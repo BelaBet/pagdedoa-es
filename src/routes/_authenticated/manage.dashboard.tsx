@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useEffectiveTenantId } from "@/lib/impersonation";
 import { Card } from "@/components/ui/card";
 import { KpiCard } from "@/components/kpi-card";
-import { Users, UserCheck, DollarSign, Calendar } from "lucide-react";
+import { DollarSign, Calendar } from "lucide-react";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid,
 } from "recharts";
@@ -17,12 +17,12 @@ export const Route = createFileRoute("/_authenticated/manage/dashboard")({
   head: () => ({ meta: [{ title: "Painel — Visão geral" }] }),
 });
 
-type Kpis = { total: number; active: number; pending: number; donationsMonth: number; eventsMonth: number };
+type Kpis = { donationsMonth: number; eventsMonth: number };
 
 function ManagerDashboard() {
   const { profile } = useAuth();
   const tenantId = useEffectiveTenantId(profile?.tenant_id);
-  const [kpis, setKpis] = useState<Kpis>({ total: 0, active: 0, pending: 0, donationsMonth: 0, eventsMonth: 0 });
+  const [kpis, setKpis] = useState<Kpis>({ donationsMonth: 0, eventsMonth: 0 });
   const [donationSeries, setDonationSeries] = useState<{ month: string; total: number }[]>([]);
   
   const [loading, setLoading] = useState(true);
@@ -39,18 +39,13 @@ function ManagerDashboard() {
       const startMonth = startOfMonth(new Date()).toISOString();
       const endMonthIso = endOfMonth(new Date()).toISOString();
 
-      const [profilesRes, donationsAllRes, donationsMonthRes, eventsMonthRes] = await Promise.all([
-        supabase.from("profiles").select("id, status, created_at").eq("tenant_id", tenantId),
+      const [donationsAllRes, donationsMonthRes, eventsMonthRes] = await Promise.all([
         supabase.from("donations").select("amount, created_at").eq("tenant_id", tenantId),
         supabase.from("donations").select("amount").eq("tenant_id", tenantId).gte("created_at", startMonth).lte("created_at", endMonthIso),
         supabase.from("events").select("id").eq("tenant_id", tenantId).gte("date", startMonth).lte("date", endMonthIso),
       ]);
 
-      const profiles = profilesRes.data ?? [];
       setKpis({
-        total: profiles.length,
-        active: profiles.filter((p) => p.status === "approved").length,
-        pending: profiles.filter((p) => p.status === "pending").length,
         donationsMonth: (donationsMonthRes.data ?? []).reduce((s, d) => s + Number(d.amount || 0), 0),
         eventsMonth: (eventsMonthRes.data ?? []).length,
       });
@@ -81,9 +76,7 @@ function ManagerDashboard() {
         <p className="text-sm text-muted-foreground">Visão geral da sua igreja</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard icon={Users} label="Membros totais" value={kpis.total} loading={loading} />
-        <KpiCard icon={UserCheck} label="Membros aprovados" value={kpis.active} loading={loading} hint={`${kpis.pending} pendentes`} />
+      <div className="grid gap-4 sm:grid-cols-2">
         <KpiCard icon={DollarSign} label="Doações no mês" value={fmtBRL(kpis.donationsMonth)} loading={loading} />
         <KpiCard icon={Calendar} label="Eventos no mês" value={kpis.eventsMonth} loading={loading} />
       </div>
