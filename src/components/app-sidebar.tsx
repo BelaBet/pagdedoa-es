@@ -24,6 +24,7 @@ import {
   ScrollText,
   Wallet,
   ShieldAlert,
+  AlertTriangle,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useEffectiveTenantId } from "@/lib/impersonation";
@@ -38,6 +39,7 @@ const MANAGE_ITEMS = [
   { title: "Financeiro", url: "/dashboard/financeiro", icon: Wallet },
   { title: "Eventos", url: "/manage/events", icon: Calendar },
   { title: "Mensagens", url: "/manage/mensagens", icon: Megaphone },
+  { title: "Pendências", url: "/manage/pendencias", icon: AlertTriangle },
   { title: "Configurações", url: "/manage/settings", icon: Settings },
 ];
 

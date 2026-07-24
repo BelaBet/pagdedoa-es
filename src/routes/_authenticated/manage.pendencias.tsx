@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth-context";
+import { useEffectiveTenantId } from "@/lib/impersonation";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, CheckCircle2, Clock, ShieldX } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/admin/pendencias")({
+export const Route = createFileRoute("/_authenticated/manage/pendencias")({
   component: PendenciasPage,
   head: () => ({ meta: [{ title: "Pendências de cadastro" }] }),
 });
@@ -28,7 +29,7 @@ const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "
 
 function PendenciasPage() {
   const { profile } = useAuth();
-  const tenantId = profile?.tenant_id;
+  const tenantId = useEffectiveTenantId(profile?.tenant_id);
 
   const { data: tenant } = useQuery({
     queryKey: ["tenant-compliance", tenantId],
@@ -139,7 +140,7 @@ function PendenciasPage() {
 
       <div className="flex justify-end">
         <Button asChild variant="outline">
-          <Link to="/admin/settings">Editar dados da igreja</Link>
+          <Link to="/manage/settings">Editar dados da igreja</Link>
         </Button>
       </div>
     </div>
