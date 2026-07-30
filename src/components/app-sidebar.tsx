@@ -20,7 +20,7 @@ import {
   ArrowLeft,
   HeartHandshake,
   Building2,
- 24  CreditCard,
+  CreditCard,
   ScrollText,
   Wallet,
   ShieldAlert,
