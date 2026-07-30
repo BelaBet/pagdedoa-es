@@ -253,7 +253,7 @@ export const createPixPayment = createServerFn({ method: "POST" })
     const sellerRecipientId = await fetchSellerRecipientId(data.tenantId);
     const costCenter = data.costCenterId ? await fetchCostCenter(data.costCenterId, data.tenantId) : null;
     const splitOverride = costCenter?.split_platform_percent ?? null;
-    const feeRow = await getPlatformFeeRow("pix");
+    const feeRow = await getPlatformFeeRow("pix", data.tenantId);
     const amounts = calculatePixAmounts(data.donationAmount, splitOverride, feeRow ?? undefined);
     if (process.env.NODE_ENV !== "production") {
       console.log("[pix] amounts", amounts, { sellerRecipientId, costCenterId: data.costCenterId, splitOverride });
@@ -453,7 +453,7 @@ export const createCreditCardPayment = createServerFn({ method: "POST" })
       }
     }
     const splitOverride = costCenter?.split_platform_percent ?? null;
-    const feeRow = await getPlatformFeeRow(data.brand === "master_visa" ? "cartao_master_visa" : "cartao_ello_hiper_amex");
+    const feeRow = await getPlatformFeeRow(data.brand === "master_visa" ? "cartao_master_visa" : "cartao_ello_hiper_amex", data.tenantId);
     const amounts = calculateCardAmounts(data.donationAmount, data.installments, data.brand, splitOverride, feeRow ?? undefined);
     if (process.env.NODE_ENV !== "production") {
       console.log("[card] amounts", amounts, {

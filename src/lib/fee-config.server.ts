@@ -23,9 +23,27 @@ export type PaymentMethodKey = "pix" | "boleto" | "cartao_master_visa" | "cartao
  * fees.config.ts como rede de segurança, para nunca bloquear um
  * pagamento por falta de configuração de taxa.
  */
-export async function getPlatformFeeRow(paymentMethod: PaymentMethodKey): Promise<FeeRow | null> {
+export async function getPlatformFeeRow(
+  paymentMethod: PaymentMethodKey,
+  tenantId?: string | null,
+): Promise<FeeRow | null> {
+  const columns =
+    "adm_percent, adquirencia_fixa, adquirencia_avista_percent, adquirencia_2x_percent, tk2_operacional_fixo, tk2_op_percent, transacao_fixa";
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // 1) Taxa específica da instituição (configurada em /admin/taxas)
+    if (tenantId) {
+      const { data: tenantRow } = await supabaseAdmin
+        .from("tenant_fee_config" as any)
+        .select(columns)
+        .eq("tenant_id", tenantId)
+        .eq("payment_method", paymentMethod)
+        .maybeSingle();
+      if (tenantRow) return tenantRow as unknown as FeeRow;
+    }
+
+    // 2) Taxa padrão da plataforma
     const { data, error } = await supabaseAdmin
       .from("platform_fee_config" as any)
       .select(
