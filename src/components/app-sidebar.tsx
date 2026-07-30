@@ -26,6 +26,9 @@ import {
   ShieldAlert,
   AlertTriangle,
   Percent,
+  Mail,
+  Phone,
+  Headphones,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useEffectiveTenantId } from "@/lib/impersonation";
@@ -164,6 +167,40 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter className="border-t">
         <SidebarMenu>
+          <SidebarMenuItem>
+            <div className="px-2 py-2">
+              {!collapsed ? (
+                <div className="rounded-lg border bg-card p-3">
+                  <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    <Headphones className="h-3.5 w-3.5" />
+                    <span>Suporte</span>
+                  </div>
+                  <a
+                    href="mailto:tk2@grupoempresariallp.com.br"
+                    className="mt-2 flex items-center gap-2 text-xs hover:text-primary hover:underline"
+                  >
+                    <Mail className="h-3.5 w-3.5 shrink-0" />
+                    tk2@grupoempresariallp.com.br
+                  </a>
+                  <a
+                    href="tel:+5531998199781"
+                    className="mt-1.5 flex items-center gap-2 text-xs hover:text-primary hover:underline"
+                  >
+                    <Phone className="h-3.5 w-3.5 shrink-0" />
+                    (31) 99819-9781
+                  </a>
+                </div>
+              ) : (
+                <a
+                  href="mailto:tk2@grupoempresariallp.com.br"
+                  title="Suporte"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border bg-card hover:bg-accent"
+                >
+                  <Headphones className="h-4 w-4" />
+                </a>
+              )}
+            </div>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link to="/dashboard" className="flex items-center gap-2">
