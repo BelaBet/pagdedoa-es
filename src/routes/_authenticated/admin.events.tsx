@@ -40,8 +40,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { EmptyRow, LoadingRow } from "@/components/empty-row";
-import { ExternalLink, Calendar, Plus } from "lucide-react";
+import { ExternalLink, Calendar, Plus, Pencil, Trash2 } from "lucide-react";
+
 import { toast } from "sonner";
 import { translateError } from "@/lib/translate-error";
 import { externalEventUrlSchema, TICKETTO_BASE } from "@/lib/validators/url";
