@@ -446,6 +446,22 @@ function AdminEventsPage() {
                         <ExternalLink className="h-4 w-4" />
                       </a>
                     </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      title="Editar evento"
+                      onClick={() => startEdit(ev)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      title="Excluir evento"
+                      onClick={() => setToDelete(ev)}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -453,6 +469,28 @@ function AdminEventsPage() {
           </TableBody>
         </Table>
       </Card>
+
+      <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir evento</AlertDialogTitle>
+            <AlertDialogDescription>
+              O evento “{toDelete?.title}” será removido definitivamente e deixará de aparecer na
+              página da igreja.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground"
+              onClick={() => toDelete && deleteMut.mutate(toDelete.id)}
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+
   );
 }
