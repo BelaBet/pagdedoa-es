@@ -122,3 +122,44 @@ export const createEventAsAdmin = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/** Atualiza um evento de qualquer igreja (apenas super admin). */
+export const updateEventAsAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    AdminEventSchema.omit({ tenant_id: true })
+      .extend({
+        id: z.string().uuid(),
+        status: z.enum(["draft", "active", "closed"]).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertPlatformAdmin(context.userId);
+    const { error } = await supabaseAdmin
+      .from("events")
+      .update({
+        title: data.title,
+        date: data.date ?? null,
+        location: data.location ?? null,
+        description: data.description ?? null,
+        banner_url: data.banner_url ?? null,
+        external_url: data.external_url,
+        ...(data.status ? { status: data.status } : {}),
+      })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** Remove um evento de qualquer igreja (apenas super admin). */
+export const deleteEventAsAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertPlatformAdmin(context.userId);
+    const { error } = await supabaseAdmin.from("events").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+

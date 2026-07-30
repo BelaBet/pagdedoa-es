@@ -6,8 +6,11 @@ import {
   getAllEvents,
   listTenantsForAdmin,
   createEventAsAdmin,
+  updateEventAsAdmin,
+  deleteEventAsAdmin,
   uploadEventBanner,
 } from "@/lib/events.functions";
+
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,8 +40,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { EmptyRow, LoadingRow } from "@/components/empty-row";
-import { ExternalLink, Calendar, Plus } from "lucide-react";
+import { ExternalLink, Calendar, Plus, Pencil, Trash2 } from "lucide-react";
+
 import { toast } from "sonner";
 import { translateError } from "@/lib/translate-error";
 import { externalEventUrlSchema, TICKETTO_BASE } from "@/lib/validators/url";
@@ -85,17 +99,30 @@ const empty: FormData = {
   external_url: TICKETTO_BASE,
 };
 
+function toLocalInput(iso: string) {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+
+
 function AdminEventsPage() {
   const qc = useQueryClient();
   const { active, tenantId: impersonatedTenantId } = useImpersonation();
   const fetchEvents = useServerFn(getAllEvents);
   const fetchTenants = useServerFn(listTenantsForAdmin);
   const createEventFn = useServerFn(createEventAsAdmin);
+  const updateEventFn = useServerFn(updateEventAsAdmin);
+  const deleteEventFn = useServerFn(deleteEventAsAdmin);
   const uploadBannerFn = useServerFn(uploadEventBanner);
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormData>(empty);
+  const [editing, setEditing] = useState<AdminEvent | null>(null);
+  const [toDelete, setToDelete] = useState<AdminEvent | null>(null);
   const [uploading, setUploading] = useState(false);
+
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin-events", active ? impersonatedTenantId : null],
@@ -112,29 +139,59 @@ function AdminEventsPage() {
 
   const events = (data ?? []) as AdminEvent[];
 
-  const createMut = useMutation({
+  const saveMut = useMutation({
     mutationFn: async (d: FormData) => {
       const parsed = formSchema.parse(d);
-      await createEventFn({
-        data: {
-          tenant_id: parsed.tenant_id,
-          title: parsed.title,
-          date: parsed.date ? new Date(parsed.date).toISOString() : null,
-          location: parsed.location || null,
-          description: parsed.description || null,
-          banner_url: parsed.banner_url || null,
-          external_url: parsed.external_url,
-        },
-      });
+      const payload = {
+        title: parsed.title,
+        date: parsed.date ? new Date(parsed.date).toISOString() : null,
+        location: parsed.location || null,
+        description: parsed.description || null,
+        banner_url: parsed.banner_url || null,
+        external_url: parsed.external_url,
+      };
+      if (editing) {
+        await updateEventFn({ data: { id: editing.id, ...payload } });
+      } else {
+        await createEventFn({ data: { tenant_id: parsed.tenant_id, ...payload } });
+      }
     },
     onSuccess: () => {
-      toast.success("Evento criado");
+      toast.success(editing ? "Evento atualizado" : "Evento criado");
       setOpen(false);
+      setEditing(null);
       setForm(empty);
       qc.invalidateQueries({ queryKey: ["admin-events"] });
     },
     onError: (e) => toast.error(translateError(e)),
   });
+
+  const deleteMut = useMutation({
+    mutationFn: async (id: string) => {
+      await deleteEventFn({ data: { id } });
+    },
+    onSuccess: () => {
+      toast.success("Evento excluído");
+      setToDelete(null);
+      qc.invalidateQueries({ queryKey: ["admin-events"] });
+    },
+    onError: (e) => toast.error(translateError(e)),
+  });
+
+  function startEdit(ev: AdminEvent) {
+    setEditing(ev);
+    setForm({
+      tenant_id: ev.tenant_id,
+      title: ev.title,
+      date: ev.date ? toLocalInput(ev.date) : "",
+      location: ev.location ?? "",
+      description: ev.description ?? "",
+      banner_url: ev.banner_url ?? "",
+      external_url: ev.external_url,
+    });
+    setOpen(true);
+  }
+
 
   async function handleBannerUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -182,7 +239,7 @@ function AdminEventsPage() {
       toast.error(r.error.issues[0]?.message ?? "Verifique os campos");
       return;
     }
-    createMut.mutate(r.data);
+    saveMut.mutate(r.data);
   }
 
   return (
@@ -200,27 +257,35 @@ function AdminEventsPage() {
           open={open}
           onOpenChange={(o) => {
             setOpen(o);
-            if (o && active && impersonatedTenantId) {
+            if (!o) {
+              setEditing(null);
+              setForm(empty);
+            } else if (!editing && active && impersonatedTenantId) {
               setForm((f) => ({ ...f, tenant_id: impersonatedTenantId }));
             }
           }}
         >
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={() => { setEditing(null); setForm(empty); }}>
               <Plus className="mr-2 h-4 w-4" /> Novo evento
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Novo evento (qualquer igreja)</DialogTitle>
+              <DialogTitle>
+                {editing ? "Editar evento" : "Novo evento (qualquer igreja)"}
+              </DialogTitle>
             </DialogHeader>
             <form onSubmit={onSubmit} className="space-y-4">
+
               <div>
                 <Label>Igreja *</Label>
                 <Select
                   value={form.tenant_id}
+                  disabled={!!editing}
                   onValueChange={(v) => setForm({ ...form, tenant_id: v })}
                 >
+
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a igreja" />
                   </SelectTrigger>
@@ -305,9 +370,10 @@ function AdminEventsPage() {
                 <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={createMut.isPending}>
-                  {createMut.isPending ? "Salvando…" : "Cadastrar"}
+                <Button type="submit" disabled={saveMut.isPending}>
+                  {saveMut.isPending ? "Salvando…" : editing ? "Salvar alterações" : "Cadastrar"}
                 </Button>
+
               </DialogFooter>
             </form>
           </DialogContent>
@@ -380,6 +446,22 @@ function AdminEventsPage() {
                         <ExternalLink className="h-4 w-4" />
                       </a>
                     </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      title="Editar evento"
+                      onClick={() => startEdit(ev)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      title="Excluir evento"
+                      onClick={() => setToDelete(ev)}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -387,6 +469,28 @@ function AdminEventsPage() {
           </TableBody>
         </Table>
       </Card>
+
+      <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir evento</AlertDialogTitle>
+            <AlertDialogDescription>
+              O evento “{toDelete?.title}” será removido definitivamente e deixará de aparecer na
+              página da igreja.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground"
+              onClick={() => toDelete && deleteMut.mutate(toDelete.id)}
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+
   );
 }

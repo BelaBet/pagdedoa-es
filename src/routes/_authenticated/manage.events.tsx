@@ -20,12 +20,23 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Calendar, ExternalLink, Plus } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Calendar, ExternalLink, Plus, Pencil, Trash2 } from "lucide-react";
 import { BackButton } from "@/components/back-button";
 import { toast } from "sonner";
 import { translateError } from "@/lib/translate-error";
 import { externalEventUrlSchema, TICKETTO_BASE, isTickettoUrl } from "@/lib/validators/url";
 import { z } from "zod";
+
 
 export const Route = createFileRoute("/_authenticated/manage/events")({
   component: ManageEventsPage,
@@ -51,14 +62,34 @@ const empty: FormData = {
   external_url: TICKETTO_BASE,
 };
 
+type EventRow = {
+  id: string;
+  title: string;
+  date: string | null;
+  location: string | null;
+  description: string | null;
+  banner_url: string | null;
+  external_url: string;
+  status: string;
+};
+
+function toLocalInput(iso: string) {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 function ManageEventsPage() {
   const { profile } = useAuth();
   const tenantId = useEffectiveTenantId(profile?.tenant_id);
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormData>(empty);
+  const [editing, setEditing] = useState<EventRow | null>(null);
+  const [toDelete, setToDelete] = useState<EventRow | null>(null);
   const [uploading, setUploading] = useState(false);
   const uploadBannerFn = useServerFn(uploadEventBanner);
+
 
   async function handleBannerUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -103,30 +134,63 @@ function ManageEventsPage() {
     },
   });
 
-  const createMut = useMutation({
+  const saveMut = useMutation({
     mutationFn: async (data: FormData) => {
       if (!tenantId) throw new Error("Tenant não definido");
       const parsed = formSchema.parse(data);
-      const { error } = await supabase.from("events").insert({
-        tenant_id: tenantId,
+      const payload = {
         title: parsed.title,
         date: parsed.date ? new Date(parsed.date).toISOString() : null,
         location: parsed.location || null,
         description: parsed.description || null,
         banner_url: parsed.banner_url || null,
         external_url: parsed.external_url,
-        status: "active",
-      });
-      if (error) throw error;
+      };
+      if (editing) {
+        const { error } = await supabase.from("events").update(payload).eq("id", editing.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("events")
+          .insert({ tenant_id: tenantId, ...payload, status: "active" });
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
-      toast.success("Evento cadastrado");
+      toast.success(editing ? "Evento atualizado" : "Evento cadastrado");
       setOpen(false);
+      setEditing(null);
       setForm(empty);
       qc.invalidateQueries({ queryKey: ["manage-events", tenantId] });
     },
     onError: (e) => toast.error(translateError(e)),
   });
+
+  const deleteMut = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("events").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Evento excluído");
+      setToDelete(null);
+      qc.invalidateQueries({ queryKey: ["manage-events", tenantId] });
+    },
+    onError: (e) => toast.error(translateError(e)),
+  });
+
+  function startEdit(ev: EventRow) {
+    setEditing(ev);
+    setForm({
+      title: ev.title,
+      date: ev.date ? toLocalInput(ev.date) : "",
+      location: ev.location ?? "",
+      description: ev.description ?? "",
+      banner_url: ev.banner_url ?? "",
+      external_url: ev.external_url,
+    });
+    setOpen(true);
+  }
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -135,8 +199,9 @@ function ManageEventsPage() {
       toast.error(r.error.issues[0]?.message ?? "Verifique os campos");
       return;
     }
-    createMut.mutate(r.data);
+    saveMut.mutate(r.data);
   }
+
 
   return (
     <div>
@@ -148,15 +213,22 @@ function ManageEventsPage() {
             Cadastre eventos da igreja. A inscrição é feita no link externo (TicketTO).
           </p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+          open={open}
+          onOpenChange={(o) => {
+            setOpen(o);
+            if (!o) { setEditing(null); setForm(empty); }
+          }}
+        >
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={() => { setEditing(null); setForm(empty); }}>
               <Plus className="mr-2 h-4 w-4" /> Novo evento
             </Button>
+
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Novo evento</DialogTitle>
+              <DialogTitle>{editing ? "Editar evento" : "Novo evento"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={onSubmit} className="space-y-4">
               <div>
@@ -239,8 +311,9 @@ function ManageEventsPage() {
                 <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={createMut.isPending}>
-                  {createMut.isPending ? "Salvando…" : "Cadastrar"}
+                <Button type="submit" disabled={saveMut.isPending}>
+                  {saveMut.isPending ? "Salvando…" : editing ? "Salvar alterações" : "Cadastrar"}
+
                 </Button>
               </DialogFooter>
             </form>
@@ -293,11 +366,46 @@ function ManageEventsPage() {
                     Link externo (não-TicketTO)
                   </p>
                 )}
+                <div className="mt-4 flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => startEdit(ev as EventRow)}>
+                    <Pencil className="mr-1.5 h-3.5 w-3.5" /> Editar
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive"
+                    onClick={() => setToDelete(ev as EventRow)}
+                  >
+                    <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Excluir
+                  </Button>
+                </div>
               </div>
             </Card>
           ))
         )}
       </div>
+
+      <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir evento</AlertDialogTitle>
+            <AlertDialogDescription>
+              O evento “{toDelete?.title}” será removido definitivamente e deixará de aparecer na
+              sua página de doação.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground"
+              onClick={() => toDelete && deleteMut.mutate(toDelete.id)}
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+
   );
 }
