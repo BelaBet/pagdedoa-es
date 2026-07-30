@@ -134,30 +134,63 @@ function ManageEventsPage() {
     },
   });
 
-  const createMut = useMutation({
+  const saveMut = useMutation({
     mutationFn: async (data: FormData) => {
       if (!tenantId) throw new Error("Tenant não definido");
       const parsed = formSchema.parse(data);
-      const { error } = await supabase.from("events").insert({
-        tenant_id: tenantId,
+      const payload = {
         title: parsed.title,
         date: parsed.date ? new Date(parsed.date).toISOString() : null,
         location: parsed.location || null,
         description: parsed.description || null,
         banner_url: parsed.banner_url || null,
         external_url: parsed.external_url,
-        status: "active",
-      });
-      if (error) throw error;
+      };
+      if (editing) {
+        const { error } = await supabase.from("events").update(payload).eq("id", editing.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("events")
+          .insert({ tenant_id: tenantId, ...payload, status: "active" });
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
-      toast.success("Evento cadastrado");
+      toast.success(editing ? "Evento atualizado" : "Evento cadastrado");
       setOpen(false);
+      setEditing(null);
       setForm(empty);
       qc.invalidateQueries({ queryKey: ["manage-events", tenantId] });
     },
     onError: (e) => toast.error(translateError(e)),
   });
+
+  const deleteMut = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("events").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Evento excluído");
+      setToDelete(null);
+      qc.invalidateQueries({ queryKey: ["manage-events", tenantId] });
+    },
+    onError: (e) => toast.error(translateError(e)),
+  });
+
+  function startEdit(ev: EventRow) {
+    setEditing(ev);
+    setForm({
+      title: ev.title,
+      date: ev.date ? toLocalInput(ev.date) : "",
+      location: ev.location ?? "",
+      description: ev.description ?? "",
+      banner_url: ev.banner_url ?? "",
+      external_url: ev.external_url,
+    });
+    setOpen(true);
+  }
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -166,8 +199,9 @@ function ManageEventsPage() {
       toast.error(r.error.issues[0]?.message ?? "Verifique os campos");
       return;
     }
-    createMut.mutate(r.data);
+    saveMut.mutate(r.data);
   }
+
 
   return (
     <div>
