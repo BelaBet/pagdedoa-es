@@ -282,8 +282,10 @@ function AdminEventsPage() {
                 <Label>Igreja *</Label>
                 <Select
                   value={form.tenant_id}
+                  disabled={!!editing}
                   onValueChange={(v) => setForm({ ...form, tenant_id: v })}
                 >
+
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a igreja" />
                   </SelectTrigger>
