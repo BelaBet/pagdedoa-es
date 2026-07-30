@@ -76,10 +76,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setProfile(null); setRoles([]); setPlatformRoles([]);
       }
-      // Redirect to password reset page when user clicks recovery link
+      // Redirect to password reset page when user clicks recovery link.
+      // Preserva o hash da URL (#access_token=...&type=recovery) no
+      // redirecionamento — sem isso, se o Supabase não cair direto em
+      // /redefinir-senha (ex: por causa da config de Redirect URLs
+      // permitidas), esse "resgate" perderia o token no caminho e a
+      // página de redefinição mostraria erro de link inválido mesmo com
+      // o link original sendo válido.
       if (event === "PASSWORD_RECOVERY" && typeof window !== "undefined") {
         if (window.location.pathname !== "/redefinir-senha") {
-          window.location.assign("/redefinir-senha");
+          window.location.assign("/redefinir-senha" + window.location.hash);
         }
       }
     });
