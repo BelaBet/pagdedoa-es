@@ -228,7 +228,7 @@ function ManageEventsPage() {
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Novo evento</DialogTitle>
+              <DialogTitle>{editing ? "Editar evento" : "Novo evento"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={onSubmit} className="space-y-4">
               <div>
