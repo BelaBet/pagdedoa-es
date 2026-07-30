@@ -257,21 +257,27 @@ function AdminEventsPage() {
           open={open}
           onOpenChange={(o) => {
             setOpen(o);
-            if (o && active && impersonatedTenantId) {
+            if (!o) {
+              setEditing(null);
+              setForm(empty);
+            } else if (!editing && active && impersonatedTenantId) {
               setForm((f) => ({ ...f, tenant_id: impersonatedTenantId }));
             }
           }}
         >
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={() => { setEditing(null); setForm(empty); }}>
               <Plus className="mr-2 h-4 w-4" /> Novo evento
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Novo evento (qualquer igreja)</DialogTitle>
+              <DialogTitle>
+                {editing ? "Editar evento" : "Novo evento (qualquer igreja)"}
+              </DialogTitle>
             </DialogHeader>
             <form onSubmit={onSubmit} className="space-y-4">
+
               <div>
                 <Label>Igreja *</Label>
                 <Select
