@@ -20,12 +20,23 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Calendar, ExternalLink, Plus } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Calendar, ExternalLink, Plus, Pencil, Trash2 } from "lucide-react";
 import { BackButton } from "@/components/back-button";
 import { toast } from "sonner";
 import { translateError } from "@/lib/translate-error";
 import { externalEventUrlSchema, TICKETTO_BASE, isTickettoUrl } from "@/lib/validators/url";
 import { z } from "zod";
+
 
 export const Route = createFileRoute("/_authenticated/manage/events")({
   component: ManageEventsPage,
