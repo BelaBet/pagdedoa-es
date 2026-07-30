@@ -366,11 +366,46 @@ function ManageEventsPage() {
                     Link externo (não-TicketTO)
                   </p>
                 )}
+                <div className="mt-4 flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => startEdit(ev as EventRow)}>
+                    <Pencil className="mr-1.5 h-3.5 w-3.5" /> Editar
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive"
+                    onClick={() => setToDelete(ev as EventRow)}
+                  >
+                    <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Excluir
+                  </Button>
+                </div>
               </div>
             </Card>
           ))
         )}
       </div>
+
+      <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir evento</AlertDialogTitle>
+            <AlertDialogDescription>
+              O evento “{toDelete?.title}” será removido definitivamente e deixará de aparecer na
+              sua página de doação.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground"
+              onClick={() => toDelete && deleteMut.mutate(toDelete.id)}
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+
   );
 }
