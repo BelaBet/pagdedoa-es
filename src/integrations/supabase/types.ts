@@ -1157,6 +1157,66 @@ export type Database = {
           },
         ]
       }
+      tenant_fee_config: {
+        Row: {
+          adm_percent: number
+          adquirencia_2x_percent: number | null
+          adquirencia_avista_percent: number | null
+          adquirencia_fixa: number | null
+          antecipacao_custo_percent: number | null
+          payment_method: string
+          tenant_id: string
+          tk2_op_percent: number | null
+          tk2_operacional_fixo: number | null
+          transacao_fixa: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          adm_percent?: number
+          adquirencia_2x_percent?: number | null
+          adquirencia_avista_percent?: number | null
+          adquirencia_fixa?: number | null
+          antecipacao_custo_percent?: number | null
+          payment_method: string
+          tenant_id: string
+          tk2_op_percent?: number | null
+          tk2_operacional_fixo?: number | null
+          transacao_fixa?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          adm_percent?: number
+          adquirencia_2x_percent?: number | null
+          adquirencia_avista_percent?: number | null
+          adquirencia_fixa?: number | null
+          antecipacao_custo_percent?: number | null
+          payment_method?: string
+          tenant_id?: string
+          tk2_op_percent?: number | null
+          tk2_operacional_fixo?: number | null
+          transacao_fixa?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_fee_config_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tenant_fee_config_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenant_financial_config: {
         Row: {
           anticipation_days: number | null
