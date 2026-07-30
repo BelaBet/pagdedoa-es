@@ -20,12 +20,15 @@ import {
   ArrowLeft,
   HeartHandshake,
   Building2,
-  CreditCard,
+ 24  CreditCard,
   ScrollText,
   Wallet,
   ShieldAlert,
   AlertTriangle,
   Percent,
+  Mail,
+  Phone,
+  Headphones,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useEffectiveTenantId } from "@/lib/impersonation";
