@@ -105,11 +105,16 @@ function AdminEventsPage() {
   const fetchEvents = useServerFn(getAllEvents);
   const fetchTenants = useServerFn(listTenantsForAdmin);
   const createEventFn = useServerFn(createEventAsAdmin);
+  const updateEventFn = useServerFn(updateEventAsAdmin);
+  const deleteEventFn = useServerFn(deleteEventAsAdmin);
   const uploadBannerFn = useServerFn(uploadEventBanner);
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormData>(empty);
+  const [editing, setEditing] = useState<AdminEvent | null>(null);
+  const [toDelete, setToDelete] = useState<AdminEvent | null>(null);
   const [uploading, setUploading] = useState(false);
+
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin-events", active ? impersonatedTenantId : null],
