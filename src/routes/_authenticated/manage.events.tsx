@@ -62,14 +62,34 @@ const empty: FormData = {
   external_url: TICKETTO_BASE,
 };
 
+type EventRow = {
+  id: string;
+  title: string;
+  date: string | null;
+  location: string | null;
+  description: string | null;
+  banner_url: string | null;
+  external_url: string;
+  status: string;
+};
+
+function toLocalInput(iso: string) {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 function ManageEventsPage() {
   const { profile } = useAuth();
   const tenantId = useEffectiveTenantId(profile?.tenant_id);
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormData>(empty);
+  const [editing, setEditing] = useState<EventRow | null>(null);
+  const [toDelete, setToDelete] = useState<EventRow | null>(null);
   const [uploading, setUploading] = useState(false);
   const uploadBannerFn = useServerFn(uploadEventBanner);
+
 
   async function handleBannerUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
