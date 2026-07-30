@@ -213,11 +213,18 @@ function ManageEventsPage() {
             Cadastre eventos da igreja. A inscrição é feita no link externo (TicketTO).
           </p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+          open={open}
+          onOpenChange={(o) => {
+            setOpen(o);
+            if (!o) { setEditing(null); setForm(empty); }
+          }}
+        >
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={() => { setEditing(null); setForm(empty); }}>
               <Plus className="mr-2 h-4 w-4" /> Novo evento
             </Button>
+
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
