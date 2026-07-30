@@ -131,29 +131,59 @@ function AdminEventsPage() {
 
   const events = (data ?? []) as AdminEvent[];
 
-  const createMut = useMutation({
+  const saveMut = useMutation({
     mutationFn: async (d: FormData) => {
       const parsed = formSchema.parse(d);
-      await createEventFn({
-        data: {
-          tenant_id: parsed.tenant_id,
-          title: parsed.title,
-          date: parsed.date ? new Date(parsed.date).toISOString() : null,
-          location: parsed.location || null,
-          description: parsed.description || null,
-          banner_url: parsed.banner_url || null,
-          external_url: parsed.external_url,
-        },
-      });
+      const payload = {
+        title: parsed.title,
+        date: parsed.date ? new Date(parsed.date).toISOString() : null,
+        location: parsed.location || null,
+        description: parsed.description || null,
+        banner_url: parsed.banner_url || null,
+        external_url: parsed.external_url,
+      };
+      if (editing) {
+        await updateEventFn({ data: { id: editing.id, ...payload } });
+      } else {
+        await createEventFn({ data: { tenant_id: parsed.tenant_id, ...payload } });
+      }
     },
     onSuccess: () => {
-      toast.success("Evento criado");
+      toast.success(editing ? "Evento atualizado" : "Evento criado");
       setOpen(false);
+      setEditing(null);
       setForm(empty);
       qc.invalidateQueries({ queryKey: ["admin-events"] });
     },
     onError: (e) => toast.error(translateError(e)),
   });
+
+  const deleteMut = useMutation({
+    mutationFn: async (id: string) => {
+      await deleteEventFn({ data: { id } });
+    },
+    onSuccess: () => {
+      toast.success("Evento excluído");
+      setToDelete(null);
+      qc.invalidateQueries({ queryKey: ["admin-events"] });
+    },
+    onError: (e) => toast.error(translateError(e)),
+  });
+
+  function startEdit(ev: AdminEvent) {
+    setEditing(ev);
+    setForm({
+      tenant_id: ev.tenant_id,
+      title: ev.title,
+      date: ev.date ? toLocalInput(ev.date) : "",
+      location: ev.location ?? "",
+      description: ev.description ?? "",
+      banner_url: ev.banner_url ?? "",
+      external_url: ev.external_url,
+    });
+    setOpen(true);
+  }
+
 
   async function handleBannerUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
