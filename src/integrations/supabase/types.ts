@@ -776,6 +776,48 @@ export type Database = {
           },
         ]
       }
+      platform_fee_config: {
+        Row: {
+          adm_percent: number
+          adquirencia_2x_percent: number | null
+          adquirencia_avista_percent: number | null
+          adquirencia_fixa: number | null
+          antecipacao_custo_percent: number | null
+          payment_method: string
+          tk2_op_percent: number | null
+          tk2_operacional_fixo: number | null
+          transacao_fixa: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          adm_percent?: number
+          adquirencia_2x_percent?: number | null
+          adquirencia_avista_percent?: number | null
+          adquirencia_fixa?: number | null
+          antecipacao_custo_percent?: number | null
+          payment_method: string
+          tk2_op_percent?: number | null
+          tk2_operacional_fixo?: number | null
+          transacao_fixa?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          adm_percent?: number
+          adquirencia_2x_percent?: number | null
+          adquirencia_avista_percent?: number | null
+          adquirencia_fixa?: number | null
+          antecipacao_custo_percent?: number | null
+          payment_method?: string
+          tk2_op_percent?: number | null
+          tk2_operacional_fixo?: number | null
+          transacao_fixa?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       platform_roles: {
         Row: {
           created_at: string

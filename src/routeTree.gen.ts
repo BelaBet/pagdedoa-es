@@ -9,66 +9,58 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as SignupRouteImport } from './routes/signup'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedManageRouteImport } from './routes/_authenticated/manage'
-import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
-import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
-import { Route as AuthenticatedScanRouteImport } from './routes/_authenticated/scan'
-import { Route as AuthenticatedSuperAdminRouteImport } from './routes/_authenticated/super-admin'
-import { Route as AuthenticatedTicketsRouteImport } from './routes/_authenticated/tickets'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as ISlugRouteImport } from './routes/i.$slug'
-import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
-import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
-import { Route as AuthenticatedAdminBillingRouteImport } from './routes/_authenticated/admin.billing'
-import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
-import { Route as AuthenticatedAdminDonationsRouteImport } from './routes/_authenticated/admin.donations'
-import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
-import { Route as AuthenticatedAdminFinanceiroRouteImport } from './routes/_authenticated/admin.financeiro'
-import { Route as AuthenticatedAdminRelatoriosRouteImport } from './routes/_authenticated/admin.relatorios'
-import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
-import { Route as AuthenticatedAdminTaxasRouteImport } from './routes/_authenticated/admin.taxas'
-import { Route as AuthenticatedAdminTenantsRouteImport } from './routes/_authenticated/admin.tenants'
-import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
-import { Route as AuthenticatedDashboardFinanceiroRouteImport } from './routes/_authenticated/dashboard.financeiro'
-import { Route as AuthenticatedIgrejasIndexRouteImport } from './routes/_authenticated/igrejas.index'
-import { Route as AuthenticatedIgrejasNovaRouteImport } from './routes/_authenticated/igrejas.nova'
-import { Route as AuthenticatedIgrejasOnboardingRouteImport } from './routes/_authenticated/igrejas.onboarding'
+import { Route as AuthenticatedTicketsRouteImport } from './routes/_authenticated/tickets'
+import { Route as AuthenticatedSuperAdminRouteImport } from './routes/_authenticated/super-admin'
+import { Route as AuthenticatedScanRouteImport } from './routes/_authenticated/scan'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
+import { Route as AuthenticatedManageRouteImport } from './routes/_authenticated/manage'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedManageIndexRouteImport } from './routes/_authenticated/manage.index'
-import { Route as AuthenticatedManageDashboardRouteImport } from './routes/_authenticated/manage.dashboard'
-import { Route as AuthenticatedManageDonationsRouteImport } from './routes/_authenticated/manage.donations'
-import { Route as AuthenticatedManageEventsRouteImport } from './routes/_authenticated/manage.events'
-import { Route as AuthenticatedManageMembersRouteImport } from './routes/_authenticated/manage.members'
-import { Route as AuthenticatedManageMensagensRouteImport } from './routes/_authenticated/manage.mensagens'
-import { Route as AuthenticatedManagePendenciasRouteImport } from './routes/_authenticated/manage.pendencias'
-import { Route as AuthenticatedManageRelatoriosRouteImport } from './routes/_authenticated/manage.relatorios'
-import { Route as AuthenticatedManageSettingsRouteImport } from './routes/_authenticated/manage.settings'
+import { Route as AuthenticatedIgrejasIndexRouteImport } from './routes/_authenticated/igrejas.index'
+import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as ApiPublicCreateDonationRouteImport } from './routes/api/public/create-donation'
+import { Route as AuthenticatedManageSettingsRouteImport } from './routes/_authenticated/manage.settings'
+import { Route as AuthenticatedManageRelatoriosRouteImport } from './routes/_authenticated/manage.relatorios'
+import { Route as AuthenticatedManagePendenciasRouteImport } from './routes/_authenticated/manage.pendencias'
+import { Route as AuthenticatedManageMensagensRouteImport } from './routes/_authenticated/manage.mensagens'
+import { Route as AuthenticatedManageMembersRouteImport } from './routes/_authenticated/manage.members'
+import { Route as AuthenticatedManageEventsRouteImport } from './routes/_authenticated/manage.events'
+import { Route as AuthenticatedManageDonationsRouteImport } from './routes/_authenticated/manage.donations'
+import { Route as AuthenticatedManageDashboardRouteImport } from './routes/_authenticated/manage.dashboard'
+import { Route as AuthenticatedIgrejasOnboardingRouteImport } from './routes/_authenticated/igrejas.onboarding'
+import { Route as AuthenticatedIgrejasNovaRouteImport } from './routes/_authenticated/igrejas.nova'
+import { Route as AuthenticatedDashboardFinanceiroRouteImport } from './routes/_authenticated/dashboard.financeiro'
+import { Route as AuthenticatedAdminTenantsRouteImport } from './routes/_authenticated/admin.tenants'
+import { Route as AuthenticatedAdminTaxasRouteImport } from './routes/_authenticated/admin.taxas'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
+import { Route as AuthenticatedAdminRelatoriosRouteImport } from './routes/_authenticated/admin.relatorios'
+import { Route as AuthenticatedAdminFinanceiroRouteImport } from './routes/_authenticated/admin.financeiro'
+import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
+import { Route as AuthenticatedAdminDonationsRouteImport } from './routes/_authenticated/admin.donations'
+import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
+import { Route as AuthenticatedAdminBillingRouteImport } from './routes/_authenticated/admin.billing'
+import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as ApiPublicWebhooksPagarmeRouteImport } from './routes/api/public/webhooks/pagarme'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRoute = AuthenticatedRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
@@ -76,24 +68,48 @@ const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
   path: '/redefinir-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ISlugRoute = ISlugRouteImport.update({
+  id: '/i/$slug',
+  path: '/i/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedTicketsRoute = AuthenticatedTicketsRouteImport.update({
+  id: '/tickets',
+  path: '/tickets',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthenticatedSuperAdminRoute = AuthenticatedSuperAdminRouteImport.update({
+  id: '/super-admin',
+  path: '/super-admin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedManageRoute = AuthenticatedManageRouteImport.update({
-  id: '/manage',
-  path: '/manage',
+const AuthenticatedScanRoute = AuthenticatedScanRouteImport.update({
+  id: '/scan',
+  path: '/scan',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedNotificationsRoute =
@@ -102,105 +118,26 @@ const AuthenticatedNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
+const AuthenticatedManageRoute = AuthenticatedManageRouteImport.update({
+  id: '/manage',
+  path: '/manage',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedScanRoute = AuthenticatedScanRouteImport.update({
-  id: '/scan',
-  path: '/scan',
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedSuperAdminRoute = AuthenticatedSuperAdminRouteImport.update({
-  id: '/super-admin',
-  path: '/super-admin',
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedTicketsRoute = AuthenticatedTicketsRouteImport.update({
-  id: '/tickets',
-  path: '/tickets',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const ISlugRoute = ISlugRouteImport.update({
-  id: '/i/$slug',
-  path: '/i/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthenticatedAdminRoute,
-} as any)
-const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
-  id: '/audit',
-  path: '/audit',
-  getParentRoute: () => AuthenticatedAdminRoute,
-} as any)
-const AuthenticatedAdminBillingRoute =
-  AuthenticatedAdminBillingRouteImport.update({
-    id: '/billing',
-    path: '/billing',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminDashboardRoute =
-  AuthenticatedAdminDashboardRouteImport.update({
-    id: '/dashboard',
-    path: '/dashboard',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminDonationsRoute =
-  AuthenticatedAdminDonationsRouteImport.update({
-    id: '/donations',
-    path: '/donations',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminEventsRoute =
-  AuthenticatedAdminEventsRouteImport.update({
-    id: '/events',
-    path: '/events',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminFinanceiroRoute =
-  AuthenticatedAdminFinanceiroRouteImport.update({
-    id: '/financeiro',
-    path: '/financeiro',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminRelatoriosRoute =
-  AuthenticatedAdminRelatoriosRouteImport.update({
-    id: '/relatorios',
-    path: '/relatorios',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminSettingsRoute =
-  AuthenticatedAdminSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminTaxasRoute = AuthenticatedAdminTaxasRouteImport.update({
-  id: '/taxas',
-  path: '/taxas',
-  getParentRoute: () => AuthenticatedAdminRoute,
-} as any)
-const AuthenticatedAdminTenantsRoute =
-  AuthenticatedAdminTenantsRouteImport.update({
-    id: '/tenants',
-    path: '/tenants',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedDashboardIndexRoute =
-  AuthenticatedDashboardIndexRouteImport.update({
+const AuthenticatedManageIndexRoute =
+  AuthenticatedManageIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AuthenticatedDashboardRoute,
-  } as any)
-const AuthenticatedDashboardFinanceiroRoute =
-  AuthenticatedDashboardFinanceiroRouteImport.update({
-    id: '/financeiro',
-    path: '/financeiro',
-    getParentRoute: () => AuthenticatedDashboardRoute,
+    getParentRoute: () => AuthenticatedManageRoute,
   } as any)
 const AuthenticatedIgrejasIndexRoute =
   AuthenticatedIgrejasIndexRouteImport.update({
@@ -208,58 +145,26 @@ const AuthenticatedIgrejasIndexRoute =
     path: '/igrejas/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedIgrejasNovaRoute =
-  AuthenticatedIgrejasNovaRouteImport.update({
-    id: '/igrejas/nova',
-    path: '/igrejas/nova',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedIgrejasOnboardingRoute =
-  AuthenticatedIgrejasOnboardingRouteImport.update({
-    id: '/igrejas/onboarding',
-    path: '/igrejas/onboarding',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedManageIndexRoute =
-  AuthenticatedManageIndexRouteImport.update({
+const AuthenticatedDashboardIndexRoute =
+  AuthenticatedDashboardIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AuthenticatedManageRoute,
+    getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
-const AuthenticatedManageDashboardRoute =
-  AuthenticatedManageDashboardRouteImport.update({
-    id: '/dashboard',
-    path: '/dashboard',
-    getParentRoute: () => AuthenticatedManageRoute,
-  } as any)
-const AuthenticatedManageDonationsRoute =
-  AuthenticatedManageDonationsRouteImport.update({
-    id: '/donations',
-    path: '/donations',
-    getParentRoute: () => AuthenticatedManageRoute,
-  } as any)
-const AuthenticatedManageEventsRoute =
-  AuthenticatedManageEventsRouteImport.update({
-    id: '/events',
-    path: '/events',
-    getParentRoute: () => AuthenticatedManageRoute,
-  } as any)
-const AuthenticatedManageMembersRoute =
-  AuthenticatedManageMembersRouteImport.update({
-    id: '/members',
-    path: '/members',
-    getParentRoute: () => AuthenticatedManageRoute,
-  } as any)
-const AuthenticatedManageMensagensRoute =
-  AuthenticatedManageMensagensRouteImport.update({
-    id: '/mensagens',
-    path: '/mensagens',
-    getParentRoute: () => AuthenticatedManageRoute,
-  } as any)
-const AuthenticatedManagePendenciasRoute =
-  AuthenticatedManagePendenciasRouteImport.update({
-    id: '/pendencias',
-    path: '/pendencias',
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const ApiPublicCreateDonationRoute = ApiPublicCreateDonationRouteImport.update({
+  id: '/api/public/create-donation',
+  path: '/api/public/create-donation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedManageSettingsRoute =
+  AuthenticatedManageSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
     getParentRoute: () => AuthenticatedManageRoute,
   } as any)
 const AuthenticatedManageRelatoriosRoute =
@@ -268,16 +173,117 @@ const AuthenticatedManageRelatoriosRoute =
     path: '/relatorios',
     getParentRoute: () => AuthenticatedManageRoute,
   } as any)
-const AuthenticatedManageSettingsRoute =
-  AuthenticatedManageSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
+const AuthenticatedManagePendenciasRoute =
+  AuthenticatedManagePendenciasRouteImport.update({
+    id: '/pendencias',
+    path: '/pendencias',
     getParentRoute: () => AuthenticatedManageRoute,
   } as any)
-const ApiPublicCreateDonationRoute = ApiPublicCreateDonationRouteImport.update({
-  id: '/api/public/create-donation',
-  path: '/api/public/create-donation',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedManageMensagensRoute =
+  AuthenticatedManageMensagensRouteImport.update({
+    id: '/mensagens',
+    path: '/mensagens',
+    getParentRoute: () => AuthenticatedManageRoute,
+  } as any)
+const AuthenticatedManageMembersRoute =
+  AuthenticatedManageMembersRouteImport.update({
+    id: '/members',
+    path: '/members',
+    getParentRoute: () => AuthenticatedManageRoute,
+  } as any)
+const AuthenticatedManageEventsRoute =
+  AuthenticatedManageEventsRouteImport.update({
+    id: '/events',
+    path: '/events',
+    getParentRoute: () => AuthenticatedManageRoute,
+  } as any)
+const AuthenticatedManageDonationsRoute =
+  AuthenticatedManageDonationsRouteImport.update({
+    id: '/donations',
+    path: '/donations',
+    getParentRoute: () => AuthenticatedManageRoute,
+  } as any)
+const AuthenticatedManageDashboardRoute =
+  AuthenticatedManageDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedManageRoute,
+  } as any)
+const AuthenticatedIgrejasOnboardingRoute =
+  AuthenticatedIgrejasOnboardingRouteImport.update({
+    id: '/igrejas/onboarding',
+    path: '/igrejas/onboarding',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedIgrejasNovaRoute =
+  AuthenticatedIgrejasNovaRouteImport.update({
+    id: '/igrejas/nova',
+    path: '/igrejas/nova',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDashboardFinanceiroRoute =
+  AuthenticatedDashboardFinanceiroRouteImport.update({
+    id: '/financeiro',
+    path: '/financeiro',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedAdminTenantsRoute =
+  AuthenticatedAdminTenantsRouteImport.update({
+    id: '/tenants',
+    path: '/tenants',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminTaxasRoute = AuthenticatedAdminTaxasRouteImport.update({
+  id: '/taxas',
+  path: '/taxas',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminRelatoriosRoute =
+  AuthenticatedAdminRelatoriosRouteImport.update({
+    id: '/relatorios',
+    path: '/relatorios',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminFinanceiroRoute =
+  AuthenticatedAdminFinanceiroRouteImport.update({
+    id: '/financeiro',
+    path: '/financeiro',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminEventsRoute =
+  AuthenticatedAdminEventsRouteImport.update({
+    id: '/events',
+    path: '/events',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminDonationsRoute =
+  AuthenticatedAdminDonationsRouteImport.update({
+    id: '/donations',
+    path: '/donations',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminDashboardRoute =
+  AuthenticatedAdminDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminBillingRoute =
+  AuthenticatedAdminBillingRouteImport.update({
+    id: '/billing',
+    path: '/billing',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
 const ApiPublicWebhooksPagarmeRoute =
   ApiPublicWebhooksPagarmeRouteImport.update({
@@ -291,6 +297,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
@@ -334,6 +341,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -376,6 +384,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
@@ -421,6 +430,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/redefinir-senha'
+    | '/reset-password'
     | '/signup'
     | '/admin'
     | '/dashboard'
@@ -464,6 +474,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/redefinir-senha'
+    | '/reset-password'
     | '/signup'
     | '/notifications'
     | '/profile'
@@ -505,6 +516,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/redefinir-senha'
+    | '/reset-password'
     | '/signup'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
@@ -550,6 +562,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   ISlugRoute: typeof ISlugRoute
   ApiPublicCreateDonationRoute: typeof ApiPublicCreateDonationRoute
@@ -558,32 +571,18 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgot-password': {
-      id: '/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/redefinir-senha': {
@@ -593,53 +592,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RedefinirSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/manage': {
-      id: '/_authenticated/manage'
-      path: '/manage'
-      fullPath: '/manage'
-      preLoaderRoute: typeof AuthenticatedManageRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/notifications': {
-      id: '/_authenticated/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/i/$slug': {
+      id: '/i/$slug'
+      path: '/i/$slug'
+      fullPath: '/i/$slug'
+      preLoaderRoute: typeof ISlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/profile': {
-      id: '/_authenticated/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AuthenticatedProfileRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/scan': {
-      id: '/_authenticated/scan'
-      path: '/scan'
-      fullPath: '/scan'
-      preLoaderRoute: typeof AuthenticatedScanRouteImport
+    '/_authenticated/tickets': {
+      id: '/_authenticated/tickets'
+      path: '/tickets'
+      fullPath: '/tickets'
+      preLoaderRoute: typeof AuthenticatedTicketsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/super-admin': {
@@ -649,130 +641,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSuperAdminRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/tickets': {
-      id: '/_authenticated/tickets'
-      path: '/tickets'
-      fullPath: '/tickets'
-      preLoaderRoute: typeof AuthenticatedTicketsRouteImport
+    '/_authenticated/scan': {
+      id: '/_authenticated/scan'
+      path: '/scan'
+      fullPath: '/scan'
+      preLoaderRoute: typeof AuthenticatedScanRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/i/$slug': {
-      id: '/i/$slug'
-      path: '/i/$slug'
-      fullPath: '/i/$slug'
-      preLoaderRoute: typeof ISlugRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/admin/': {
-      id: '/_authenticated/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
+    '/_authenticated/notifications': {
+      id: '/_authenticated/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/admin/audit': {
-      id: '/_authenticated/admin/audit'
-      path: '/audit'
-      fullPath: '/admin/audit'
-      preLoaderRoute: typeof AuthenticatedAdminAuditRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
+    '/_authenticated/manage': {
+      id: '/_authenticated/manage'
+      path: '/manage'
+      fullPath: '/manage'
+      preLoaderRoute: typeof AuthenticatedManageRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/admin/billing': {
-      id: '/_authenticated/admin/billing'
-      path: '/billing'
-      fullPath: '/admin/billing'
-      preLoaderRoute: typeof AuthenticatedAdminBillingRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/dashboard': {
-      id: '/_authenticated/admin/dashboard'
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
       path: '/dashboard'
-      fullPath: '/admin/dashboard'
-      preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/donations': {
-      id: '/_authenticated/admin/donations'
-      path: '/donations'
-      fullPath: '/admin/donations'
-      preLoaderRoute: typeof AuthenticatedAdminDonationsRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/events': {
-      id: '/_authenticated/admin/events'
-      path: '/events'
-      fullPath: '/admin/events'
-      preLoaderRoute: typeof AuthenticatedAdminEventsRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/financeiro': {
-      id: '/_authenticated/admin/financeiro'
-      path: '/financeiro'
-      fullPath: '/admin/financeiro'
-      preLoaderRoute: typeof AuthenticatedAdminFinanceiroRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/relatorios': {
-      id: '/_authenticated/admin/relatorios'
-      path: '/relatorios'
-      fullPath: '/admin/relatorios'
-      preLoaderRoute: typeof AuthenticatedAdminRelatoriosRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/settings': {
-      id: '/_authenticated/admin/settings'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/taxas': {
-      id: '/_authenticated/admin/taxas'
-      path: '/taxas'
-      fullPath: '/admin/taxas'
-      preLoaderRoute: typeof AuthenticatedAdminTaxasRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/tenants': {
-      id: '/_authenticated/admin/tenants'
-      path: '/tenants'
-      fullPath: '/admin/tenants'
-      preLoaderRoute: typeof AuthenticatedAdminTenantsRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/dashboard/': {
-      id: '/_authenticated/dashboard/'
-      path: '/'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
-      parentRoute: typeof AuthenticatedDashboardRoute
-    }
-    '/_authenticated/dashboard/financeiro': {
-      id: '/_authenticated/dashboard/financeiro'
-      path: '/financeiro'
-      fullPath: '/dashboard/financeiro'
-      preLoaderRoute: typeof AuthenticatedDashboardFinanceiroRouteImport
-      parentRoute: typeof AuthenticatedDashboardRoute
-    }
-    '/_authenticated/igrejas/': {
-      id: '/_authenticated/igrejas/'
-      path: '/igrejas'
-      fullPath: '/igrejas/'
-      preLoaderRoute: typeof AuthenticatedIgrejasIndexRouteImport
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/igrejas/nova': {
-      id: '/_authenticated/igrejas/nova'
-      path: '/igrejas/nova'
-      fullPath: '/igrejas/nova'
-      preLoaderRoute: typeof AuthenticatedIgrejasNovaRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/igrejas/onboarding': {
-      id: '/_authenticated/igrejas/onboarding'
-      path: '/igrejas/onboarding'
-      fullPath: '/igrejas/onboarding'
-      preLoaderRoute: typeof AuthenticatedIgrejasOnboardingRouteImport
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/manage/': {
@@ -782,46 +690,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedManageIndexRouteImport
       parentRoute: typeof AuthenticatedManageRoute
     }
-    '/_authenticated/manage/dashboard': {
-      id: '/_authenticated/manage/dashboard'
-      path: '/dashboard'
-      fullPath: '/manage/dashboard'
-      preLoaderRoute: typeof AuthenticatedManageDashboardRouteImport
-      parentRoute: typeof AuthenticatedManageRoute
+    '/_authenticated/igrejas/': {
+      id: '/_authenticated/igrejas/'
+      path: '/igrejas'
+      fullPath: '/igrejas/'
+      preLoaderRoute: typeof AuthenticatedIgrejasIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/manage/donations': {
-      id: '/_authenticated/manage/donations'
-      path: '/donations'
-      fullPath: '/manage/donations'
-      preLoaderRoute: typeof AuthenticatedManageDonationsRouteImport
-      parentRoute: typeof AuthenticatedManageRoute
+    '/_authenticated/dashboard/': {
+      id: '/_authenticated/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
     }
-    '/_authenticated/manage/events': {
-      id: '/_authenticated/manage/events'
-      path: '/events'
-      fullPath: '/manage/events'
-      preLoaderRoute: typeof AuthenticatedManageEventsRouteImport
-      parentRoute: typeof AuthenticatedManageRoute
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/_authenticated/manage/members': {
-      id: '/_authenticated/manage/members'
-      path: '/members'
-      fullPath: '/manage/members'
-      preLoaderRoute: typeof AuthenticatedManageMembersRouteImport
-      parentRoute: typeof AuthenticatedManageRoute
+    '/api/public/create-donation': {
+      id: '/api/public/create-donation'
+      path: '/api/public/create-donation'
+      fullPath: '/api/public/create-donation'
+      preLoaderRoute: typeof ApiPublicCreateDonationRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/manage/mensagens': {
-      id: '/_authenticated/manage/mensagens'
-      path: '/mensagens'
-      fullPath: '/manage/mensagens'
-      preLoaderRoute: typeof AuthenticatedManageMensagensRouteImport
-      parentRoute: typeof AuthenticatedManageRoute
-    }
-    '/_authenticated/manage/pendencias': {
-      id: '/_authenticated/manage/pendencias'
-      path: '/pendencias'
-      fullPath: '/manage/pendencias'
-      preLoaderRoute: typeof AuthenticatedManagePendenciasRouteImport
+    '/_authenticated/manage/settings': {
+      id: '/_authenticated/manage/settings'
+      path: '/settings'
+      fullPath: '/manage/settings'
+      preLoaderRoute: typeof AuthenticatedManageSettingsRouteImport
       parentRoute: typeof AuthenticatedManageRoute
     }
     '/_authenticated/manage/relatorios': {
@@ -831,19 +732,138 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedManageRelatoriosRouteImport
       parentRoute: typeof AuthenticatedManageRoute
     }
-    '/_authenticated/manage/settings': {
-      id: '/_authenticated/manage/settings'
-      path: '/settings'
-      fullPath: '/manage/settings'
-      preLoaderRoute: typeof AuthenticatedManageSettingsRouteImport
+    '/_authenticated/manage/pendencias': {
+      id: '/_authenticated/manage/pendencias'
+      path: '/pendencias'
+      fullPath: '/manage/pendencias'
+      preLoaderRoute: typeof AuthenticatedManagePendenciasRouteImport
       parentRoute: typeof AuthenticatedManageRoute
     }
-    '/api/public/create-donation': {
-      id: '/api/public/create-donation'
-      path: '/api/public/create-donation'
-      fullPath: '/api/public/create-donation'
-      preLoaderRoute: typeof ApiPublicCreateDonationRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/manage/mensagens': {
+      id: '/_authenticated/manage/mensagens'
+      path: '/mensagens'
+      fullPath: '/manage/mensagens'
+      preLoaderRoute: typeof AuthenticatedManageMensagensRouteImport
+      parentRoute: typeof AuthenticatedManageRoute
+    }
+    '/_authenticated/manage/members': {
+      id: '/_authenticated/manage/members'
+      path: '/members'
+      fullPath: '/manage/members'
+      preLoaderRoute: typeof AuthenticatedManageMembersRouteImport
+      parentRoute: typeof AuthenticatedManageRoute
+    }
+    '/_authenticated/manage/events': {
+      id: '/_authenticated/manage/events'
+      path: '/events'
+      fullPath: '/manage/events'
+      preLoaderRoute: typeof AuthenticatedManageEventsRouteImport
+      parentRoute: typeof AuthenticatedManageRoute
+    }
+    '/_authenticated/manage/donations': {
+      id: '/_authenticated/manage/donations'
+      path: '/donations'
+      fullPath: '/manage/donations'
+      preLoaderRoute: typeof AuthenticatedManageDonationsRouteImport
+      parentRoute: typeof AuthenticatedManageRoute
+    }
+    '/_authenticated/manage/dashboard': {
+      id: '/_authenticated/manage/dashboard'
+      path: '/dashboard'
+      fullPath: '/manage/dashboard'
+      preLoaderRoute: typeof AuthenticatedManageDashboardRouteImport
+      parentRoute: typeof AuthenticatedManageRoute
+    }
+    '/_authenticated/igrejas/onboarding': {
+      id: '/_authenticated/igrejas/onboarding'
+      path: '/igrejas/onboarding'
+      fullPath: '/igrejas/onboarding'
+      preLoaderRoute: typeof AuthenticatedIgrejasOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/igrejas/nova': {
+      id: '/_authenticated/igrejas/nova'
+      path: '/igrejas/nova'
+      fullPath: '/igrejas/nova'
+      preLoaderRoute: typeof AuthenticatedIgrejasNovaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard/financeiro': {
+      id: '/_authenticated/dashboard/financeiro'
+      path: '/financeiro'
+      fullPath: '/dashboard/financeiro'
+      preLoaderRoute: typeof AuthenticatedDashboardFinanceiroRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/admin/tenants': {
+      id: '/_authenticated/admin/tenants'
+      path: '/tenants'
+      fullPath: '/admin/tenants'
+      preLoaderRoute: typeof AuthenticatedAdminTenantsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/taxas': {
+      id: '/_authenticated/admin/taxas'
+      path: '/taxas'
+      fullPath: '/admin/taxas'
+      preLoaderRoute: typeof AuthenticatedAdminTaxasRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/relatorios': {
+      id: '/_authenticated/admin/relatorios'
+      path: '/relatorios'
+      fullPath: '/admin/relatorios'
+      preLoaderRoute: typeof AuthenticatedAdminRelatoriosRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/financeiro': {
+      id: '/_authenticated/admin/financeiro'
+      path: '/financeiro'
+      fullPath: '/admin/financeiro'
+      preLoaderRoute: typeof AuthenticatedAdminFinanceiroRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/events': {
+      id: '/_authenticated/admin/events'
+      path: '/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AuthenticatedAdminEventsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/donations': {
+      id: '/_authenticated/admin/donations'
+      path: '/donations'
+      fullPath: '/admin/donations'
+      preLoaderRoute: typeof AuthenticatedAdminDonationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/dashboard': {
+      id: '/_authenticated/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/billing': {
+      id: '/_authenticated/admin/billing'
+      path: '/billing'
+      fullPath: '/admin/billing'
+      preLoaderRoute: typeof AuthenticatedAdminBillingRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/audit': {
+      id: '/_authenticated/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AuthenticatedAdminAuditRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/api/public/webhooks/pagarme': {
       id: '/api/public/webhooks/pagarme'
@@ -968,6 +988,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   ISlugRoute: ISlugRoute,
   ApiPublicCreateDonationRoute: ApiPublicCreateDonationRoute,
@@ -976,13 +997,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
