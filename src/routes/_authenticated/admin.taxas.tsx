@@ -9,7 +9,20 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Percent, Save } from "lucide-react";
 import { toast } from "sonner";
-import { getFeeConfig, updateFeeConfig, type FeeConfigRow, type PaymentMethodKey } from "@/lib/fee-config.functions";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import {
+  getFeeConfig,
+  updateFeeConfig,
+  resetTenantFeeConfig,
+  listTenantsForFees,
+  type FeeConfigRow,
+  type PaymentMethodKey,
+} from "@/lib/fee-config.functions";
+
+const PLATFORM_VALUE = "__platform__";
 
 export const Route = createFileRoute("/_authenticated/admin/taxas")({
   component: TaxasPage,
@@ -30,10 +43,18 @@ function TaxasPage() {
   const qc = useQueryClient();
   const fetchFn = useServerFn(getFeeConfig);
   const updateFn = useServerFn(updateFeeConfig);
+  const resetFn = useServerFn(resetTenantFeeConfig);
+  const tenantsFn = useServerFn(listTenantsForFees);
+  const [tenantId, setTenantId] = useState<string | null>(null);
+
+  const { data: tenants } = useQuery({
+    queryKey: ["fee-config-tenants"],
+    queryFn: () => tenantsFn(),
+  });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["fee-config"],
-    queryFn: () => fetchFn(),
+    queryKey: ["fee-config", tenantId],
+    queryFn: () => fetchFn({ data: { tenantId } }),
   });
 
   return (
@@ -47,6 +68,29 @@ function TaxasPage() {
         </p>
       </div>
 
+      <div className="flex flex-col gap-2 sm:max-w-md">
+        <Label className="text-xs">Instituição</Label>
+        <Select
+          value={tenantId ?? PLATFORM_VALUE}
+          onValueChange={(v) => setTenantId(v === PLATFORM_VALUE ? null : v)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Selecione a instituição" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={PLATFORM_VALUE}>Padrão da plataforma (todas)</SelectItem>
+            {(tenants ?? []).map((t) => (
+              <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">
+          {tenantId
+            ? "As taxas salvas valem apenas para esta instituição."
+            : "As taxas salvas valem para todas as instituições sem taxa específica."}
+        </p>
+      </div>
+
       {isLoading ? (
         <div className="grid gap-4 md:grid-cols-2">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -55,13 +99,21 @@ function TaxasPage() {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {(data ?? []).map((row) => (
+          {(data?.rows ?? []).map((row) => (
             <FeeCard
-              key={row.payment_method}
+              key={`${tenantId ?? "platform"}-${row.payment_method}`}
               row={row}
+              inherited={row.inherited}
+              tenantId={tenantId}
               onSave={async (payload) => {
-                await updateFn({ data: payload });
+                await updateFn({ data: { ...payload, tenant_id: tenantId } });
                 toast.success(`Taxa de ${METHOD_LABEL[row.payment_method]} atualizada.`);
+                qc.invalidateQueries({ queryKey: ["fee-config"] });
+              }}
+              onReset={async () => {
+                if (!tenantId) return;
+                await resetFn({ data: { tenant_id: tenantId, payment_method: row.payment_method } });
+                toast.success("Voltou ao padrão da plataforma.");
                 qc.invalidateQueries({ queryKey: ["fee-config"] });
               }}
             />
@@ -74,9 +126,15 @@ function TaxasPage() {
 
 function FeeCard({
   row,
+  inherited,
+  tenantId,
   onSave,
+  onReset,
 }: {
   row: FeeConfigRow;
+  inherited: boolean;
+  tenantId: string | null;
+  onReset: () => Promise<void>;
   onSave: (payload: {
     payment_method: PaymentMethodKey;
     adm_percent: number;
@@ -132,6 +190,11 @@ function FeeCard({
         <CardTitle className="flex items-center gap-2 text-base">
           <Percent className="h-4 w-4 text-primary" />
           {METHOD_LABEL[row.payment_method]}
+          {tenantId && (
+            <Badge variant={inherited ? "secondary" : "default"} className="ml-auto text-[10px]">
+              {inherited ? "Padrão da plataforma" : "Taxa própria"}
+            </Badge>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -184,10 +247,30 @@ function FeeCard({
           </>
         )}
 
-        <Button onClick={save} disabled={saving} className="w-full gap-2">
-          <Save className="h-4 w-4" />
-          {saving ? "Salvando..." : "Salvar"}
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={save} disabled={saving} className="flex-1 gap-2">
+            <Save className="h-4 w-4" />
+            {saving ? "Salvando..." : "Salvar"}
+          </Button>
+          {tenantId && !inherited && (
+            <Button
+              variant="outline"
+              disabled={saving}
+              onClick={async () => {
+                setSaving(true);
+                try {
+                  await onReset();
+                } catch (e) {
+                  toast.error(e instanceof Error ? e.message : "Falha ao restaurar padrão.");
+                } finally {
+                  setSaving(false);
+                }
+              }}
+            >
+              Usar padrão
+            </Button>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
