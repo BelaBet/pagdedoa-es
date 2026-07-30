@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { buildSplitPayload, calculateBoletoAmounts, fetchSellerRecipientId, fetchCostCenter } from "./split.utils";
+import { getPlatformFeeRow } from "./fee-config.server";
 import { buildPagarmeCustomer, resolveCustomer, validateDocument } from "./payments-customer";
 
 const InputSchema = z.object({
@@ -43,7 +44,8 @@ export const createBoletoPayment = createServerFn({ method: "POST" })
     const sellerRecipientId = await fetchSellerRecipientId(data.tenantId);
     const costCenter = data.costCenterId ? await fetchCostCenter(data.costCenterId, data.tenantId) : null;
     const splitOverride = costCenter?.split_platform_percent ?? null;
-    const amounts = calculateBoletoAmounts(data.donationAmount, splitOverride);
+    const feeRow = await getPlatformFeeRow("boleto");
+    const amounts = calculateBoletoAmounts(data.donationAmount, splitOverride, feeRow ?? undefined);
     if (process.env.NODE_ENV !== "production") {
       console.log("[boleto] amounts", amounts, { sellerRecipientId, costCenterId: data.costCenterId, splitOverride });
     }

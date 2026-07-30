@@ -25,6 +25,7 @@ import {
   Wallet,
   ShieldAlert,
   AlertTriangle,
+  Percent,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useEffectiveTenantId } from "@/lib/impersonation";
@@ -50,6 +51,7 @@ const PLATFORM_ITEMS = [
   { title: "Eventos", url: "/admin/events", icon: Calendar },
   { title: "Relatórios", url: "/admin/relatorios", icon: ScrollText },
   { title: "Financeiro", url: "/admin/financeiro", icon: Wallet },
+  { title: "Taxas", url: "/admin/taxas", icon: Percent },
   { title: "Plataforma", url: "/admin/settings", icon: Settings },
 ];
 

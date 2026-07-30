@@ -33,15 +33,32 @@ function assertPositiveInt(v: number, name: string) {
   }
 }
 
+type FeeRow = {
+  adm_percent: number;
+  adquirencia_fixa: number | null;
+  adquirencia_avista_percent: number | null;
+  adquirencia_2x_percent: number | null;
+  tk2_operacional_fixo: number | null;
+  tk2_op_percent: number | null;
+  transacao_fixa: number;
+};
+
 // ── PIX ──────────────────────────────────────────────────────
-export function calculatePixAmounts(ofertaEmCentavos: number, splitOverridePercent?: number | null): SplitAmounts {
+// Função pura e síncrona — segura para uso tanto no servidor quanto no
+// cliente (ex: prévia de valor no modal de doação antes de confirmar).
+// `feeRow` é opcional: sem ele, usa os valores padrão de fees.config.ts.
+// O servidor (payments.functions.ts) busca a taxa atual no banco
+// (getPlatformFeeRow, em fee-config.server.ts) e passa aqui — essa função
+// em si nunca acessa banco, então nunca precisa de código exclusivo de
+// servidor e pode ser importada com segurança do lado do cliente.
+export function calculatePixAmounts(ofertaEmCentavos: number, splitOverridePercent?: number | null, feeRow?: FeeRow): SplitAmounts {
   assertPositiveInt(ofertaEmCentavos, "donationAmount");
-  const f = FEES.pix;
+  const f = feeRow ?? FEES.pix;
   const donationAmount = ofertaEmCentavos;
-  const admPercent = splitOverridePercent ?? f.adm_percent;
-  const pagarmeFee = f.adquirencia_fixa;
-  const tk2OpFee = f.tk2_operacional_fixo;
-  const transacaoFee = f.transacao_fixa;
+  const admPercent = splitOverridePercent ?? Number(f.adm_percent);
+  const pagarmeFee = Number(f.adquirencia_fixa ?? 0);
+  const tk2OpFee = Number(f.tk2_operacional_fixo ?? 0);
+  const transacaoFee = Number(f.transacao_fixa);
 
   // GROSS-UP: o percentual da taxa ADM incide sobre o valor TOTAL cobrado
   // do doador (que já inclui a própria taxa), não sobre a doação base —
@@ -70,16 +87,17 @@ export function calculateCardAmounts(
   installments: number,
   brand: CardBrand,
   splitOverridePercent?: number | null,
+  feeRow?: FeeRow,
 ): SplitAmounts {
   assertPositiveInt(ofertaEmCentavos, "donationAmount");
-  const f = brand === "master_visa" ? FEES.cartao_master_visa : FEES.cartao_ello_hiper_amex;
+  const f = feeRow ?? (brand === "master_visa" ? FEES.cartao_master_visa : FEES.cartao_ello_hiper_amex);
   const donationAmount = ofertaEmCentavos;
-  const admPercent = splitOverridePercent ?? f.adm_percent;
-  const adquirenciaPercent = installments <= 1 ? f.adquirencia_avista_percent : f.adquirencia_2x_percent;
-  const tk2OpPercent = f.tk2_op_percent * admPercent;
+  const admPercent = splitOverridePercent ?? Number(f.adm_percent);
+  const adquirenciaPercent = Number(installments <= 1 ? f.adquirencia_avista_percent : f.adquirencia_2x_percent);
+  const tk2OpPercent = Number(f.tk2_op_percent ?? 0) * admPercent;
 
   const pagarmeFee = 0;
-  const transacaoFee = f.transacao_fixa;
+  const transacaoFee = Number(f.transacao_fixa);
 
   // GROSS-UP: os três percentuais (adm, tk2_op, adquirência) incidem sobre
   // o valor total cobrado do doador, não sobre a doação base — mesmo
@@ -107,14 +125,14 @@ export function calculateCardAmounts(
 }
 
 // ── BOLETO ───────────────────────────────────────────────────
-export function calculateBoletoAmounts(ofertaEmCentavos: number, splitOverridePercent?: number | null): SplitAmounts {
+export function calculateBoletoAmounts(ofertaEmCentavos: number, splitOverridePercent?: number | null, feeRow?: FeeRow): SplitAmounts {
   assertPositiveInt(ofertaEmCentavos, "donationAmount");
-  const f = FEES.boleto;
+  const f = feeRow ?? FEES.boleto;
   const donationAmount = ofertaEmCentavos;
-  const admPercent = splitOverridePercent ?? f.adm_percent;
-  const pagarmeFee = f.adquirencia_fixa;
-  const tk2OpFee = f.tk2_operacional_fixo;
-  const transacaoFee = f.transacao_fixa;
+  const admPercent = splitOverridePercent ?? Number(f.adm_percent);
+  const pagarmeFee = Number(f.adquirencia_fixa ?? 0);
+  const tk2OpFee = Number(f.tk2_operacional_fixo ?? 0);
+  const transacaoFee = Number(f.transacao_fixa);
 
   // GROSS-UP: mesmo ajuste do PIX — ver comentário em calculatePixAmounts.
   const fixedTotal = pagarmeFee + tk2OpFee;
@@ -170,6 +188,9 @@ export function buildSplitPayload(amounts: SplitAmounts, sellerRecipientId: stri
 /**
  * Compat: usado pela UI para estimar o total cobrado.
  * Para cartão usa parcelamento à vista com bandeira master/visa como padrão.
+ * Usa sempre os valores padrão (fees.config.ts) — é só uma prévia no
+ * cliente; o valor final de verdade é calculado no servidor, com a taxa
+ * atual configurada no banco (ver fee-config.server.ts).
  */
 export function calculateAmounts(donationAmount: number, method: PaymentMethod = "pix"): SplitAmounts {
   if (method === "pix") return calculatePixAmounts(donationAmount);

@@ -34,6 +34,7 @@ import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminFinanceiroRouteImport } from './routes/_authenticated/admin.financeiro'
 import { Route as AuthenticatedAdminRelatoriosRouteImport } from './routes/_authenticated/admin.relatorios'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
+import { Route as AuthenticatedAdminTaxasRouteImport } from './routes/_authenticated/admin.taxas'
 import { Route as AuthenticatedAdminTenantsRouteImport } from './routes/_authenticated/admin.tenants'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as AuthenticatedDashboardFinanceiroRouteImport } from './routes/_authenticated/dashboard.financeiro'
@@ -184,6 +185,11 @@ const AuthenticatedAdminSettingsRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminTaxasRoute = AuthenticatedAdminTaxasRouteImport.update({
+  id: '/taxas',
+  path: '/taxas',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminTenantsRoute =
   AuthenticatedAdminTenantsRouteImport.update({
     id: '/tenants',
@@ -310,6 +316,7 @@ export interface FileRoutesByFullPath {
   '/admin/financeiro': typeof AuthenticatedAdminFinanceiroRoute
   '/admin/relatorios': typeof AuthenticatedAdminRelatoriosRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/taxas': typeof AuthenticatedAdminTaxasRoute
   '/admin/tenants': typeof AuthenticatedAdminTenantsRoute
   '/dashboard/financeiro': typeof AuthenticatedDashboardFinanceiroRoute
   '/igrejas/nova': typeof AuthenticatedIgrejasNovaRoute
@@ -350,6 +357,7 @@ export interface FileRoutesByTo {
   '/admin/financeiro': typeof AuthenticatedAdminFinanceiroRoute
   '/admin/relatorios': typeof AuthenticatedAdminRelatoriosRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/taxas': typeof AuthenticatedAdminTaxasRoute
   '/admin/tenants': typeof AuthenticatedAdminTenantsRoute
   '/dashboard/financeiro': typeof AuthenticatedDashboardFinanceiroRoute
   '/igrejas/nova': typeof AuthenticatedIgrejasNovaRoute
@@ -395,6 +403,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/financeiro': typeof AuthenticatedAdminFinanceiroRoute
   '/_authenticated/admin/relatorios': typeof AuthenticatedAdminRelatoriosRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/_authenticated/admin/taxas': typeof AuthenticatedAdminTaxasRoute
   '/_authenticated/admin/tenants': typeof AuthenticatedAdminTenantsRoute
   '/_authenticated/dashboard/financeiro': typeof AuthenticatedDashboardFinanceiroRoute
   '/_authenticated/igrejas/nova': typeof AuthenticatedIgrejasNovaRoute
@@ -440,6 +449,7 @@ export interface FileRouteTypes {
     | '/admin/financeiro'
     | '/admin/relatorios'
     | '/admin/settings'
+    | '/admin/taxas'
     | '/admin/tenants'
     | '/dashboard/financeiro'
     | '/igrejas/nova'
@@ -480,6 +490,7 @@ export interface FileRouteTypes {
     | '/admin/financeiro'
     | '/admin/relatorios'
     | '/admin/settings'
+    | '/admin/taxas'
     | '/admin/tenants'
     | '/dashboard/financeiro'
     | '/igrejas/nova'
@@ -524,6 +535,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/financeiro'
     | '/_authenticated/admin/relatorios'
     | '/_authenticated/admin/settings'
+    | '/_authenticated/admin/taxas'
     | '/_authenticated/admin/tenants'
     | '/_authenticated/dashboard/financeiro'
     | '/_authenticated/igrejas/nova'
@@ -734,6 +746,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/taxas': {
+      id: '/_authenticated/admin/taxas'
+      path: '/taxas'
+      fullPath: '/admin/taxas'
+      preLoaderRoute: typeof AuthenticatedAdminTaxasRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/tenants': {
       id: '/_authenticated/admin/tenants'
       path: '/tenants'
@@ -865,6 +884,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminFinanceiroRoute: typeof AuthenticatedAdminFinanceiroRoute
   AuthenticatedAdminRelatoriosRoute: typeof AuthenticatedAdminRelatoriosRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
+  AuthenticatedAdminTaxasRoute: typeof AuthenticatedAdminTaxasRoute
   AuthenticatedAdminTenantsRoute: typeof AuthenticatedAdminTenantsRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
@@ -878,6 +898,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminFinanceiroRoute: AuthenticatedAdminFinanceiroRoute,
   AuthenticatedAdminRelatoriosRoute: AuthenticatedAdminRelatoriosRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
+  AuthenticatedAdminTaxasRoute: AuthenticatedAdminTaxasRoute,
   AuthenticatedAdminTenantsRoute: AuthenticatedAdminTenantsRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
