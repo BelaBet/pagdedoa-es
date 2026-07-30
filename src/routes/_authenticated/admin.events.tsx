@@ -6,8 +6,11 @@ import {
   getAllEvents,
   listTenantsForAdmin,
   createEventAsAdmin,
+  updateEventAsAdmin,
+  deleteEventAsAdmin,
   uploadEventBanner,
 } from "@/lib/events.functions";
+
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
