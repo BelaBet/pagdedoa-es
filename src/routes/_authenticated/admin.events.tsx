@@ -239,7 +239,7 @@ function AdminEventsPage() {
       toast.error(r.error.issues[0]?.message ?? "Verifique os campos");
       return;
     }
-    createMut.mutate(r.data);
+    saveMut.mutate(r.data);
   }
 
   return (
@@ -362,8 +362,8 @@ function AdminEventsPage() {
                 <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={createMut.isPending}>
-                  {createMut.isPending ? "Salvando…" : "Cadastrar"}
+                <Button type="submit" disabled={saveMut.isPending}>
+                  {saveMut.isPending ? "Salvando…" : "Cadastrar"}
                 </Button>
               </DialogFooter>
             </form>
