@@ -6,6 +6,7 @@ import { useImpersonation } from "@/lib/impersonation";
 import { useNavigate } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { EmptyRow, LoadingRow } from "@/components/empty-row";
-import { Eye, Pause, Play, Trash2, Plus, Pencil } from "lucide-react";
+import { Eye, Pause, Play, Trash2, Plus, Pencil, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { translateError } from "@/lib/translate-error";
 
@@ -33,6 +34,9 @@ function TenantsPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [imperId, setImperId] = useState<string | null>(null);
   const [imperReason, setImperReason] = useState("");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 15;
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-tenants"],
@@ -85,11 +89,24 @@ function TenantsPage() {
       await start(imperId, imperReason || undefined);
       toast.success("Impersonação iniciada");
       setImperId(null); setImperReason("");
-      nav({ to: "/manage/dashboard" });
+      nav({ to: "/dashboard" });
     } catch (e) {
       toast.error(translateError(e));
     }
   };
+
+  const filtered = (data ?? []).filter((t) => {
+    const q = search.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      t.name.toLowerCase().includes(q) ||
+      t.slug.toLowerCase().includes(q) ||
+      (t.custom_domain ?? "").toLowerCase().includes(q)
+    );
+  });
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
     <div className="space-y-4">
@@ -105,6 +122,17 @@ function TenantsPage() {
           </Link>
         </Button>
       </div>
+
+      <div className="relative max-w-sm">
+        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Buscar por nome, slug ou domínio"
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          className="pl-8"
+        />
+      </div>
+
       <Card className="overflow-x-auto">
         <Table className="min-w-[820px]">
           <TableHeader>
@@ -122,9 +150,14 @@ function TenantsPage() {
           </TableHeader>
           <TableBody>
             {isLoading && <LoadingRow colSpan={9} />}
-            {!isLoading && (data?.length ?? 0) === 0 && <EmptyRow colSpan={9} message="Nenhuma igreja cadastrada." />}
-            {data?.map((t) => (
-              <TableRow key={t.id}>
+            {!isLoading && filtered.length === 0 && (
+              <EmptyRow
+                colSpan={9}
+                message={search ? "Nenhuma igreja encontrada para essa busca." : "Nenhuma igreja cadastrada."}
+              />
+            )}
+            {paginated.map((t, i) => (
+              <TableRow key={t.id} className={i % 2 === 1 ? "bg-muted/40" : undefined}>
                 <TableCell className="font-medium">{t.name}</TableCell>
                 <TableCell className="text-xs text-muted-foreground">
                   {t.slug}{t.custom_domain ? ` · ${t.custom_domain}` : ""}
@@ -162,6 +195,35 @@ function TenantsPage() {
           </TableBody>
         </Table>
       </Card>
+
+      {filtered.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs text-muted-foreground">
+            {filtered.length} {filtered.length === 1 ? "igreja" : "igrejas"}
+            {search ? ` (filtradas de ${data?.length ?? 0})` : ""} — página {currentPage} de {totalPages}
+          </p>
+          <div className="flex items-center gap-1">
+            <Button
+              size="icon"
+              variant="outline"
+              disabled={currentPage <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              aria-label="Página anterior"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              size="icon"
+              variant="outline"
+              disabled={currentPage >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              aria-label="Próxima página"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
 
       <AlertDialog open={!!deleteId} onOpenChange={(v) => !v && setDeleteId(null)}>
         <AlertDialogContent>
