@@ -311,8 +311,9 @@ function ManageEventsPage() {
                 <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={createMut.isPending}>
-                  {createMut.isPending ? "Salvando…" : "Cadastrar"}
+                <Button type="submit" disabled={saveMut.isPending}>
+                  {saveMut.isPending ? "Salvando…" : editing ? "Salvar alterações" : "Cadastrar"}
+
                 </Button>
               </DialogFooter>
             </form>
