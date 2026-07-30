@@ -371,8 +371,9 @@ function AdminEventsPage() {
                   Cancelar
                 </Button>
                 <Button type="submit" disabled={saveMut.isPending}>
-                  {saveMut.isPending ? "Salvando…" : "Cadastrar"}
+                  {saveMut.isPending ? "Salvando…" : editing ? "Salvar alterações" : "Cadastrar"}
                 </Button>
+
               </DialogFooter>
             </form>
           </DialogContent>
