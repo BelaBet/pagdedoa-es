@@ -321,7 +321,7 @@ function ManageEventsPage() {
         </Dialog>
       </div>
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
+      <div className="mt-8 grid auto-rows-fr gap-4 md:grid-cols-2">
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando…</p>
         ) : (events?.length ?? 0) === 0 ? (
@@ -331,28 +331,43 @@ function ManageEventsPage() {
           </Card>
         ) : (
           events!.map((ev) => (
-            <Card key={ev.id} className="overflow-hidden">
-              {ev.banner_url && (
-                <img src={ev.banner_url} alt={ev.title} className="h-40 w-full object-cover" />
-              )}
-              <div className="p-5">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="font-display text-lg break-words">{ev.title}</h3>
-                  <Badge variant={ev.status === "active" ? "default" : "secondary"}>
-                    {ev.status}
-                  </Badge>
+            <Card key={ev.id} className="flex h-full flex-col overflow-hidden">
+              {/* Área de capa: sempre presente, sempre a mesma altura, com ou
+                  sem imagem — cards sem banner nunca ficam menores nem com o
+                  conteúdo começando "colado" no topo do card. */}
+              {ev.banner_url ? (
+                <img
+                  src={ev.banner_url}
+                  alt={ev.title}
+                  className="h-40 w-full shrink-0 rounded-t-xl object-cover"
+                />
+              ) : (
+                <div className="flex h-40 w-full shrink-0 items-center justify-center rounded-t-xl bg-gradient-to-br from-primary/15 via-accent/40 to-primary/5">
+                  <Calendar className="h-10 w-10 text-primary/50" strokeWidth={1.5} />
                 </div>
+              )}
+
+              <div className="flex flex-1 flex-col p-5">
+                <h3 className="font-display text-lg break-words">{ev.title}</h3>
+
                 {ev.date && (
                   <p className="mt-1 text-xs text-muted-foreground">
                     {new Date(ev.date).toLocaleString("pt-BR")}
                   </p>
                 )}
                 {ev.location && <p className="text-xs text-muted-foreground">{ev.location}</p>}
+
                 {ev.description && (
                   <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">
                     {ev.description}
                   </p>
                 )}
+
+                {/* Espaçador flexível: empurra o rodapé (link, ações, selo)
+                    para uma posição consistente mesmo quando a descrição
+                    varia de tamanho entre os cards da mesma linha. */}
+                <div className="flex-1" />
+
                 <a
                   href={ev.external_url}
                   target="_blank"
@@ -366,18 +381,24 @@ function ManageEventsPage() {
                     Link externo (não-TicketTO)
                   </p>
                 )}
-                <div className="mt-4 flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => startEdit(ev as EventRow)}>
-                    <Pencil className="mr-1.5 h-3.5 w-3.5" /> Editar
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-destructive"
-                    onClick={() => setToDelete(ev as EventRow)}
-                  >
-                    <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Excluir
-                  </Button>
+
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => startEdit(ev as EventRow)}>
+                      <Pencil className="mr-1.5 h-3.5 w-3.5" /> Editar
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive"
+                      onClick={() => setToDelete(ev as EventRow)}
+                    >
+                      <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Excluir
+                    </Button>
+                  </div>
+                  <Badge variant={ev.status === "active" ? "default" : "secondary"}>
+                    {ev.status}
+                  </Badge>
                 </div>
               </div>
             </Card>
