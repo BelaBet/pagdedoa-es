@@ -90,9 +90,19 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
   const total = donations.data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
+  // volta para a primeira página sempre que filtros mudarem
+  useEffect(() => {
+    setPage(1);
+  }, [period.periodStart, period.periodEnd, effectiveTenantId, search]);
+
   const filtered = (donations.data?.items ?? []).filter((d) =>
     search ? (d.donorName ?? "").toLowerCase().includes(search.toLowerCase()) : true,
   );
+
+  const goToPage = (p: number) => {
+    if (p < 1 || p > totalPages) return;
+    setPage(p);
+  };
 
   return (
     <div className="space-y-4">
