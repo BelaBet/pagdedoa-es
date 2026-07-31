@@ -459,8 +459,8 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
                     <TableHead>CPF/CNPJ</TableHead>
                     <TableHead>Contato</TableHead>
                     <TableHead>Pagamento</TableHead>
-                    <TableHead className="text-right">Valor da Doação</TableHead>
-                    <TableHead className="text-right">Taxa</TableHead>
+                    <TableHead className="w-32 text-right">Valor da Doação</TableHead>
+                    <TableHead className="w-24 text-right">Taxa</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
