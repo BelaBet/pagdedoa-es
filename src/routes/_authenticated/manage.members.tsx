@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EmptyRow, LoadingRow } from "@/components/empty-row";
+import { TablePagination } from "@/components/table-pagination";
+import { usePagination } from "@/lib/use-pagination";
 import {
   MoreVertical, Search, UserCheck, UserX, Eye, Pencil, Trash2, Building2, ArrowLeft, ShieldAlert,
 } from "lucide-react";
@@ -92,6 +94,7 @@ function SuperAdminMembersPage() {
       `${t.name} ${t.slug} ${t.trade_name ?? ""}`.toLowerCase().includes(q),
     );
   }, [tenants, search]);
+  const { page, setPage, totalPages, paginated, total, start, end } = usePagination(filtered, 10);
 
   const doDeleteTenant = async () => {
     if (!deleteTenant) return;
@@ -143,7 +146,7 @@ function SuperAdminMembersPage() {
               className="pl-8"
               placeholder="Buscar instituição por nome ou slug"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             />
           </div>
           <Badge variant="outline">{tenants.length} instituições</Badge>
@@ -166,7 +169,7 @@ function SuperAdminMembersPage() {
                 <LoadingRow colSpan={6} />
               ) : filtered.length === 0 ? (
                 <EmptyRow colSpan={6} message="Nenhuma instituição encontrada." />
-              ) : filtered.map((t) => (
+              ) : paginated.map((t) => (
                 <TableRow key={t.id} className="cursor-pointer" onClick={() => setSelectedTenant(t)}>
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-2">
@@ -208,6 +211,15 @@ function SuperAdminMembersPage() {
             </TableBody>
           </Table>
         </div>
+        <TablePagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          start={start}
+          end={end}
+          onPageChange={setPage}
+          itemLabel={total === 1 ? "instituição" : "instituições"}
+        />
       </Card>
 
       <TenantEditDialog
@@ -348,6 +360,7 @@ function TenantMembersView({ tenant, onBack }: { tenant: Tenant; onBack: () => v
       return true;
     });
   }, [members, statusFilter, search]);
+  const { page: mPage, setPage: setMPage, totalPages: mTotalPages, paginated: mPaginated, total: mTotal, start: mStart, end: mEnd } = usePagination(filtered, 10);
 
   const updateStatus = async (id: string, status: Profile["status"]) => {
     const { error } = await supabase.from("profiles").update({ status }).eq("id", id);
@@ -403,10 +416,10 @@ function TenantMembersView({ tenant, onBack }: { tenant: Tenant; onBack: () => v
               className="pl-8"
               placeholder="Buscar nome, e-mail, telefone"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => { setSearch(e.target.value); setMPage(1); }}
             />
           </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setMPage(1); }}>
             <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos os status</SelectItem>
@@ -435,8 +448,8 @@ function TenantMembersView({ tenant, onBack }: { tenant: Tenant; onBack: () => v
               {loading ? (
                 <LoadingRow colSpan={7} />
               ) : filtered.length === 0 ? (
-                <EmptyRow colSpan={7} message="Nenhuma instituição encontrada." />
-              ) : filtered.map((m) => (
+                <EmptyRow colSpan={7} message="Nenhum membro encontrado." />
+              ) : mPaginated.map((m) => (
                 <TableRow key={m.id}>
                   <TableCell className="font-medium">{m.full_name ?? "—"}</TableCell>
                   <TableCell>{m.email ?? "—"}</TableCell>
@@ -492,6 +505,15 @@ function TenantMembersView({ tenant, onBack }: { tenant: Tenant; onBack: () => v
             </TableBody>
           </Table>
         </div>
+        <TablePagination
+          page={mPage}
+          totalPages={mTotalPages}
+          total={mTotal}
+          start={mStart}
+          end={mEnd}
+          onPageChange={setMPage}
+          itemLabel={mTotal === 1 ? "membro" : "membros"}
+        />
       </Card>
 
       <AlertDialog open={!!deleteMember} onOpenChange={(v) => !v && setDeleteMember(null)}>

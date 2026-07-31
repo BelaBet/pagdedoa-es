@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePagination } from "@/lib/use-pagination";
+import { TablePagination } from "@/components/table-pagination";
 
 export const Route = createFileRoute("/_authenticated/admin/billing")({
   component: BillingPage,
@@ -54,6 +56,10 @@ function BillingPage() {
     },
   });
 
+  const plansPg = usePagination(plans ?? [], 10);
+  const subsPg = usePagination(subs ?? [], 10);
+  const invoicesPg = usePagination(invoices ?? [], 10);
+
   const overdue = (invoices ?? []).filter((i: { status: string }) => i.status === "overdue").length;
   const mrr = (subs ?? [])
     .filter((s: { status: string }) => s.status === "active")
@@ -87,7 +93,7 @@ function BillingPage() {
                 <TableHead className="text-right">Instituições</TableHead><TableHead className="text-right">Eventos/mês</TableHead><TableHead>Recursos</TableHead>
               </TableRow></TableHeader>
               <TableBody>
-                {plans?.map((p) => (
+                {plansPg.paginated.map((p) => (
                   <TableRow key={p.id}>
                     <TableCell className="font-medium">{p.name}</TableCell>
                     <TableCell className="text-right">{fmtBRL(Number(p.monthly_price))}</TableCell>
@@ -102,6 +108,15 @@ function BillingPage() {
                 ))}
               </TableBody>
             </Table>
+            <TablePagination
+              page={plansPg.page}
+              totalPages={plansPg.totalPages}
+              total={plansPg.total}
+              start={plansPg.start}
+              end={plansPg.end}
+              onPageChange={plansPg.setPage}
+              itemLabel={plansPg.total === 1 ? "plano" : "planos"}
+            />
           </Card>
         </TabsContent>
 
@@ -112,7 +127,7 @@ function BillingPage() {
                 <TableHead>Igreja</TableHead><TableHead>Plano</TableHead><TableHead>Status</TableHead><TableHead>Próx. cobrança</TableHead>
               </TableRow></TableHeader>
               <TableBody>
-                {subs?.map((s) => (
+                {subsPg.paginated.map((s) => (
                   <TableRow key={s.id}>
                     <TableCell>{(s.tenants as { name?: string } | null)?.name ?? "—"}</TableCell>
                     <TableCell>{(s.subscription_plans as { name?: string } | null)?.name ?? "—"}</TableCell>
@@ -122,6 +137,15 @@ function BillingPage() {
                 ))}
               </TableBody>
             </Table>
+            <TablePagination
+              page={subsPg.page}
+              totalPages={subsPg.totalPages}
+              total={subsPg.total}
+              start={subsPg.start}
+              end={subsPg.end}
+              onPageChange={subsPg.setPage}
+              itemLabel={subsPg.total === 1 ? "assinatura" : "assinaturas"}
+            />
           </Card>
         </TabsContent>
 
@@ -133,7 +157,7 @@ function BillingPage() {
                 <TableHead>Período</TableHead><TableHead>Vencimento</TableHead>
               </TableRow></TableHeader>
               <TableBody>
-                {invoices?.map((i) => (
+                {invoicesPg.paginated.map((i) => (
                   <TableRow key={i.id}>
                     <TableCell>{(i.tenants as { name?: string } | null)?.name ?? "—"}</TableCell>
                     <TableCell className="text-right">{fmtBRL(Number(i.amount))}</TableCell>
@@ -147,6 +171,15 @@ function BillingPage() {
                 )}
               </TableBody>
             </Table>
+            <TablePagination
+              page={invoicesPg.page}
+              totalPages={invoicesPg.totalPages}
+              total={invoicesPg.total}
+              start={invoicesPg.start}
+              end={invoicesPg.end}
+              onPageChange={invoicesPg.setPage}
+              itemLabel={invoicesPg.total === 1 ? "fatura" : "faturas"}
+            />
           </Card>
         </TabsContent>
       </Tabs>

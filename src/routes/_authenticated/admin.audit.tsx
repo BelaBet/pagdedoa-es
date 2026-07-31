@@ -1,21 +1,33 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { EmptyRow, LoadingRow } from "@/components/empty-row";
+import { TablePagination } from "@/components/table-pagination";
 
 export const Route = createFileRoute("/_authenticated/admin/audit")({
   component: AuditPage,
   head: () => ({ meta: [{ title: "Painel — Auditoria" }] }),
 });
 
+const PAGE_SIZE = 10;
+
 function AuditPage() {
   const [tenantFilter, setTenantFilter] = useState<string>("all");
   const [actionFilter, setActionFilter] = useState<string>("");
   const [days, setDays] = useState<string>("7");
+  const [page, setPage] = useState(1);
+
+  // Volta para a primeira página sempre que algum filtro mudar — sem isso,
+  // trocar o filtro poderia deixar a tela numa página que não existe mais
+  // para o novo resultado.
+  useEffect(() => {
+    setPage(1);
+  }, [tenantFilter, actionFilter, days]);
 
   const { data: tenants } = useQuery({
     queryKey: ["audit-tenant-list"],
@@ -25,23 +37,34 @@ function AuditPage() {
     },
   });
 
-  const { data: logs, isLoading } = useQuery({
-    queryKey: ["audit-logs", tenantFilter, actionFilter, days],
+  const { data, isLoading } = useQuery({
+    queryKey: ["audit-logs", tenantFilter, actionFilter, days, page],
     queryFn: async () => {
-      let q = supabase.from("audit_logs")
-        .select("id, created_at, user_id, action, entity, entity_id, tenant_id, metadata, tenants(name)")
-        .order("created_at", { ascending: false })
-        .limit(300);
+      // Paginação real no banco (.range()), evitando carregar todo o
+      // histórico de auditoria de uma vez — esse log só cresce com o tempo.
+      let q = supabase
+        .from("audit_logs")
+        .select("id, created_at, user_id, action, entity, entity_id, tenant_id, metadata, tenants(name)", {
+          count: "exact",
+        })
+        .order("created_at", { ascending: false });
       if (tenantFilter !== "all") q = q.eq("tenant_id", tenantFilter);
       if (actionFilter) q = q.ilike("action", `%${actionFilter}%`);
       if (days !== "all") {
-        const since = new Date(); since.setDate(since.getDate() - Number(days));
+        const since = new Date();
+        since.setDate(since.getDate() - Number(days));
         q = q.gte("created_at", since.toISOString());
       }
-      const { data } = await q;
-      return data ?? [];
+      const { data: rows, count } = await q.range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+      return { rows: rows ?? [], total: count ?? 0 };
     },
   });
+
+  const logs = data?.rows ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const start = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const end = Math.min(page * PAGE_SIZE, total);
 
   return (
     <div className="space-y-4">
@@ -83,21 +106,28 @@ function AuditPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading && <TableRow><TableCell colSpan={5} className="text-center text-sm text-muted-foreground">Carregando…</TableCell></TableRow>}
-            {logs?.map((l) => (
+            {isLoading && <LoadingRow colSpan={5} />}
+            {!isLoading && logs.length === 0 && <EmptyRow colSpan={5} message="Nenhum registro." />}
+            {logs.map((l) => (
               <TableRow key={l.id}>
                 <TableCell className="text-xs whitespace-nowrap">{new Date(l.created_at).toLocaleString("pt-BR")}</TableCell>
                 <TableCell className="text-xs">{(l.tenants as { name?: string } | null)?.name ?? "—"}</TableCell>
                 <TableCell className="text-xs font-mono">{l.user_id?.slice(0, 8) ?? "—"}</TableCell>
                 <TableCell className="text-xs font-medium">{l.action}</TableCell>
-                <TableCell className="text-xs text-muted-foreground">{l.entity}{l.entity_id ? ` · ${(l.entity_id as string).slice(0,8)}` : ""}</TableCell>
+                <TableCell className="text-xs text-muted-foreground">{l.entity}{l.entity_id ? ` · ${(l.entity_id as string).slice(0, 8)}` : ""}</TableCell>
               </TableRow>
             ))}
-            {(logs?.length ?? 0) === 0 && !isLoading && (
-              <TableRow><TableCell colSpan={5} className="text-center text-sm text-muted-foreground">Nenhum registro.</TableCell></TableRow>
-            )}
           </TableBody>
         </Table>
+        <TablePagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          start={start}
+          end={end}
+          onPageChange={setPage}
+          itemLabel={total === 1 ? "registro" : "registros"}
+        />
       </Card>
     </div>
   );

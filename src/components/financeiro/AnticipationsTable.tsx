@@ -4,6 +4,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { StatusBadge } from "./StatusBadge";
 import { brl, fmtDate } from "./format";
 import type { AnticipationItem } from "@/lib/recipient.functions";
+import { usePagination } from "@/lib/use-pagination";
+import { TablePagination } from "@/components/table-pagination";
 import { Inbox } from "lucide-react";
 
 type Props = {
@@ -13,6 +15,8 @@ type Props = {
 };
 
 export function AnticipationsTable({ items, loading, showFeeDetails }: Props) {
+  const { page, setPage, totalPages, paginated, total, start, end } = usePagination(items ?? [], 10);
+
   if (loading) {
     return (
       <Card>
@@ -49,7 +53,7 @@ export function AnticipationsTable({ items, loading, showFeeDetails }: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((a) => (
+            {paginated.map((a) => (
               <TableRow key={a.id}>
                 <TableCell>{fmtDate(a.created_at)}</TableCell>
                 <TableCell className="font-medium">{brl(a.amount)}</TableCell>
@@ -62,6 +66,15 @@ export function AnticipationsTable({ items, loading, showFeeDetails }: Props) {
           </TableBody>
         </Table>
       </CardContent>
+      <TablePagination
+        page={page}
+        totalPages={totalPages}
+        total={total}
+        start={start}
+        end={end}
+        onPageChange={setPage}
+        itemLabel={total === 1 ? "antecipação" : "antecipações"}
+      />
     </Card>
   );
 }

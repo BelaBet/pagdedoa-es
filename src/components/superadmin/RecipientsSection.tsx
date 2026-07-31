@@ -15,6 +15,8 @@ import {
   type RecipientStatus,
 } from "@/lib/recipient-registration.functions";
 import { BankingSetupModal } from "./BankingSetupModal";
+import { usePagination } from "@/lib/use-pagination";
+import { TablePagination } from "@/components/table-pagination";
 
 function statusBadge(status: string | null) {
   const s = (status ?? "not_configured") as RecipientStatus;
@@ -43,6 +45,7 @@ export function RecipientsSection() {
     queryKey: ["superadmin-recipients"],
     queryFn: () => list(),
   });
+  const { page, setPage, totalPages, paginated, total, start, end } = usePagination(tenants ?? [], 10);
 
   const counts = useMemo(() => {
     const c = { configured: 0, pending: 0, missing: 0, error: 0 };
@@ -97,7 +100,7 @@ export function RecipientsSection() {
                 ) : !tenants?.length ? (
                   <TableRow><TableCell colSpan={5} className="text-center text-sm text-muted-foreground">Nenhum tenant.</TableCell></TableRow>
                 ) : (
-                  tenants.map((t) => (
+                  paginated.map((t) => (
                     <TableRow key={t.id}>
                       <TableCell className="font-medium">{t.name}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">{t.document ?? "—"}</TableCell>
@@ -129,6 +132,15 @@ export function RecipientsSection() {
               </TableBody>
             </Table>
           </div>
+          <TablePagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            start={start}
+            end={end}
+            onPageChange={setPage}
+            itemLabel={total === 1 ? "igreja" : "igrejas"}
+          />
         </CardContent>
       </Card>
 

@@ -22,6 +22,8 @@ import {
   type CostCenterRow,
 } from "@/lib/cost-centers.functions";
 import { CostCenterFormModal } from "./CostCenterFormModal";
+import { usePagination } from "@/lib/use-pagination";
+import { TablePagination } from "@/components/table-pagination";
 
 export function CostCentersSection() {
   const qc = useQueryClient();
@@ -53,6 +55,7 @@ export function CostCentersSection() {
     enabled: !!tenantId,
     queryFn: () => list({ data: { tenantId } }),
   });
+  const { page, setPage, totalPages, paginated, total, start, end } = usePagination(rows ?? [], 10);
 
   const toggleMut = useMutation({
     mutationFn: (v: { id: string; isActive: boolean }) => toggleFn({ data: v }),
@@ -66,7 +69,7 @@ export function CostCentersSection() {
         <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0">
           <CardTitle className="text-base">Centros de Custo</CardTitle>
           <div className="flex items-center gap-2">
-            <Select value={tenantId} onValueChange={setTenantId}>
+            <Select value={tenantId} onValueChange={(v) => { setTenantId(v); setPage(1); }}>
               <SelectTrigger className="h-9 w-[220px]"><SelectValue placeholder="Selecione a igreja" /></SelectTrigger>
               <SelectContent>
                 {tenants?.map((t) => (
@@ -102,7 +105,7 @@ export function CostCentersSection() {
                 ) : !rows?.length ? (
                   <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground">Nenhum centro de custo.</TableCell></TableRow>
                 ) : (
-                  rows.map((r) => (
+                  paginated.map((r) => (
                     <TableRow key={r.id}>
                       <TableCell>
                         <div className="font-medium">{r.name}</div>
@@ -143,6 +146,15 @@ export function CostCentersSection() {
               </TableBody>
             </Table>
           </div>
+          <TablePagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            start={start}
+            end={end}
+            onPageChange={setPage}
+            itemLabel={total === 1 ? "centro de custo" : "centros de custo"}
+          />
         </CardContent>
       </Card>
 

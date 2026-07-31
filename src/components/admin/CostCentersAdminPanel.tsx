@@ -17,6 +17,8 @@ import {
   listCostCenters,
   toggleCostCenterActive,
 } from "@/lib/cost-centers.functions";
+import { usePagination } from "@/lib/use-pagination";
+import { TablePagination } from "@/components/table-pagination";
 
 export function CostCentersAdminPanel() {
   const qc = useQueryClient();
@@ -43,6 +45,7 @@ export function CostCentersAdminPanel() {
     enabled: !!tenantId,
     queryFn: () => list({ data: { tenantId: tenantId! } }),
   });
+  const { page, setPage, totalPages, paginated, total, start, end } = usePagination(rows ?? [], 10);
 
   const toggleMut = useMutation({
     mutationFn: (v: { id: string; isActive: boolean }) => toggleFn({ data: v }),
@@ -77,7 +80,7 @@ export function CostCentersAdminPanel() {
               ) : !rows?.length ? (
                 <TableRow><TableCell colSpan={5} className="text-center text-sm text-muted-foreground">Nenhum centro disponível.</TableCell></TableRow>
               ) : (
-                rows.map((r) => (
+                paginated.map((r) => (
                   <TableRow key={r.id}>
                     <TableCell>
                       <div className="font-medium">{r.name}</div>
@@ -111,6 +114,15 @@ export function CostCentersAdminPanel() {
             </TableBody>
           </Table>
         </div>
+        <TablePagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          start={start}
+          end={end}
+          onPageChange={setPage}
+          itemLabel={total === 1 ? "centro de custo" : "centros de custo"}
+        />
       </CardContent>
     </Card>
   );

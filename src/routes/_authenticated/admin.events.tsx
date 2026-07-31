@@ -51,6 +51,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { EmptyRow, LoadingRow } from "@/components/empty-row";
+import { TablePagination } from "@/components/table-pagination";
+import { usePagination } from "@/lib/use-pagination";
 import { ExternalLink, Calendar, Plus, Pencil, Trash2 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -138,6 +140,7 @@ function AdminEventsPage() {
   }
 
   const events = (data ?? []) as AdminEvent[];
+  const { page, setPage, totalPages, paginated, total, start, end } = usePagination(events, 10);
 
   const saveMut = useMutation({
     mutationFn: async (d: FormData) => {
@@ -397,7 +400,7 @@ function AdminEventsPage() {
             {!isLoading && events.length === 0 && (
               <EmptyRow colSpan={active ? 5 : 6} message="Nenhum evento cadastrado." />
             )}
-            {events.map((ev) => (
+            {paginated.map((ev) => (
               <TableRow key={ev.id}>
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-3">
@@ -470,6 +473,15 @@ function AdminEventsPage() {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          start={start}
+          end={end}
+          onPageChange={setPage}
+          itemLabel={total === 1 ? "evento" : "eventos"}
+        />
       </Card>
 
       <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>

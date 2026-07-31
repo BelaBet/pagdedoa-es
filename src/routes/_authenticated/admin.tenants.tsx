@@ -16,9 +16,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { EmptyRow, LoadingRow } from "@/components/empty-row";
-import { Eye, Pause, Play, Trash2, Plus, Pencil, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Eye, Pause, Play, Trash2, Plus, Pencil, Search } from "lucide-react";
 import { toast } from "sonner";
 import { translateError } from "@/lib/translate-error";
+import { usePagination } from "@/lib/use-pagination";
+import { TablePagination } from "@/components/table-pagination";
 
 export const Route = createFileRoute("/_authenticated/admin/tenants")({
   component: TenantsPage,
@@ -35,8 +37,6 @@ function TenantsPage() {
   const [imperId, setImperId] = useState<string | null>(null);
   const [imperReason, setImperReason] = useState("");
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const PAGE_SIZE = 15;
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-tenants"],
@@ -104,9 +104,7 @@ function TenantsPage() {
       (t.custom_domain ?? "").toLowerCase().includes(q)
     );
   });
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPages);
-  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const { page, setPage, totalPages, paginated, total, start: rangeStart, end: rangeEnd } = usePagination(filtered, 10);
 
   return (
     <div className="space-y-4">
@@ -156,8 +154,8 @@ function TenantsPage() {
                 message={search ? "Nenhuma igreja encontrada para essa busca." : "Nenhuma igreja cadastrada."}
               />
             )}
-            {paginated.map((t, i) => (
-              <TableRow key={t.id} className={i % 2 === 1 ? "bg-muted/40" : undefined}>
+            {paginated.map((t) => (
+              <TableRow key={t.id}>
                 <TableCell className="font-medium">{t.name}</TableCell>
                 <TableCell className="text-xs text-muted-foreground">
                   {t.slug}{t.custom_domain ? ` · ${t.custom_domain}` : ""}
@@ -194,36 +192,16 @@ function TenantsPage() {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          start={rangeStart}
+          end={rangeEnd}
+          onPageChange={setPage}
+          itemLabel={total === 1 ? "igreja" : "igrejas"}
+        />
       </Card>
-
-      {filtered.length > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-xs text-muted-foreground">
-            {filtered.length} {filtered.length === 1 ? "igreja" : "igrejas"}
-            {search ? ` (filtradas de ${data?.length ?? 0})` : ""} — página {currentPage} de {totalPages}
-          </p>
-          <div className="flex items-center gap-1">
-            <Button
-              size="icon"
-              variant="outline"
-              disabled={currentPage <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              aria-label="Página anterior"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              size="icon"
-              variant="outline"
-              disabled={currentPage >= totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              aria-label="Próxima página"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
 
       <AlertDialog open={!!deleteId} onOpenChange={(v) => !v && setDeleteId(null)}>
         <AlertDialogContent>

@@ -19,19 +19,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { StatusBadge } from "@/components/financeiro/StatusBadge";
 import { brl, fmtDate, translateMethod } from "@/components/financeiro/format";
 import { getDonationsList, getTenantOptions } from "@/lib/donations.functions";
 import { useImpersonation } from "@/lib/impersonation";
 import { DonationDetailDialog } from "./DonationDetailDialog";
+import { TablePagination } from "@/components/table-pagination";
 import { Search, Inbox } from "lucide-react";
 
 const PAGE_SIZE = 10;
@@ -191,10 +184,10 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((d, idx) => (
+                {filtered.map((d) => (
                   <TableRow
                     key={d.id}
-                    className={`cursor-pointer ${idx % 2 === 1 ? "bg-muted/40" : ""}`}
+                    className="cursor-pointer"
                     onClick={() => setSelectedId(d.id)}
                   >
                     <TableCell className="font-medium">{d.donorName ?? "—"}</TableCell>
@@ -215,50 +208,16 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
               </TableBody>
             </Table>
           </CardContent>
+          <TablePagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            start={total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}
+            end={Math.min(page * PAGE_SIZE, total)}
+            onPageChange={goToPage}
+            itemLabel={total === 1 ? "doação" : "doações"}
+          />
         </Card>
-      )}
-
-      {totalPages > 1 && (
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  goToPage(page - 1);
-                }}
-                aria-disabled={page <= 1}
-                className={page <= 1 ? "pointer-events-none opacity-50" : ""}
-              />
-            </PaginationItem>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <PaginationItem key={p}>
-                <PaginationLink
-                  href="#"
-                  isActive={p === page}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    goToPage(p);
-                  }}
-                >
-                  {p}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  goToPage(page + 1);
-                }}
-                aria-disabled={page >= totalPages}
-                className={page >= totalPages ? "pointer-events-none opacity-50" : ""}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
       )}
 
       <DonationDetailDialog paymentId={selectedId} onClose={() => setSelectedId(null)} />

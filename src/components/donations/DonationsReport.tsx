@@ -31,6 +31,8 @@ import {
 } from "@/lib/donations.functions";
 import { getWithdrawalsReport, type WithdrawalReportItem } from "@/lib/recipient.functions";
 import { useImpersonation } from "@/lib/impersonation";
+import { usePagination } from "@/lib/use-pagination";
+import { TablePagination } from "@/components/table-pagination";
 import { Download, FileText, Inbox, Landmark } from "lucide-react";
 
 function currentMonthRange() {
@@ -319,6 +321,10 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
   const isPlatformAdmin = showTenantFilter && !impersonating && (report.data?.isPlatformAdmin ?? false);
   const totalDonation = items.reduce((sum, i) => sum + i.donationAmountCents, 0);
   const totalFee = items.reduce((sum, i) => sum + i.adminFeeCents, 0);
+  // Paginação é só da pré-visualização em tela — o PDF (buildPdf) sempre
+  // usa "items" completo, nunca a fatia paginada, senão o relatório
+  // baixado sairia incompleto.
+  const itemsPg = usePagination(items, 10);
 
   // Saques/retiradas e antecipações: sempre disponível para a igreja (própria
   // instituição). Para o super admin só faz sentido quando uma instituição
@@ -339,6 +345,8 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
   });
   const withdrawalItems = withdrawals.data?.items ?? [];
   const totalWithdrawals = withdrawalItems.reduce((s, w) => s + w.amountCents, 0);
+  // Mesma regra: o PDF sempre usa withdrawalItems completo.
+  const withdrawalsPg = usePagination(withdrawalItems, 10);
 
   const tenantLabel = isPlatformAdmin
     ? tenantFilter === "all"
@@ -456,7 +464,7 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {items.map((d) => (
+                  {itemsPg.paginated.map((d) => (
                     <TableRow key={d.id}>
                       <TableCell className="text-muted-foreground">{fmtDate(d.createdAt)}</TableCell>
                       {isPlatformAdmin && (
@@ -483,6 +491,15 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
                 </TableBody>
               </Table>
             </CardContent>
+            <TablePagination
+              page={itemsPg.page}
+              totalPages={itemsPg.totalPages}
+              total={itemsPg.total}
+              start={itemsPg.start}
+              end={itemsPg.end}
+              onPageChange={itemsPg.setPage}
+              itemLabel={itemsPg.total === 1 ? "doação" : "doações"}
+            />
           </Card>
         </>
       )}
@@ -527,7 +544,7 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {withdrawalItems.map((w) => (
+                  {withdrawalsPg.paginated.map((w) => (
                     <TableRow key={w.id}>
                       <TableCell className="text-muted-foreground">{fmtDate(w.createdAt)}</TableCell>
                       <TableCell className="font-medium">
@@ -543,6 +560,15 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
                 </TableBody>
               </Table>
             </CardContent>
+            <TablePagination
+              page={withdrawalsPg.page}
+              totalPages={withdrawalsPg.totalPages}
+              total={withdrawalsPg.total}
+              start={withdrawalsPg.start}
+              end={withdrawalsPg.end}
+              onPageChange={withdrawalsPg.setPage}
+              itemLabel={withdrawalsPg.total === 1 ? "movimentação" : "movimentações"}
+            />
           </Card>
         </>
       ) : null}
