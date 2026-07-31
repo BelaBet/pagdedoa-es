@@ -129,7 +129,7 @@ function AuthLayout() {
             </Link>
           </div>
           <nav className="hidden items-center gap-1 md:flex">
-            <Button asChild variant="ghost" size="sm"><Link to="/dashboard">Painel</Link></Button>
+            <Button asChild variant="ghost" size="sm"><Link to="/dashboard">{"\n"}</Link></Button>
             {isStaff && (myTenant as { slug?: string } | null)?.slug && (
               <Button asChild variant="ghost" size="sm">
                 <a href={`/i/${(myTenant as { slug: string }).slug}`} target="_blank" rel="noopener noreferrer">
