@@ -115,6 +115,22 @@ export const getDonationsList = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     
+    let countQuery = supabaseAdmin
+      .from("payments")
+      .select("id", { count: "exact", head: true })
+      .eq("reference_type", "donation")
+      .gte("created_at", `${data.periodStart}T00:00:00.000Z`)
+      .lte("created_at", `${data.periodEnd}T23:59:59.999Z`);
+
+    if (!access.isPlatformAdmin) {
+      countQuery = countQuery.eq("tenant_id", access.tenantId as string);
+    } else if (data.tenantId) {
+      countQuery = countQuery.eq("tenant_id", data.tenantId);
+    }
+
+    const { count, error: countError } = await countQuery;
+    if (countError) throw new Error(countError.message);
+
     let query = supabaseAdmin
       .from("payments")
       .select(
@@ -214,7 +230,7 @@ export const getDonationsList = createServerFn({ method: "POST" })
       };
     });
 
-    return { items, isPlatformAdmin: access.isPlatformAdmin };
+    return { items, isPlatformAdmin: access.isPlatformAdmin, total: count ?? 0 };
   });
 
 type BillingAddress = { line1: string; city: string; state: string; zipCode: string } | null;
