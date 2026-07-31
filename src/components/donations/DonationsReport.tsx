@@ -178,7 +178,7 @@ async function buildPdf(
       if (isNumeric) {
         doc.text(String(text), x + col.width - 4, y + 11, { align: "right" });
       } else {
-        doc.text(String(text), x + 4, y + 11);
+        doc.text(String(text), x, y + 11);
       }
       x += col.width;
     }
