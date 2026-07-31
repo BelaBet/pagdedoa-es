@@ -482,8 +482,8 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
                         {translateMethod(d.paymentMethod)}
                         {d.cardBrand ? ` · ${d.cardBrand}` : ""}
                       </TableCell>
-                      <TableCell className="text-right font-medium">{brl(d.donationAmountCents)}</TableCell>
-                      <TableCell className="text-right text-muted-foreground">
+                      <TableCell className="w-32 text-right font-medium tabular-nums">{brl(d.donationAmountCents)}</TableCell>
+                      <TableCell className="w-24 text-right text-muted-foreground tabular-nums">
                         {brl(d.adminFeeCents)}
                       </TableCell>
                     </TableRow>
