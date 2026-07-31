@@ -174,7 +174,12 @@ async function buildPdf(
     for (const col of columns) {
       const raw = values[col.key] ?? "—";
       const text = doc.splitTextToSize(raw, col.width - 6)[0] ?? raw;
-      doc.text(String(text), x, y + 11);
+      const isNumeric = col.key.endsWith("Cents");
+      if (isNumeric) {
+        doc.text(String(text), x + col.width - 4, y + 11, { align: "right" });
+      } else {
+        doc.text(String(text), x + 4, y + 11);
+      }
       x += col.width;
     }
     y += rowHeight;
