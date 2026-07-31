@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,12 +19,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { StatusBadge } from "@/components/financeiro/StatusBadge";
 import { brl, fmtDate, translateMethod } from "@/components/financeiro/format";
 import { getDonationsList, getTenantOptions } from "@/lib/donations.functions";
 import { useImpersonation } from "@/lib/impersonation";
 import { DonationDetailDialog } from "./DonationDetailDialog";
 import { Search, Inbox } from "lucide-react";
+
+const PAGE_SIZE = 10;
 
 function last7DaysRange() {
   const end = new Date();
@@ -39,6 +49,7 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
   const [tenantFilter, setTenantFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   const { active: impersonating, tenantId: impersonatedTenantId } = useImpersonation();
 
@@ -64,21 +75,34 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
         : undefined;
 
   const donations = useQuery({
-    queryKey: ["donations-list", period, effectiveTenantId ?? "all"],
+    queryKey: ["donations-list", period, effectiveTenantId ?? "all", page],
     queryFn: () =>
       listFn({
         data: {
           ...period,
           tenantId: effectiveTenantId,
-          page: 1,
-          size: 50,
+          page,
+          size: PAGE_SIZE,
         },
       }),
   });
 
+  const total = donations.data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  // volta para a primeira página sempre que filtros mudarem
+  useEffect(() => {
+    setPage(1);
+  }, [period.periodStart, period.periodEnd, effectiveTenantId, search]);
+
   const filtered = (donations.data?.items ?? []).filter((d) =>
     search ? (d.donorName ?? "").toLowerCase().includes(search.toLowerCase()) : true,
   );
+
+  const goToPage = (p: number) => {
+    if (p < 1 || p > totalPages) return;
+    setPage(p);
+  };
 
   return (
     <div className="space-y-4">
@@ -167,10 +191,10 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((d) => (
+                {filtered.map((d, idx) => (
                   <TableRow
                     key={d.id}
-                    className="cursor-pointer"
+                    className={`cursor-pointer ${idx % 2 === 1 ? "bg-muted/40" : ""}`}
                     onClick={() => setSelectedId(d.id)}
                   >
                     <TableCell className="font-medium">{d.donorName ?? "—"}</TableCell>
@@ -192,6 +216,49 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
             </Table>
           </CardContent>
         </Card>
+      )}
+
+      {totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  goToPage(page - 1);
+                }}
+                aria-disabled={page <= 1}
+                className={page <= 1 ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <PaginationItem key={p}>
+                <PaginationLink
+                  href="#"
+                  isActive={p === page}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goToPage(p);
+                  }}
+                >
+                  {p}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  goToPage(page + 1);
+                }}
+                aria-disabled={page >= totalPages}
+                className={page >= totalPages ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       )}
 
       <DonationDetailDialog paymentId={selectedId} onClose={() => setSelectedId(null)} />

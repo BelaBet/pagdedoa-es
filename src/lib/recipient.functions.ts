@@ -172,10 +172,15 @@ export const getRecipientAnticipations = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const recipientId = await resolveRecipientId(data.scope, context as never);
-    const res = await pagarme<{ data: AnticipationItem[] }>(
-      `/recipients/${recipientId}/anticipations?page=${data.page}&size=${data.size}`,
-    );
-    return { items: res.data ?? [] };
+    try {
+      const res = await pagarme<{ data: AnticipationItem[] }>(
+        `/recipients/${recipientId}/anticipations?page=${data.page}&size=${data.size}`,
+      );
+      return { items: res.data ?? [] };
+    } catch (e) {
+      if (e instanceof Error && e.message.includes("404")) return { items: [] };
+      throw e;
+    }
   });
 
 export const getAnticipationLimits = createServerFn({ method: "POST" })
@@ -415,7 +420,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
       .select(
         "ticketto_fee, pagarme_fee, tk2_op_fee, transacao_fee, split_platform_amount, split_seller_amount, seller_recipient_id",
       )
-      .in("status", ["paid", "confirmed"] as any)
+      .eq("status", "confirmed")
       .is("deleted_at", null);
     if (error) throw new Error(error.message);
     type Row = {
