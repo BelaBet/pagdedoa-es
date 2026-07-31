@@ -51,6 +51,7 @@ import { Route as AuthenticatedManageRelatoriosRouteImport } from './routes/_aut
 import { Route as AuthenticatedManageSettingsRouteImport } from './routes/_authenticated/manage.settings'
 import { Route as ApiPublicCreateDonationRouteImport } from './routes/api/public/create-donation'
 import { Route as ApiPublicWebhooksPagarmeRouteImport } from './routes/api/public/webhooks/pagarme'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -285,6 +286,12 @@ const ApiPublicWebhooksPagarmeRoute =
     path: '/api/public/webhooks/pagarme',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -328,6 +335,7 @@ export interface FileRoutesByFullPath {
   '/igrejas/': typeof AuthenticatedIgrejasIndexRoute
   '/manage/': typeof AuthenticatedManageIndexRoute
   '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -368,6 +376,7 @@ export interface FileRoutesByTo {
   '/igrejas': typeof AuthenticatedIgrejasIndexRoute
   '/manage': typeof AuthenticatedManageIndexRoute
   '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -413,6 +422,7 @@ export interface FileRoutesById {
   '/_authenticated/igrejas/': typeof AuthenticatedIgrejasIndexRoute
   '/_authenticated/manage/': typeof AuthenticatedManageIndexRoute
   '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -458,6 +468,7 @@ export interface FileRouteTypes {
     | '/igrejas/'
     | '/manage/'
     | '/api/public/webhooks/pagarme'
+    | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -498,6 +509,7 @@ export interface FileRouteTypes {
     | '/igrejas'
     | '/manage'
     | '/api/public/webhooks/pagarme'
+    | '/lovable/email/queue/process'
   id:
     | '__root__'
     | '/'
@@ -542,6 +554,7 @@ export interface FileRouteTypes {
     | '/_authenticated/igrejas/'
     | '/_authenticated/manage/'
     | '/api/public/webhooks/pagarme'
+    | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -554,6 +567,7 @@ export interface RootRouteChildren {
   ISlugRoute: typeof ISlugRoute
   ApiPublicCreateDonationRoute: typeof ApiPublicCreateDonationRoute
   ApiPublicWebhooksPagarmeRoute: typeof ApiPublicWebhooksPagarmeRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -852,6 +866,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksPagarmeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -972,6 +993,7 @@ const rootRouteChildren: RootRouteChildren = {
   ISlugRoute: ISlugRoute,
   ApiPublicCreateDonationRoute: ApiPublicCreateDonationRoute,
   ApiPublicWebhooksPagarmeRoute: ApiPublicWebhooksPagarmeRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
