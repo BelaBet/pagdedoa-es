@@ -260,7 +260,13 @@ async function buildPdf(
         feeCents: brl(w.feeCents),
       };
       for (const col of wColumns) {
-        doc.text(values[col.key] ?? "—", x, y + 11);
+        const raw = values[col.key] ?? "—";
+        const isNumeric = col.key.endsWith("Cents");
+        if (isNumeric) {
+          doc.text(String(raw), x + col.width - 4, y + 11, { align: "right" });
+        } else {
+          doc.text(String(raw), x, y + 11);
+        }
         x += col.width;
       }
       y += rowHeight;
