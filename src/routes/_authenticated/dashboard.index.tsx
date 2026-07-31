@@ -36,7 +36,7 @@ function Dashboard() {
 
   const onboardingDone = myTenant ? myTenant.logo_url != null && myTenant.name !== "Comunidade Demo" : false;
 
-  const greeting = `Olá, ${profile?.full_name?.split(" ")[0] ?? "instituição"} 👋`;
+  const greeting = `Olá, ${profile?.full_name?.split(" ")[0] ?? "instituição"}`;
 
   const qrUrl = myTenant?.slug ? `${typeof window !== "undefined" ? window.location.origin : ""}/i/${myTenant.slug}` : "";
   const primary = myTenant?.primary_color ?? "#1a3a5c";
