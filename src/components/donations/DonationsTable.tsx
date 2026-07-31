@@ -49,6 +49,7 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
   const [tenantFilter, setTenantFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   const { active: impersonating, tenantId: impersonatedTenantId } = useImpersonation();
 
@@ -74,17 +75,20 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
         : undefined;
 
   const donations = useQuery({
-    queryKey: ["donations-list", period, effectiveTenantId ?? "all"],
+    queryKey: ["donations-list", period, effectiveTenantId ?? "all", page],
     queryFn: () =>
       listFn({
         data: {
           ...period,
           tenantId: effectiveTenantId,
-          page: 1,
-          size: 50,
+          page,
+          size: PAGE_SIZE,
         },
       }),
   });
+
+  const total = donations.data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const filtered = (donations.data?.items ?? []).filter((d) =>
     search ? (d.donorName ?? "").toLowerCase().includes(search.toLowerCase()) : true,
