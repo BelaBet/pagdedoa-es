@@ -174,7 +174,12 @@ async function buildPdf(
     for (const col of columns) {
       const raw = values[col.key] ?? "—";
       const text = doc.splitTextToSize(raw, col.width - 6)[0] ?? raw;
-      doc.text(String(text), x, y + 11);
+      const isNumeric = col.key.endsWith("Cents");
+      if (isNumeric) {
+        doc.text(String(text), x + col.width - 4, y + 11, { align: "right" });
+      } else {
+        doc.text(String(text), x, y + 11);
+      }
       x += col.width;
     }
     y += rowHeight;
@@ -255,7 +260,13 @@ async function buildPdf(
         feeCents: brl(w.feeCents),
       };
       for (const col of wColumns) {
-        doc.text(values[col.key] ?? "—", x, y + 11);
+        const raw = values[col.key] ?? "—";
+        const isNumeric = col.key.endsWith("Cents");
+        if (isNumeric) {
+          doc.text(String(raw), x + col.width - 4, y + 11, { align: "right" });
+        } else {
+          doc.text(String(raw), x, y + 11);
+        }
         x += col.width;
       }
       y += rowHeight;
@@ -459,8 +470,8 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
                     <TableHead>CPF/CNPJ</TableHead>
                     <TableHead>Contato</TableHead>
                     <TableHead>Pagamento</TableHead>
-                    <TableHead className="text-right">Valor da Doação</TableHead>
-                    <TableHead className="text-right">Taxa</TableHead>
+                    <TableHead className="w-32 text-right">Valor da Doação</TableHead>
+                    <TableHead className="w-24 text-right">Taxa</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -482,8 +493,8 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
                         {translateMethod(d.paymentMethod)}
                         {d.cardBrand ? ` · ${d.cardBrand}` : ""}
                       </TableCell>
-                      <TableCell className="text-right font-medium">{brl(d.donationAmountCents)}</TableCell>
-                      <TableCell className="text-right text-muted-foreground">
+                      <TableCell className="w-32 text-right font-medium tabular-nums">{brl(d.donationAmountCents)}</TableCell>
+                      <TableCell className="w-24 text-right text-muted-foreground tabular-nums">
                         {brl(d.adminFeeCents)}
                       </TableCell>
                     </TableRow>
