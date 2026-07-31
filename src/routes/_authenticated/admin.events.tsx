@@ -244,7 +244,7 @@ function AdminEventsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl">Eventos</h1>
           <p className="text-sm text-muted-foreground">
@@ -405,21 +405,23 @@ function AdminEventsPage() {
                       <img
                         src={ev.banner_url}
                         alt={ev.title}
-                        className="h-10 w-10 rounded-md object-cover"
+                        className="h-10 w-10 shrink-0 rounded-md object-cover"
                       />
                     )}
-                    <span>{ev.title}</span>
+                    <span className="block max-w-[220px] truncate" title={ev.title}>
+                      {ev.title}
+                    </span>
                   </div>
                 </TableCell>
                 {!active && (
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="max-w-[140px] truncate text-sm text-muted-foreground" title={ev.tenants?.name ?? undefined}>
                     {ev.tenants?.name ?? "—"}
                   </TableCell>
                 )}
                 <TableCell className="text-sm whitespace-nowrap">
                   {ev.date ? new Date(ev.date).toLocaleString("pt-BR") : "—"}
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
+                <TableCell className="max-w-[160px] truncate text-sm text-muted-foreground" title={ev.location ?? undefined}>
                   {ev.location ?? "—"}
                 </TableCell>
                 <TableCell>
