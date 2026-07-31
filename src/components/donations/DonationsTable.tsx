@@ -191,10 +191,10 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((d) => (
+                {filtered.map((d, idx) => (
                   <TableRow
                     key={d.id}
-                    className="cursor-pointer"
+                    className={`cursor-pointer ${idx % 2 === 1 ? "bg-muted/40" : ""}`}
                     onClick={() => setSelectedId(d.id)}
                   >
                     <TableCell className="font-medium">{d.donorName ?? "—"}</TableCell>
@@ -216,6 +216,49 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
             </Table>
           </CardContent>
         </Card>
+      )}
+
+      {totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  goToPage(page - 1);
+                }}
+                aria-disabled={page <= 1}
+                className={page <= 1 ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <PaginationItem key={p}>
+                <PaginationLink
+                  href="#"
+                  isActive={p === page}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goToPage(p);
+                  }}
+                >
+                  {p}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  goToPage(page + 1);
+                }}
+                aria-disabled={page >= totalPages}
+                className={page >= totalPages ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       )}
 
       <DonationDetailDialog paymentId={selectedId} onClose={() => setSelectedId(null)} />
