@@ -1,1 +1,0 @@
-ALTER TABLE public.events ALTER COLUMN status SET DEFAULT 'active'; UPDATE public.events SET status='active' WHERE status='draft';
