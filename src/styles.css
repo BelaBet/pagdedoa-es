@@ -137,8 +137,16 @@
      primeiro contato, antes de a pessoa conhecer a marca. */
   .auth-fields input,
   .auth-fields select,
-  .auth-fields textarea,
-  .auth-fields button {
+  .auth-fields textarea {
+    border-radius: 0.5rem;
+  }
+
+  /* Botoes arredondados em todo o produto: sao o elemento que a pessoa
+     toca, e o canto suave sinaliza isso melhor que o canto reto. As
+     superficies (card, ladrilho, tabela) seguem retas. */
+  button,
+  [role="button"],
+  a[data-slot="button"] {
     border-radius: 0.5rem;
   }
 }
