@@ -31,11 +31,11 @@ export const BRAND = {
   domain: "example.com.br",
 
   support: {
-    email: "suporte@example.com.br",
+    email: "contato@meuhub.site",
     /** Formato de exibição, legível por humanos. */
-    phone: "(00) 00000-0000",
+    phone: "(81) 99288-1552",
     /** Formato E.164, para href="tel:". */
-    phoneE164: "+550000000000",
+    phoneE164: "+5581992881552",
   },
 
   /**
@@ -44,9 +44,9 @@ export const BRAND = {
    */
   pagarme: {
     /** Fallback quando o contribuinte não informa e-mail. */
-    fallbackCustomerEmail: "contribuinte@example.com.br",
+    fallbackCustomerEmail: "contribuinte@meuhub.site",
     /** Domínio dos e-mails gerados por tenant no cadastro de recipient. */
-    recipientEmailDomain: "example.com.br",
+    recipientEmailDomain: "meuhub.site",
   },
 } as const;
 
