@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -30,7 +31,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Calendar, ExternalLink, Plus, Pencil, Trash2 } from "lucide-react";
+import { Calendar, ExternalLink, HandHeart, Plus, Pencil, Trash2 } from "lucide-react";
+import { EventNeedsPanel } from "@/components/events/EventNeedsPanel";
 import { BackButton } from "@/components/back-button";
 import { toast } from "sonner";
 import { translateError } from "@/lib/translate-error";
@@ -176,6 +178,8 @@ function ManageEventsPage() {
     },
     onError: (e) => toast.error(translateError(e)),
   });
+
+  const [needsFor, setNeedsFor] = useState<string | null>(null);
 
   function startEdit(ev: EventRow) {
     setEditing(ev);
@@ -385,6 +389,9 @@ function ManageEventsPage() {
                     <Button variant="outline" size="sm" onClick={() => startEdit(ev as EventRow)}>
                       <Pencil className="mr-1.5 h-3.5 w-3.5" /> Editar
                     </Button>
+                    <Button variant="outline" size="sm" onClick={() => setNeedsFor(ev.id)}>
+                      <HandHeart className="mr-1.5 h-3.5 w-3.5" /> Padrinhos e itens
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -424,6 +431,18 @@ function ManageEventsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <Dialog open={needsFor !== null} onOpenChange={(o) => !o && setNeedsFor(null)}>
+        <DialogContent className="max-h-[85vh] max-w-3xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Padrinhos e itens da festa</DialogTitle>
+            <DialogDescription>
+              O que estiver ativo aqui aparece na página pública da igreja, onde qualquer pessoa
+              pode se oferecer.
+            </DialogDescription>
+          </DialogHeader>
+          {needsFor && <EventNeedsPanel eventId={needsFor} />}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
