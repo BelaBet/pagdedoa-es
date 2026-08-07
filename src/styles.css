@@ -131,24 +131,16 @@
   }
 }
 
-@layer components {
-  /* Telas de acesso: campos com canto suave. O resto do produto mantem o
-     canto reto do ladrilho — aqui o objetivo e reduzir a aspereza no
-     primeiro contato, antes de a pessoa conhecer a marca. */
-  .auth-fields input,
-  .auth-fields select,
-  .auth-fields textarea {
-    border-radius: 1.25rem;
-  }
-
-  /* Botoes arredondados em todo o produto: sao o elemento que a pessoa
-     toca, e o canto suave sinaliza isso melhor que o canto reto. As
-     superficies (card, ladrilho, tabela) seguem retas. */
-  button,
-  [role="button"],
-  a[data-slot="button"] {
-    border-radius: 1.25rem;
-  }
+/* Fora de @layer de proposito: regra sem camada vence utilitario do
+   Tailwind. Dentro de @layer components o .rounded-md dos componentes
+   shadcn sobrescrevia isto e nada acontecia. */
+button,
+[role="button"],
+a[data-slot="button"],
+.auth-fields input,
+.auth-fields select,
+.auth-fields textarea {
+  border-radius: 1.25rem;
 }
 
 #lovable-badge { display: none !important; }
