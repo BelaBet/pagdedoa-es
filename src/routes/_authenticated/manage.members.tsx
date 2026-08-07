@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableMoneyCell, TableRow,
 } from "@/components/ui/table";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -440,7 +440,7 @@ function TenantMembersView({ tenant, onBack }: { tenant: Tenant; onBack: () => v
                 <TableHead>Telefone</TableHead>
                 <TableHead>Papel</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Doado</TableHead>
+                <TableHead className="text-right">Doado</TableHead>
                 <TableHead className="w-8"></TableHead>
               </TableRow>
             </TableHeader>
@@ -472,9 +472,9 @@ function TenantMembersView({ tenant, onBack }: { tenant: Tenant; onBack: () => v
                       {m.status === "approved" ? "Aprovado" : m.status === "pending" ? "Pendente" : "Bloqueado"}
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableMoneyCell>
                     {(totals.get(m.id) ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                  </TableCell>
+                  </TableMoneyCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
