@@ -168,7 +168,7 @@ export const createBoletoPayment = createServerFn({ method: "POST" })
         gateway_id: gatewayId,
         reference_type: "donation",
         donation_amount: amounts.donationAmount,
-        ticketto_fee: amounts.platformFee,
+        platform_fee: amounts.platformFee,
         pagarme_fee: amounts.pagarmeFee,
         tk2_op_fee: amounts.tk2OpFee,
         transacao_fee: amounts.transacaoFee,

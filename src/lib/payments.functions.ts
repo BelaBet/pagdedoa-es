@@ -195,7 +195,7 @@ async function persistPayment(args: {
       gateway_id: args.gatewayId || `failed_${Date.now()}`,
       reference_type: "donation",
       donation_amount: a.donationAmount,
-      ticketto_fee: a.platformFee,
+      platform_fee: a.platformFee,
       pagarme_fee: a.pagarmeFee,
       tk2_op_fee: a.tk2OpFee,
       transacao_fee: a.transacaoFee,
