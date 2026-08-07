@@ -20,6 +20,7 @@ function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [emailConfirmed, setEmailConfirmed] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -53,6 +54,18 @@ function LoginPage() {
     setLoading(false);
     if (error) return toast.error(translateError(error));
     toast.success("Bem-vindo de volta!");
+    navigate({ to: "/dashboard" });
+  };
+
+  const enterDemo = async () => {
+    setDemoLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: "admin@igrejademo.org.br",
+      password: "Demo@2026",
+    });
+    setDemoLoading(false);
+    if (error) return toast.error(translateError(error));
+    toast.success("Entrando na Igreja Demonstração");
     navigate({ to: "/dashboard" });
   };
 
@@ -100,6 +113,21 @@ function LoginPage() {
         </form>
         <div className="mt-4 text-center">
           <Link to="/forgot-password" className="text-sm text-muted-foreground hover:underline">Esqueci minha senha</Link>
+        </div>
+        <div className="mt-6 rounded-lg border border-dashed p-4 text-center">
+          <p className="text-sm font-medium">Conhecer a plataforma</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Acesse a Igreja Demonstração com dados de exemplo.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-3 w-full"
+            onClick={enterDemo}
+            disabled={demoLoading}
+          >
+            {demoLoading ? "Entrando..." : "Entrar na demonstração"}
+          </Button>
         </div>
         <p className="mt-6 text-center text-sm text-muted-foreground">
           Sem conta? <Link to="/signup" className="text-primary hover:underline">Cadastrar-me</Link>

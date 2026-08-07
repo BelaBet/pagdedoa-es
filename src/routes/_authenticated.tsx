@@ -17,6 +17,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+// Tenant de demonstração: nunca é enviado ao onboarding inicial.
+const DEMO_TENANT_ID = "dddddddd-0000-4000-8000-000000000001";
+
 export const Route = createFileRoute("/_authenticated")({
   component: AuthLayout,
 });
@@ -55,6 +58,7 @@ function AuthLayout() {
   useEffect(() => {
     if (loading || !user || !profile || !myTenant) return;
     if (!isAdmin) return;
+    if (myTenant.id === DEMO_TENANT_ID) return;
     if (myTenant.logo_url) return;
     if (!user.email_confirmed_at) return;
     const path = location.pathname;

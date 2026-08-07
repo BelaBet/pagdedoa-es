@@ -752,6 +752,7 @@ export type Database = {
           id: string
           method: Database["public"]["Enums"]["payment_method"]
           pagarme_fee: number | null
+          platform_fee: number | null
           platform_recipient_id: string | null
           profile_id: string | null
           reference_id: string | null
@@ -761,7 +762,6 @@ export type Database = {
           split_seller_amount: number | null
           status: Database["public"]["Enums"]["payment_status"]
           tenant_id: string
-          ticketto_fee: number | null
           tk2_op_fee: number | null
           transacao_fee: number | null
         }
@@ -780,6 +780,7 @@ export type Database = {
           id?: string
           method: Database["public"]["Enums"]["payment_method"]
           pagarme_fee?: number | null
+          platform_fee?: number | null
           platform_recipient_id?: string | null
           profile_id?: string | null
           reference_id?: string | null
@@ -791,7 +792,6 @@ export type Database = {
           split_seller_amount?: number | null
           status?: Database["public"]["Enums"]["payment_status"]
           tenant_id: string
-          ticketto_fee?: number | null
           tk2_op_fee?: number | null
           transacao_fee?: number | null
         }
@@ -810,6 +810,7 @@ export type Database = {
           id?: string
           method?: Database["public"]["Enums"]["payment_method"]
           pagarme_fee?: number | null
+          platform_fee?: number | null
           platform_recipient_id?: string | null
           profile_id?: string | null
           reference_id?: string | null
@@ -821,7 +822,6 @@ export type Database = {
           split_seller_amount?: number | null
           status?: Database["public"]["Enums"]["payment_status"]
           tenant_id?: string
-          ticketto_fee?: number | null
           tk2_op_fee?: number | null
           transacao_fee?: number | null
         }
