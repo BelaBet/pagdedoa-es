@@ -235,7 +235,7 @@ function TK2LandingPage() {
       <section id="planos" className="bg-white py-20">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            Comece grátis. Cresça com a TicketConnect.
+            Comece grátis. Cresça com o Centro de Doações.
           </h2>
           <p className="mt-3 text-slate-600">Cadastre sua igreja em minutos e comece a receber doações ainda hoje.</p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -257,7 +257,7 @@ function TK2LandingPage() {
 
       <footer className="border-t border-slate-200 bg-slate-50 py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 text-sm text-slate-500 sm:flex-row">
-          <div>© {new Date().getFullYear()} TicketConnect. Todos os direitos reservados.</div>
+          <div>© {new Date().getFullYear()} Centro de Doações. Todos os direitos reservados.</div>
           <div className="flex items-center gap-5">
             <a href="/login" className="hover:text-slate-900">
               Entrar
@@ -949,7 +949,7 @@ function PixDialog({
   const brCode = buildPixPayload({
     key,
     amount: amount ? amount.replace(/[^\d,.-]/g, "") : undefined,
-    merchantName: "TicketConnect",
+    merchantName: "Centro de Doações",
     merchantCity: "SAO PAULO",
   });
   const copy = async () => {
@@ -1722,7 +1722,7 @@ export function ChurchPageView({ tenantOverride }: { tenantOverride?: Tenant | n
         </p>
         {CHURCH.tagline && <p style={{ fontSize: 12, color: "#666", margin: "0 0 16px" }}>{CHURCH.tagline}</p>}
         <p style={{ fontSize: 11, color: "#999", margin: 0, letterSpacing: "0.04em" }}>
-          Tecnologia fornecida por <span style={{ color: "#666", fontWeight: 600 }}>TicketConnect</span>
+          Tecnologia fornecida por <span style={{ color: "#666", fontWeight: 600 }}>Centro de Doações</span>
         </p>
       </footer>
     </div>

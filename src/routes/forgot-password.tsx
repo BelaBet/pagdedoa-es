@@ -46,7 +46,7 @@ function ForgotPasswordPage() {
         <div className="mb-6 flex justify-center">
           <img
             src="/__l5e/assets-v1/64e1ae41-9cf7-45e3-ac17-3658b088a3df/ticketconnect-logo-long.jpeg"
-            alt="TicketConnect"
+            alt="Centro de Doações"
             className="h-24 w-auto sm:h-28"
           />
         </div>
