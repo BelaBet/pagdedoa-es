@@ -283,7 +283,7 @@ export type TransactionsSummary = {
 
 /**
  * Tenant-only: extrato da igreja, calculado a partir de payments confirmados.
- * Não consulta o Pagar.me — só agrega donation_amount/ticketto_fee já guardados
+ * Não consulta o Pagar.me — só agrega donation_amount/platform_fee já guardados
  * no momento do split. Não expõe taxa por transação, somente o total do período.
  */
 export const getRecipientTransactionsSummary = createServerFn({ method: "POST" })
@@ -322,7 +322,7 @@ export const getRecipientTransactionsSummary = createServerFn({ method: "POST" }
 
     const { data: rows, error } = await supabaseAdmin
       .from("payments")
-      .select("donation_amount, ticketto_fee")
+      .select("donation_amount, platform_fee")
       .eq("tenant_id", tenantId)
       .eq("status", "confirmed")
       .is("deleted_at", null)
@@ -330,12 +330,12 @@ export const getRecipientTransactionsSummary = createServerFn({ method: "POST" }
       .lte("created_at", `${data.periodEnd}T23:59:59.999Z`);
     if (error) throw new Error(error.message);
 
-    type Row = { donation_amount: number | null; ticketto_fee: number | null };
+    type Row = { donation_amount: number | null; platform_fee: number | null };
     const list = (rows ?? []) as Row[];
     const totals = list.reduce(
       (acc, r) => {
         acc.gross += r.donation_amount ?? 0;
-        acc.fee += r.ticketto_fee ?? 0;
+        acc.fee += r.platform_fee ?? 0;
         return acc;
       },
       { gross: 0, fee: 0 },
@@ -418,13 +418,13 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
     const { data, error } = await supabaseAdmin
       .from("payments")
       .select(
-        "ticketto_fee, pagarme_fee, tk2_op_fee, transacao_fee, split_platform_amount, split_seller_amount, seller_recipient_id",
+        "platform_fee, pagarme_fee, tk2_op_fee, transacao_fee, split_platform_amount, split_seller_amount, seller_recipient_id",
       )
       .eq("status", "confirmed")
       .is("deleted_at", null);
     if (error) throw new Error(error.message);
     type Row = {
-      ticketto_fee: number | null;
+      platform_fee: number | null;
       pagarme_fee: number | null;
       tk2_op_fee: number | null;
       transacao_fee: number | null;
@@ -435,7 +435,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
     const rows = (data ?? []) as Row[];
     const totals = rows.reduce(
       (acc, r) => {
-        acc.platformRevenue += r.ticketto_fee ?? 0;
+        acc.platformRevenue += r.platform_fee ?? 0;
         acc.pagarmeAbsorbed += r.pagarme_fee ?? 0;
         acc.tk2OpRevenue += r.tk2_op_fee ?? 0;
         acc.transacaoAbsorbed += r.transacao_fee ?? 0;
@@ -473,7 +473,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
         totalSeller: 0,
         count: 0,
       };
-      cur.platformRevenue += r.ticketto_fee ?? 0;
+      cur.platformRevenue += r.platform_fee ?? 0;
       cur.tk2OpRevenue += r.tk2_op_fee ?? 0;
       cur.totalPlatform += r.split_platform_amount ?? 0;
       cur.totalSeller += r.split_seller_amount ?? 0;

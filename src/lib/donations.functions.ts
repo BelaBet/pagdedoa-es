@@ -137,8 +137,8 @@ export const getDonationsList = createServerFn({ method: "POST" })
     let sumQuery = supabaseAdmin
       .from("payments")
       // NOTA: no banco a coluna ja se chama platform_fee, mas o types.ts
-      // gerado ainda diz ticketto_fee. Ao regenerar os tipos, trocar aqui.
-      .select("donation_amount, ticketto_fee, amount")
+      // gerado ainda diz platform_fee. Ao regenerar os tipos, trocar aqui.
+      .select("donation_amount, platform_fee, amount")
       .eq("reference_type", "donation")
       .eq("status", "confirmed")
       .gte("created_at", `${data.periodStart}T00:00:00.000Z`)
@@ -160,7 +160,7 @@ export const getDonationsList = createServerFn({ method: "POST" })
       const bruto = r.donation_amount ?? Math.round(Number(r.amount ?? 0) * 100);
       paidCount += 1;
       grossCents += bruto;
-      netCents += bruto - (r.ticketto_fee ?? 0);
+      netCents += bruto - (r.platform_fee ?? 0);
     }
 
     let query = supabaseAdmin
