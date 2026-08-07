@@ -141,7 +141,7 @@ function OnboardingPage() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
-  const [savedTenant, setSavedTenant] = useState<{ name: string; tagline: string; logo_url: string | null } | null>(null);
+  const [savedTenant, setSavedTenant] = useState<{ name: string; tagline: string; logo_url: string | null; completo: boolean; pendencias: string[] } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const submitChurch = useServerFn(updateChurchIdentity);
   const queryClient = useQueryClient();
@@ -278,21 +278,9 @@ function OnboardingPage() {
       }
       const result = await submitChurch({ data: payload });
 
-      // Marca onboarding_completed no user_metadata
-      const { error: updErr } = await supabase.auth.updateUser({
-        data: { onboarding_completed: true },
-      });
-      if (updErr) throw new Error(`Falha ao marcar onboarding: ${updErr.message}`);
-
-      // Verifica que o flag persistiu e que o tenant foi atualizado
-      const { data: refreshed, error: getErr } = await supabase.auth.getUser();
-      if (getErr) throw new Error(`Falha ao recarregar usuário: ${getErr.message}`);
-      const ok = refreshed.user?.user_metadata?.onboarding_completed === true;
-      if (!ok) throw new Error("onboarding_completed não foi confirmado no usuário.");
-
       const { data: tenantRow, error: tErr } = await supabase
         .from("tenants")
-        .select("id, name, tagline, logo_url")
+        .select("id, name, tagline, logo_url, compliance_status")
         .eq("id", result.tenantId)
         .maybeSingle();
       if (tErr) throw new Error(`Falha ao verificar a igreja: ${tErr.message}`);
@@ -300,10 +288,40 @@ function OnboardingPage() {
         throw new Error("Dados da igreja não foram persistidos corretamente.");
       }
 
+      // O cadastro so esta completo quando recompute_tenant_compliance()
+      // considera o tenant apto a receber. Endereco, conta bancaria e
+      // responsavel legal sao coletados em outras telas, entao esta etapa
+      // quase sempre termina incompleta — e precisa dizer isso.
+      const [addr, bank, resp] = await Promise.all([
+        supabase.from("tenant_address").select("tenant_id").eq("tenant_id", result.tenantId).maybeSingle(),
+        supabase.from("tenant_bank_account").select("tenant_id").eq("tenant_id", result.tenantId).maybeSingle(),
+        supabase.from("tenant_legal_responsible").select("tenant_id").eq("tenant_id", result.tenantId).maybeSingle(),
+      ]);
+      const pendencias: string[] = [];
+      if (!addr.data) pendencias.push("Endereço da instituição");
+      if (!bank.data) pendencias.push("Conta bancária para recebimento");
+      if (!resp.data) pendencias.push("Responsável legal");
+      if (tenantRow.compliance_status === "pending_documents") {
+        pendencias.push("Documentos obrigatórios");
+      }
+
+      const completo = tenantRow.compliance_status === "active" && pendencias.length === 0;
+
+      // Grava a flag apenas quando o cadastro fecha de verdade. Marca-la
+      // antes fazia a igreja sair achando que tinha terminado.
+      if (completo) {
+        const { error: updErr } = await supabase.auth.updateUser({
+          data: { onboarding_completed: true },
+        });
+        if (updErr) throw new Error(`Falha ao marcar onboarding: ${updErr.message}`);
+      }
+
       setSavedTenant({
         name: tenantRow.name,
         tagline: tenantRow.tagline ?? "",
         logo_url: tenantRow.logo_url ?? null,
+        completo,
+        pendencias,
       });
       // Invalida caches do tenant para que a logo/cores apareçam imediatamente
       // na home "/" e no header sem reload manual.
@@ -312,7 +330,7 @@ function OnboardingPage() {
         queryClient.invalidateQueries({ queryKey: ["my-tenant"] }),
         queryClient.invalidateQueries({ queryKey: ["my-tenant-header"] }),
       ]);
-      toast.success("Igreja cadastrada e verificada com sucesso!");
+      toast.success(completo ? "Cadastro concluído." : "Identidade salva. Ainda faltam etapas.");
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Não foi possível concluir o cadastro.";
       toast.error(msg);
@@ -328,8 +346,14 @@ function OnboardingPage() {
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
             <Check className="h-8 w-8" />
           </div>
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">Cadastro concluído</h2>
-          <p className="mt-2 text-sm text-muted-foreground">Dados verificados no servidor.</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+            {savedTenant.completo ? "Cadastro concluído" : "Identidade salva"}
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {savedTenant.completo
+              ? "A instituição já pode receber doações."
+              : "Faltam etapas antes de a instituição poder receber doações."}
+          </p>
 
           <div className="mt-6 flex items-center gap-4 rounded-xl border border-border bg-muted/30 p-4 text-left">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-background">
@@ -344,9 +368,22 @@ function OnboardingPage() {
               {savedTenant.tagline && (
                 <p className="truncate text-xs text-muted-foreground">{savedTenant.tagline}</p>
               )}
-              <p className="mt-1 text-[11px] uppercase tracking-wider text-primary">onboarding_completed ✓</p>
+              <p className="mt-1 text-[11px] uppercase tracking-wider text-muted-foreground">
+                {savedTenant.completo ? "Apta a receber" : "Cadastro incompleto"}
+              </p>
             </div>
           </div>
+
+          {savedTenant.pendencias.length > 0 && (
+            <div className="mt-4 rounded-xl border border-border bg-muted/30 p-4 text-left">
+              <p className="text-xs font-medium text-foreground">Ainda falta cadastrar</p>
+              <ul className="mt-2 space-y-1">
+                {savedTenant.pendencias.map((p) => (
+                  <li key={p} className="text-xs text-muted-foreground">{p}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <Button
             className="mt-6 w-full"
@@ -355,7 +392,7 @@ function OnboardingPage() {
               else router.navigate({ to: "/" });
             }}
           >
-            Ir para o painel
+            {savedTenant.completo ? "Ir para o painel" : "Continuar cadastro no painel"}
           </Button>
         </div>
       </div>
