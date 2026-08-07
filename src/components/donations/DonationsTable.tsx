@@ -29,16 +29,51 @@ import { Search, Inbox } from "lucide-react";
 
 const PAGE_SIZE = 10;
 
-function last7DaysRange() {
-  const end = new Date();
-  const start = new Date();
-  start.setDate(start.getDate() - 6);
-  const toIso = (d: Date) => d.toISOString().slice(0, 10);
-  return { periodStart: toIso(start), periodEnd: toIso(end) };
+const toIso = (d: Date) => d.toISOString().slice(0, 10);
+
+/** Mes corrente: o recorte de quem fecha caixa mensal. */
+function currentMonthRange() {
+  const now = new Date();
+  return {
+    periodStart: toIso(new Date(now.getFullYear(), now.getMonth(), 1)),
+    periodEnd: toIso(now),
+  };
+}
+
+const PERIOD_SHORTCUTS: { label: string; range: () => { periodStart: string; periodEnd: string } }[] = [
+  { label: "Este mês", range: currentMonthRange },
+  {
+    label: "Mês passado",
+    range: () => {
+      const n = new Date();
+      return {
+        periodStart: toIso(new Date(n.getFullYear(), n.getMonth() - 1, 1)),
+        periodEnd: toIso(new Date(n.getFullYear(), n.getMonth(), 0)),
+      };
+    },
+  },
+  {
+    label: "Este ano",
+    range: () => {
+      const n = new Date();
+      return { periodStart: toIso(new Date(n.getFullYear(), 0, 1)), periodEnd: toIso(n) };
+    },
+  },
+];
+
+function SummaryCell({ label, value }: { label: string; value: string }) {
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="mt-1 font-display text-xl">{value}</p>
+      </CardContent>
+    </Card>
+  );
 }
 
 export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?: boolean } = {}) {
-  const [period, setPeriod] = useState(last7DaysRange);
+  const [period, setPeriod] = useState(currentMonthRange);
   const [tenantFilter, setTenantFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -108,6 +143,23 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
         </p>
       </div>
 
+      {!donations.isLoading && (
+        <div className="grid gap-3 sm:grid-cols-3">
+          <SummaryCell
+            label="Recebido no período"
+            value={brl(donations.data?.summary?.grossCents ?? 0)}
+          />
+          <SummaryCell
+            label={isPlatformView ? "Repassado às igrejas" : "Líquido para a igreja"}
+            value={brl(donations.data?.summary?.netCents ?? 0)}
+          />
+          <SummaryCell
+            label="Doações confirmadas"
+            value={String(donations.data?.summary?.paidCount ?? 0)}
+          />
+        </div>
+      )}
+
       <div className="flex flex-wrap items-end gap-2">
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -134,6 +186,27 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
             className="w-40"
             aria-label="Até"
           />
+        </div>
+        <div className="flex items-center gap-1">
+          {PERIOD_SHORTCUTS.map((sc) => {
+            const r = sc.range();
+            const ativo = r.periodStart === period.periodStart && r.periodEnd === period.periodEnd;
+            return (
+              <button
+                key={sc.label}
+                type="button"
+                onClick={() => setPeriod(r)}
+                className={
+                  "h-9 px-3 text-xs border transition-colors " +
+                  (ativo
+                    ? "border-primary bg-primary/10 text-primary font-medium"
+                    : "border-border text-muted-foreground hover:text-foreground")
+                }
+              >
+                {sc.label}
+              </button>
+            );
+          })}
         </div>
         {isPlatformView && (
           <Select value={tenantFilter} onValueChange={setTenantFilter}>
@@ -164,7 +237,25 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
         <Card>
           <CardContent className="flex flex-col items-center gap-2 p-10 text-center text-muted-foreground">
             <Inbox className="h-10 w-10 opacity-40" />
-            <p className="text-sm">Nenhuma doação encontrada.</p>
+            {search || total > 0 ? (
+              <>
+                <p className="text-sm">Nenhuma doação corresponde a esses filtros.</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch("");
+                    setPeriod(currentMonthRange());
+                  }}
+                  className="text-xs font-medium text-primary underline underline-offset-4"
+                >
+                  Limpar filtros
+                </button>
+              </>
+            ) : (
+              <p className="text-sm">
+                Nenhuma doação recebida ainda. Assim que a primeira entrar, ela aparece aqui.
+              </p>
+            )}
           </CardContent>
         </Card>
       ) : (

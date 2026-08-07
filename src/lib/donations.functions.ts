@@ -131,6 +131,38 @@ export const getDonationsList = createServerFn({ method: "POST" })
     const { count, error: countError } = await countQuery;
     if (countError) throw new Error(countError.message);
 
+    // Soma do periodo inteiro, nao apenas da pagina visivel. Sem isto o
+    // tesoureiro precisa somar na calculadora para fechar o caixa.
+    // Considera apenas o que foi efetivamente pago.
+    let sumQuery = supabaseAdmin
+      .from("payments")
+      // NOTA: no banco a coluna ja se chama platform_fee, mas o types.ts
+      // gerado ainda diz ticketto_fee. Ao regenerar os tipos, trocar aqui.
+      .select("donation_amount, ticketto_fee, amount")
+      .eq("reference_type", "donation")
+      .eq("status", "confirmed")
+      .gte("created_at", `${data.periodStart}T00:00:00.000Z`)
+      .lte("created_at", `${data.periodEnd}T23:59:59.999Z`);
+
+    if (!access.isPlatformAdmin) {
+      sumQuery = sumQuery.eq("tenant_id", access.tenantId as string);
+    } else if (data.tenantId) {
+      sumQuery = sumQuery.eq("tenant_id", data.tenantId);
+    }
+
+    const { data: sumRows, error: sumError } = await sumQuery;
+    if (sumError) throw new Error(sumError.message);
+
+    let paidCount = 0;
+    let grossCents = 0;
+    let netCents = 0;
+    for (const r of sumRows ?? []) {
+      const bruto = r.donation_amount ?? Math.round(Number(r.amount ?? 0) * 100);
+      paidCount += 1;
+      grossCents += bruto;
+      netCents += bruto - (r.ticketto_fee ?? 0);
+    }
+
     let query = supabaseAdmin
       .from("payments")
       .select(
@@ -230,7 +262,12 @@ export const getDonationsList = createServerFn({ method: "POST" })
       };
     });
 
-    return { items, isPlatformAdmin: access.isPlatformAdmin, total: count ?? 0 };
+    return {
+      items,
+      isPlatformAdmin: access.isPlatformAdmin,
+      total: count ?? 0,
+      summary: { paidCount, grossCents, netCents },
+    };
   });
 
 type BillingAddress = { line1: string; city: string; state: string; zipCode: string } | null;
