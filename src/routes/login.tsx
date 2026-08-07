@@ -60,13 +60,6 @@ function LoginPage() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <Link to="/" className="mb-8 block text-sm text-muted-foreground hover:underline">← Voltar</Link>
-        <div className="mb-6 flex justify-center">
-          <img
-            src="/__l5e/assets-v1/64e1ae41-9cf7-45e3-ac17-3658b088a3df/ticketconnect-logo-long.jpeg"
-            alt="Centro de Doações"
-            className="h-24 w-auto sm:h-28"
-          />
-        </div>
         <h1 className="font-display text-3xl">Bem-vindo ao Centro de Doações</h1>
         <p className="mt-1 text-sm text-muted-foreground">Acesse sua conta.</p>
         {emailConfirmed && (
