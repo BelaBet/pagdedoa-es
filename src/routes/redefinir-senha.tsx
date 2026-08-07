@@ -41,13 +41,10 @@ function RedefinirSenhaPage() {
       hashParams.get("error") ||
       search.get("error_code") ||
       search.get("error");
-    const errDesc =
-      hashParams.get("error_description") || search.get("error_description");
+    const errDesc = hashParams.get("error_description") || search.get("error_description");
 
     if (errCode) {
-      const msg =
-        errDesc?.replace(/\+/g, " ") ||
-        "O link de recuperação é inválido ou expirou.";
+      const msg = errDesc?.replace(/\+/g, " ") || "O link de recuperação é inválido ou expirou.";
       setLinkError(decodeURIComponent(msg));
       setChecking(false);
       return;
@@ -90,7 +87,9 @@ function RedefinirSenhaPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <Link to="/login" className="mb-8 block text-sm text-muted-foreground hover:underline">← Voltar</Link>
+        <Link to="/login" className="mb-8 block text-sm text-muted-foreground hover:underline">
+          ← Voltar
+        </Link>
         <div className="rounded-2xl border bg-card p-6 shadow-sm">
           <h1 className="font-display text-3xl">Redefinir senha</h1>
 
@@ -108,8 +107,8 @@ function RedefinirSenhaPage() {
                 </div>
               </div>
               <p className="text-sm text-muted-foreground">
-                Os links de recuperação têm validade curta e só podem ser usados uma vez.
-                Solicite um novo link abaixo.
+                Os links de recuperação têm validade curta e só podem ser usados uma vez. Solicite
+                um novo link abaixo.
               </p>
               <Button asChild className="w-full">
                 <Link to="/forgot-password">Solicitar novo link</Link>
@@ -120,8 +119,8 @@ function RedefinirSenhaPage() {
               <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                 <p>
-                  Não encontramos uma sessão de recuperação ativa. Acesse esta página
-                  pelo link enviado ao seu e-mail.
+                  Não encontramos uma sessão de recuperação ativa. Acesse esta página pelo link
+                  enviado ao seu e-mail.
                 </p>
               </div>
               <Button asChild className="w-full" variant="outline">

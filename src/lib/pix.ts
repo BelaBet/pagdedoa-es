@@ -25,12 +25,14 @@ function sanitizeKey(key: string) {
 }
 
 function normalizeText(s: string, max: number) {
-  return s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^A-Za-z0-9 ]/g, "")
-    .slice(0, max)
-    .trim() || "NA";
+  return (
+    s
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^A-Za-z0-9 ]/g, "")
+      .slice(0, max)
+      .trim() || "NA"
+  );
 }
 
 export function buildPixPayload(opts: {
@@ -45,25 +47,17 @@ export function buildPixPayload(opts: {
   const city = normalizeText(opts.merchantCity || "SAO PAULO", 15);
   const txid = normalizeText(opts.txid || "***", 25);
 
-  const merchantAccount =
-    tlv("00", "br.gov.bcb.pix") + tlv("01", key);
+  const merchantAccount = tlv("00", "br.gov.bcb.pix") + tlv("01", key);
 
-  let payload =
-    tlv("00", "01") +
-    tlv("26", merchantAccount) +
-    tlv("52", "0000") +
-    tlv("53", "986");
+  let payload = tlv("00", "01") + tlv("26", merchantAccount) + tlv("52", "0000") + tlv("53", "986");
 
-  const amountNum = typeof opts.amount === "string" ? parseFloat(opts.amount.replace(",", ".")) : opts.amount;
+  const amountNum =
+    typeof opts.amount === "string" ? parseFloat(opts.amount.replace(",", ".")) : opts.amount;
   if (amountNum && !Number.isNaN(amountNum) && amountNum > 0) {
     payload += tlv("54", amountNum.toFixed(2));
   }
 
-  payload +=
-    tlv("58", "BR") +
-    tlv("59", name) +
-    tlv("60", city) +
-    tlv("62", tlv("05", txid));
+  payload += tlv("58", "BR") + tlv("59", name) + tlv("60", city) + tlv("62", tlv("05", txid));
 
   const toCrc = payload + "6304";
   return toCrc + crc16(toCrc);

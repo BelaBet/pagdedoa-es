@@ -180,11 +180,7 @@ const STEPS = [
   "Resumo",
 ] as const;
 
-const REQUIRED_DOCS = [
-  "Cartão CNPJ",
-  "Documento do Responsável",
-  "Comprovante Bancário",
-];
+const REQUIRED_DOCS = ["Cartão CNPJ", "Documento do Responsável", "Comprovante Bancário"];
 
 // ─────────────────────── Page ───────────────────────
 
@@ -280,7 +276,9 @@ function WizardPage() {
           holder_document: bank?.holder_document ?? "",
           use_pagarme: fin?.use_pagarme ?? true,
           pagarme_recipient_id: fin?.pagarme_recipient_id ?? "",
-          split_platform_percent: fin?.split_platform_percent ? Number(fin.split_platform_percent) * 100 : p.split_platform_percent,
+          split_platform_percent: fin?.split_platform_percent
+            ? Number(fin.split_platform_percent) * 100
+            : p.split_platform_percent,
           auto_anticipation: fin?.auto_anticipation ?? false,
           anticipation_model: fin?.anticipation_model ?? "",
           anticipation_days: fin?.anticipation_days != null ? String(fin.anticipation_days) : "",
@@ -397,18 +395,15 @@ function WizardPage() {
           : undefined,
         financial: {
           use_pagarme: s.use_pagarme,
-          pagarme_recipient_id: s.use_pagarme && s.pagarme_recipient_id
-            ? s.pagarme_recipient_id
-            : undefined,
+          pagarme_recipient_id:
+            s.use_pagarme && s.pagarme_recipient_id ? s.pagarme_recipient_id : undefined,
           split_platform_percent: s.split_platform_percent / 100,
           auto_anticipation: s.auto_anticipation,
           anticipation_model: s.anticipation_model || undefined,
-          anticipation_days: s.anticipation_days
-            ? Number(s.anticipation_days)
-            : undefined,
+          anticipation_days: s.anticipation_days ? Number(s.anticipation_days) : undefined,
           auto_transfer: s.auto_transfer,
           transfer_frequency: s.transfer_frequency || undefined,
-          receiver_type: onlyDigits(s.document).length === 14 ? "pj" as const : "pf" as const,
+          receiver_type: onlyDigits(s.document).length === 14 ? ("pj" as const) : ("pf" as const),
         },
       };
 
@@ -416,7 +411,10 @@ function WizardPage() {
         if (logoFile) {
           setLogoUploading(true);
           try {
-            commonData.branding = { ...commonData.branding, logo_url: await uploadLogo(editTenantId!) };
+            commonData.branding = {
+              ...commonData.branding,
+              logo_url: await uploadLogo(editTenantId!),
+            };
           } finally {
             setLogoUploading(false);
           }
@@ -449,7 +447,11 @@ function WizardPage() {
         } catch (e) {
           // A igreja já foi criada com sucesso; só a logo falhou — avisa mas
           // não trata como erro fatal do cadastro inteiro.
-          toast.warning(e instanceof Error ? e.message : "Igreja criada, mas a logo não pôde ser enviada. Edite a igreja para tentar de novo.");
+          toast.warning(
+            e instanceof Error
+              ? e.message
+              : "Igreja criada, mas a logo não pôde ser enviada. Edite a igreja para tentar de novo.",
+          );
         } finally {
           setLogoUploading(false);
         }
@@ -513,15 +515,16 @@ function WizardPage() {
           <ChevronLeft className="mr-1 h-4 w-4" /> Voltar
         </Button>
         {step < STEPS.length - 1 ? (
-          <Button
-            onClick={() => setStep((x) => x + 1)}
-            disabled={!canAdvance}
-          >
+          <Button onClick={() => setStep((x) => x + 1)} disabled={!canAdvance}>
             Continuar <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
         ) : (
           <Button onClick={submit} disabled={busy || !canAdvance}>
-            {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
+            {busy ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Check className="mr-2 h-4 w-4" />
+            )}
             Criar Igreja
           </Button>
         )}
@@ -537,16 +540,20 @@ function validate(step: number, s: WizardState): string[] {
   const dDoc = onlyDigits(s.document);
   if (step === 0) {
     if (s.church_name.trim().length < 2) e.push("Informe o nome da igreja.");
-    if (!(dDoc.length === 11 ? cpf.isValid(dDoc) : cnpj.isValid(dDoc))) e.push("CNPJ/CPF inválido.");
+    if (!(dDoc.length === 11 ? cpf.isValid(dDoc) : cnpj.isValid(dDoc)))
+      e.push("CNPJ/CPF inválido.");
     if (s.institutional_email && !/^\S+@\S+\.\S+$/.test(s.institutional_email))
       e.push("E-mail institucional inválido.");
   }
   if (step === 1) {
-    if (s.resp_full_name && s.resp_full_name.trim().length < 2) e.push("Nome do responsável inválido.");
+    if (s.resp_full_name && s.resp_full_name.trim().length < 2)
+      e.push("Nome do responsável inválido.");
     if (s.resp_cpf && !cpf.isValid(s.resp_cpf)) e.push("CPF do responsável inválido.");
-    if (s.resp_email && !/^\S+@\S+\.\S+$/.test(s.resp_email)) e.push("E-mail do responsável inválido.");
+    if (s.resp_email && !/^\S+@\S+\.\S+$/.test(s.resp_email))
+      e.push("E-mail do responsável inválido.");
     if (s.resp_phone_ddd && !/^\d{2}$/.test(onlyDigits(s.resp_phone_ddd))) e.push("DDD inválido.");
-    if (s.resp_phone_number && !/^\d{8,9}$/.test(onlyDigits(s.resp_phone_number))) e.push("Telefone inválido.");
+    if (s.resp_phone_number && !/^\d{8,9}$/.test(onlyDigits(s.resp_phone_number)))
+      e.push("Telefone inválido.");
   }
   if (step === 2 && s.cep) {
     if (!/^\d{8}$/.test(onlyDigits(s.cep))) e.push("CEP inválido.");
@@ -564,10 +571,15 @@ function validate(step: number, s: WizardState): string[] {
     if (!/^[0-9Xx]$/.test(s.account_digit)) e.push("Dígito da conta inválido.");
     if (!s.holder_name) e.push("Nome do titular obrigatório.");
     const hd = onlyDigits(s.holder_document);
-    if (!(hd.length === 11 ? cpf.isValid(hd) : cnpj.isValid(hd))) e.push("Documento do titular inválido.");
+    if (!(hd.length === 11 ? cpf.isValid(hd) : cnpj.isValid(hd)))
+      e.push("Documento do titular inválido.");
   }
   if (step === 4) {
-    if (s.use_pagarme && s.pagarme_recipient_id && !/^rp_[A-Za-z0-9]+$/.test(s.pagarme_recipient_id))
+    if (
+      s.use_pagarme &&
+      s.pagarme_recipient_id &&
+      !/^rp_[A-Za-z0-9]+$/.test(s.pagarme_recipient_id)
+    )
       e.push("Recipient ID Pagar.me inválido (deve começar com rp_).");
     if (s.split_platform_percent < 0 || s.split_platform_percent > 100)
       e.push("Split deve estar entre 0% e 100%.");
@@ -623,8 +635,16 @@ function Field({
 }
 
 function Step1({
-  s, set, logoFile, setLogoFile,
-}: { s: WizardState; set: SetFn; logoFile: File | null; setLogoFile: (f: File | null) => void }) {
+  s,
+  set,
+  logoFile,
+  setLogoFile,
+}: {
+  s: WizardState;
+  set: SetFn;
+  logoFile: File | null;
+  setLogoFile: (f: File | null) => void;
+}) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <Field label="Nome da Igreja" required>
@@ -637,23 +657,43 @@ function Step1({
         <Input value={s.legal_name} onChange={(e) => set("legal_name", e.target.value)} />
       </Field>
       <Field label="CNPJ / CPF" required>
-        <Input value={s.document} onChange={(e) => set("document", e.target.value)} placeholder="00.000.000/0000-00" />
+        <Input
+          value={s.document}
+          onChange={(e) => set("document", e.target.value)}
+          placeholder="00.000.000/0000-00"
+        />
       </Field>
       <Field label="E-mail Institucional">
-        <Input type="email" value={s.institutional_email} onChange={(e) => set("institutional_email", e.target.value)} />
+        <Input
+          type="email"
+          value={s.institutional_email}
+          onChange={(e) => set("institutional_email", e.target.value)}
+        />
       </Field>
       <Field label="Telefone Principal">
-        <Input value={s.main_phone} onChange={(e) => set("main_phone", e.target.value)} placeholder="(11) 99999-9999" />
+        <Input
+          value={s.main_phone}
+          onChange={(e) => set("main_phone", e.target.value)}
+          placeholder="(11) 99999-9999"
+        />
       </Field>
       <Field label="Site">
-        <Input value={s.website} onChange={(e) => set("website", e.target.value)} placeholder="https://" />
+        <Input
+          value={s.website}
+          onChange={(e) => set("website", e.target.value)}
+          placeholder="https://"
+        />
       </Field>
       <Field label="Tagline">
         <Input value={s.tagline} onChange={(e) => set("tagline", e.target.value)} />
       </Field>
       <div className="md:col-span-2">
         <Field label="Descrição">
-          <Textarea rows={3} value={s.description} onChange={(e) => set("description", e.target.value)} />
+          <Textarea
+            rows={3}
+            value={s.description}
+            onChange={(e) => set("description", e.target.value)}
+          />
         </Field>
       </div>
       <Field label="Logo">
@@ -675,24 +715,48 @@ function Step1({
         <Input
           className="mt-2"
           value={s.logo_url}
-          onChange={(e) => { setLogoFile(null); set("logo_url", e.target.value); }}
+          onChange={(e) => {
+            setLogoFile(null);
+            set("logo_url", e.target.value);
+          }}
           placeholder="ou cole uma URL (https://...)"
         />
       </Field>
       <Field label="Foto de Capa (URL)">
-        <Input value={s.cover_photo_url} onChange={(e) => set("cover_photo_url", e.target.value)} placeholder="https://..." />
+        <Input
+          value={s.cover_photo_url}
+          onChange={(e) => set("cover_photo_url", e.target.value)}
+          placeholder="https://..."
+        />
       </Field>
       <Field label="Cor Primária">
-        <Input type="color" value={s.primary_color} onChange={(e) => set("primary_color", e.target.value)} />
+        <Input
+          type="color"
+          value={s.primary_color}
+          onChange={(e) => set("primary_color", e.target.value)}
+        />
       </Field>
       <Field label="Cor Secundária">
-        <Input type="color" value={s.secondary_color} onChange={(e) => set("secondary_color", e.target.value)} />
+        <Input
+          type="color"
+          value={s.secondary_color}
+          onChange={(e) => set("secondary_color", e.target.value)}
+        />
       </Field>
       <Field label="Cor de Destaque">
-        <Input type="color" value={s.accent_color} onChange={(e) => set("accent_color", e.target.value)} />
+        <Input
+          type="color"
+          value={s.accent_color}
+          onChange={(e) => set("accent_color", e.target.value)}
+        />
       </Field>
-      <div className="md:col-span-2 rounded-md border p-4" style={{ background: s.secondary_color }}>
-        <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Preview página pública</div>
+      <div
+        className="md:col-span-2 rounded-md border p-4"
+        style={{ background: s.secondary_color }}
+      >
+        <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+          Preview página pública
+        </div>
         <div className="mt-2 flex items-center gap-3">
           {(logoFile || s.logo_url) && (
             <img
@@ -702,8 +766,14 @@ function Step1({
             />
           )}
           <div>
-            <div style={{ color: s.primary_color, fontWeight: 600 }}>{s.church_name || "Nome da igreja"}</div>
-            {s.tagline && <div className="text-xs" style={{ color: s.accent_color }}>{s.tagline}</div>}
+            <div style={{ color: s.primary_color, fontWeight: 600 }}>
+              {s.church_name || "Nome da igreja"}
+            </div>
+            {s.tagline && (
+              <div className="text-xs" style={{ color: s.accent_color }}>
+                {s.tagline}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -714,14 +784,54 @@ function Step1({
 function Step2({ s, set }: { s: WizardState; set: SetFn }) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <Field label="Nome Completo"><Input value={s.resp_full_name} onChange={(e) => set("resp_full_name", e.target.value)} /></Field>
-      <Field label="CPF"><Input value={s.resp_cpf} onChange={(e) => set("resp_cpf", e.target.value)} placeholder="000.000.000-00" /></Field>
-      <Field label="Data de Nascimento"><Input type="date" value={s.resp_birth_date} onChange={(e) => set("resp_birth_date", e.target.value)} /></Field>
-      <Field label="Nome da Mãe"><Input value={s.resp_mother_name} onChange={(e) => set("resp_mother_name", e.target.value)} /></Field>
-      <Field label="Cargo / Função"><Input value={s.resp_role} onChange={(e) => set("resp_role", e.target.value)} /></Field>
-      <Field label="E-mail"><Input type="email" value={s.resp_email} onChange={(e) => set("resp_email", e.target.value)} /></Field>
-      <Field label="DDD"><Input value={s.resp_phone_ddd} onChange={(e) => set("resp_phone_ddd", e.target.value)} maxLength={2} placeholder="11" /></Field>
-      <Field label="Telefone"><Input value={s.resp_phone_number} onChange={(e) => set("resp_phone_number", e.target.value)} placeholder="999999999" /></Field>
+      <Field label="Nome Completo">
+        <Input value={s.resp_full_name} onChange={(e) => set("resp_full_name", e.target.value)} />
+      </Field>
+      <Field label="CPF">
+        <Input
+          value={s.resp_cpf}
+          onChange={(e) => set("resp_cpf", e.target.value)}
+          placeholder="000.000.000-00"
+        />
+      </Field>
+      <Field label="Data de Nascimento">
+        <Input
+          type="date"
+          value={s.resp_birth_date}
+          onChange={(e) => set("resp_birth_date", e.target.value)}
+        />
+      </Field>
+      <Field label="Nome da Mãe">
+        <Input
+          value={s.resp_mother_name}
+          onChange={(e) => set("resp_mother_name", e.target.value)}
+        />
+      </Field>
+      <Field label="Cargo / Função">
+        <Input value={s.resp_role} onChange={(e) => set("resp_role", e.target.value)} />
+      </Field>
+      <Field label="E-mail">
+        <Input
+          type="email"
+          value={s.resp_email}
+          onChange={(e) => set("resp_email", e.target.value)}
+        />
+      </Field>
+      <Field label="DDD">
+        <Input
+          value={s.resp_phone_ddd}
+          onChange={(e) => set("resp_phone_ddd", e.target.value)}
+          maxLength={2}
+          placeholder="11"
+        />
+      </Field>
+      <Field label="Telefone">
+        <Input
+          value={s.resp_phone_number}
+          onChange={(e) => set("resp_phone_number", e.target.value)}
+          placeholder="999999999"
+        />
+      </Field>
     </div>
   );
 }
@@ -732,23 +842,61 @@ function Step3({ s, set, fetchCep }: { s: WizardState; set: SetFn; fetchCep: () 
       <div className="md:col-span-1">
         <Field label="CEP">
           <div className="flex gap-2">
-            <Input value={s.cep} onChange={(e) => set("cep", e.target.value)} onBlur={fetchCep} placeholder="00000-000" />
-            <Button type="button" variant="outline" onClick={fetchCep}>Buscar</Button>
+            <Input
+              value={s.cep}
+              onChange={(e) => set("cep", e.target.value)}
+              onBlur={fetchCep}
+              placeholder="00000-000"
+            />
+            <Button type="button" variant="outline" onClick={fetchCep}>
+              Buscar
+            </Button>
           </div>
         </Field>
       </div>
-      <div className="md:col-span-2"><Field label="Logradouro"><Input value={s.street} onChange={(e) => set("street", e.target.value)} /></Field></div>
-      <Field label="Número"><Input value={s.number} onChange={(e) => set("number", e.target.value)} disabled={s.no_number} /></Field>
+      <div className="md:col-span-2">
+        <Field label="Logradouro">
+          <Input value={s.street} onChange={(e) => set("street", e.target.value)} />
+        </Field>
+      </div>
+      <Field label="Número">
+        <Input
+          value={s.number}
+          onChange={(e) => set("number", e.target.value)}
+          disabled={s.no_number}
+        />
+      </Field>
       <div className="flex items-end gap-2">
         <Switch checked={s.no_number} onCheckedChange={(v) => set("no_number", v)} />
         <span className="text-sm">Sem número (S/N)</span>
       </div>
-      <Field label="Complemento"><Input value={s.complement} onChange={(e) => set("complement", e.target.value)} /></Field>
-      <Field label="Bairro"><Input value={s.neighborhood} onChange={(e) => set("neighborhood", e.target.value)} /></Field>
-      <Field label="Cidade"><Input value={s.city} onChange={(e) => set("city", e.target.value)} /></Field>
-      <Field label="Estado"><Input value={s.state} onChange={(e) => set("state", e.target.value)} /></Field>
-      <Field label="UF"><Input value={s.uf} onChange={(e) => set("uf", e.target.value.toUpperCase())} maxLength={2} /></Field>
-      <div className="md:col-span-3"><Field label="Ponto de Referência"><Input value={s.reference_point} onChange={(e) => set("reference_point", e.target.value)} /></Field></div>
+      <Field label="Complemento">
+        <Input value={s.complement} onChange={(e) => set("complement", e.target.value)} />
+      </Field>
+      <Field label="Bairro">
+        <Input value={s.neighborhood} onChange={(e) => set("neighborhood", e.target.value)} />
+      </Field>
+      <Field label="Cidade">
+        <Input value={s.city} onChange={(e) => set("city", e.target.value)} />
+      </Field>
+      <Field label="Estado">
+        <Input value={s.state} onChange={(e) => set("state", e.target.value)} />
+      </Field>
+      <Field label="UF">
+        <Input
+          value={s.uf}
+          onChange={(e) => set("uf", e.target.value.toUpperCase())}
+          maxLength={2}
+        />
+      </Field>
+      <div className="md:col-span-3">
+        <Field label="Ponto de Referência">
+          <Input
+            value={s.reference_point}
+            onChange={(e) => set("reference_point", e.target.value)}
+          />
+        </Field>
+      </div>
     </div>
   );
 }
@@ -756,14 +904,39 @@ function Step3({ s, set, fetchCep }: { s: WizardState; set: SetFn; fetchCep: () 
 function Step4({ s, set }: { s: WizardState; set: SetFn }) {
   return (
     <div className="grid gap-4 md:grid-cols-3">
-      <Field label="Banco (3 dígitos)"><Input value={s.bank_code} onChange={(e) => set("bank_code", onlyDigits(e.target.value).slice(0, 3))} placeholder="341" /></Field>
-      <Field label="Agência"><Input value={s.branch} onChange={(e) => set("branch", onlyDigits(e.target.value))} /></Field>
-      <Field label="Dígito Agência"><Input value={s.branch_digit} onChange={(e) => set("branch_digit", e.target.value.slice(0, 1))} /></Field>
-      <Field label="Conta"><Input value={s.account} onChange={(e) => set("account", onlyDigits(e.target.value))} /></Field>
-      <Field label="Dígito Conta"><Input value={s.account_digit} onChange={(e) => set("account_digit", e.target.value.slice(0, 1))} /></Field>
+      <Field label="Banco (3 dígitos)">
+        <Input
+          value={s.bank_code}
+          onChange={(e) => set("bank_code", onlyDigits(e.target.value).slice(0, 3))}
+          placeholder="341"
+        />
+      </Field>
+      <Field label="Agência">
+        <Input value={s.branch} onChange={(e) => set("branch", onlyDigits(e.target.value))} />
+      </Field>
+      <Field label="Dígito Agência">
+        <Input
+          value={s.branch_digit}
+          onChange={(e) => set("branch_digit", e.target.value.slice(0, 1))}
+        />
+      </Field>
+      <Field label="Conta">
+        <Input value={s.account} onChange={(e) => set("account", onlyDigits(e.target.value))} />
+      </Field>
+      <Field label="Dígito Conta">
+        <Input
+          value={s.account_digit}
+          onChange={(e) => set("account_digit", e.target.value.slice(0, 1))}
+        />
+      </Field>
       <Field label="Tipo de Conta">
-        <Select value={s.account_type} onValueChange={(v) => set("account_type", v as WizardState["account_type"])}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
+        <Select
+          value={s.account_type}
+          onValueChange={(v) => set("account_type", v as WizardState["account_type"])}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="checking">Conta Corrente</SelectItem>
             <SelectItem value="checking_joint">Conta Corrente Conjunta</SelectItem>
@@ -772,8 +945,16 @@ function Step4({ s, set }: { s: WizardState; set: SetFn }) {
           </SelectContent>
         </Select>
       </Field>
-      <Field label="Nome do Titular"><Input value={s.holder_name} onChange={(e) => set("holder_name", e.target.value)} /></Field>
-      <Field label="Documento do Titular"><Input value={s.holder_document} onChange={(e) => set("holder_document", e.target.value)} placeholder="CPF ou CNPJ" /></Field>
+      <Field label="Nome do Titular">
+        <Input value={s.holder_name} onChange={(e) => set("holder_name", e.target.value)} />
+      </Field>
+      <Field label="Documento do Titular">
+        <Input
+          value={s.holder_document}
+          onChange={(e) => set("holder_document", e.target.value)}
+          placeholder="CPF ou CNPJ"
+        />
+      </Field>
     </div>
   );
 }
@@ -794,22 +975,39 @@ function Step5({ s, set }: { s: WizardState; set: SetFn }) {
       {s.use_pagarme && (
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Recipient ID Pagar.me">
-            <Input value={s.pagarme_recipient_id} onChange={(e) => set("pagarme_recipient_id", e.target.value)} placeholder="rp_..." />
+            <Input
+              value={s.pagarme_recipient_id}
+              onChange={(e) => set("pagarme_recipient_id", e.target.value)}
+              placeholder="rp_..."
+            />
           </Field>
           <Field label="Split da Plataforma (%)">
-            <Input type="number" step="0.01" value={s.split_platform_percent} onChange={(e) => set("split_platform_percent", Number(e.target.value))} />
+            <Input
+              type="number"
+              step="0.01"
+              value={s.split_platform_percent}
+              onChange={(e) => set("split_platform_percent", Number(e.target.value))}
+            />
           </Field>
 
           <div className="md:col-span-2 grid gap-3 rounded-md border p-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Antecipação Automática</span>
-              <Switch checked={s.auto_anticipation} onCheckedChange={(v) => set("auto_anticipation", v)} />
+              <Switch
+                checked={s.auto_anticipation}
+                onCheckedChange={(v) => set("auto_anticipation", v)}
+              />
             </div>
             {s.auto_anticipation && (
               <div className="grid gap-3 md:grid-cols-2">
                 <Field label="Modelo de Antecipação">
-                  <Select value={s.anticipation_model} onValueChange={(v) => set("anticipation_model", v)}>
-                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <Select
+                    value={s.anticipation_model}
+                    onValueChange={(v) => set("anticipation_model", v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="by_volume">Recebimento por Volume</SelectItem>
                       <SelectItem value="dx">Recebimento em D+X</SelectItem>
@@ -818,7 +1016,11 @@ function Step5({ s, set }: { s: WizardState; set: SetFn }) {
                 </Field>
                 {s.anticipation_model === "dx" && (
                   <Field label="Prazo D+X (dias)">
-                    <Input type="number" value={s.anticipation_days} onChange={(e) => set("anticipation_days", e.target.value)} />
+                    <Input
+                      type="number"
+                      value={s.anticipation_days}
+                      onChange={(e) => set("anticipation_days", e.target.value)}
+                    />
                   </Field>
                 )}
               </div>
@@ -832,8 +1034,15 @@ function Step5({ s, set }: { s: WizardState; set: SetFn }) {
             </div>
             {s.auto_transfer && (
               <Field label="Periodicidade">
-                <Select value={s.transfer_frequency} onValueChange={(v) => set("transfer_frequency", v as WizardState["transfer_frequency"])}>
-                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <Select
+                  value={s.transfer_frequency}
+                  onValueChange={(v) =>
+                    set("transfer_frequency", v as WizardState["transfer_frequency"])
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="daily">Diária</SelectItem>
                     <SelectItem value="weekly">Semanal</SelectItem>
@@ -853,14 +1062,17 @@ function Step6() {
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">
-        Os documentos serão solicitados após a criação. Por enquanto, ficam registrados como pendências:
+        Os documentos serão solicitados após a criação. Por enquanto, ficam registrados como
+        pendências:
       </p>
       <ul className="space-y-2">
         {REQUIRED_DOCS.map((d) => (
           <li key={d} className="flex items-center gap-2 rounded-md border p-3 text-sm">
             <span className="inline-block h-4 w-4 rounded border" />
             {d}
-            <Badge variant="outline" className="ml-auto text-[10px]">obrigatório</Badge>
+            <Badge variant="outline" className="ml-auto text-[10px]">
+              obrigatório
+            </Badge>
           </li>
         ))}
       </ul>

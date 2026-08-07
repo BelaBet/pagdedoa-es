@@ -65,14 +65,17 @@ function SettingsPage() {
 
   const save = async () => {
     setSaving(true);
-    const { error } = await supabase.from("tenants").update({
-      name: row.name,
-      tagline: row.tagline,
-      logo_url: row.logo_url,
-      cover_photo_url: row.cover_photo_url,
-      primary_color: row.primary_color,
-      accent_color: row.accent_color,
-    }).eq("id", row.id);
+    const { error } = await supabase
+      .from("tenants")
+      .update({
+        name: row.name,
+        tagline: row.tagline,
+        logo_url: row.logo_url,
+        cover_photo_url: row.cover_photo_url,
+        primary_color: row.primary_color,
+        accent_color: row.accent_color,
+      })
+      .eq("id", row.id);
     if (error) {
       setSaving(false);
       return toast.error(translateError(error));
@@ -80,7 +83,10 @@ function SettingsPage() {
     if (isSuperAdmin) {
       const { error: pErr } = await supabase
         .from("tenant_payment_settings")
-        .upsert({ tenant_id: row.id, pix_key: row.pix_key, updated_at: new Date().toISOString() }, { onConflict: "tenant_id" });
+        .upsert(
+          { tenant_id: row.id, pix_key: row.pix_key, updated_at: new Date().toISOString() },
+          { onConflict: "tenant_id" },
+        );
       if (pErr) {
         setSaving(false);
         return toast.error(translateError(pErr));
@@ -180,7 +186,13 @@ function SettingsPage() {
 
       <div className="flex justify-end">
         <Button onClick={save} disabled={saving}>
-          {saving ? <><Loader2 className="h-4 w-4 animate-spin" /> Salvando…</> : "Salvar alterações"}
+          {saving ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" /> Salvando…
+            </>
+          ) : (
+            "Salvar alterações"
+          )}
         </Button>
       </div>
     </div>

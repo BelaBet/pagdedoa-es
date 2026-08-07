@@ -124,7 +124,9 @@ export function TenantProvider({ children }: { children: ReactNode }) {
 
       // Cross-tenant guard: if user is signed in to a different tenant, flag it.
       if (t) {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (user) {
           const { data: prof } = await supabase
             .from("profiles")
@@ -134,7 +136,7 @@ export function TenantProvider({ children }: { children: ReactNode }) {
           if (prof && prof.tenant_id !== t.id) {
             setMismatch(true);
             console.warn(
-              "[multi-tenant] Cross-tenant access blocked: signed-in user belongs to a different tenant."
+              "[multi-tenant] Cross-tenant access blocked: signed-in user belongs to a different tenant.",
             );
           }
         }

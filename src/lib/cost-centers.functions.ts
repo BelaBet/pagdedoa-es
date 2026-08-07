@@ -5,6 +5,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { BRAND_URL } from "@/lib/brand";
 
 const CostCenterType = z.enum(["online", "presencial", "totem"]);
 
@@ -149,10 +150,13 @@ export const createCostCenter = createServerFn({ method: "POST" })
     if (error || !created) throw new Error(error?.message ?? "Falha ao criar centro de custo");
 
     // Gera QR Code apontando para /i/<tenant_slug>?cc=<slug>
-    const origin = process.env.PUBLIC_SITE_URL || "https://tk2projeto1.lovable.app";
+    const origin = process.env.PUBLIC_SITE_URL || BRAND_URL;
     const target = `${origin.replace(/\/$/, "")}/i/${tenantSlug}?cc=${slug}`;
     const qrDataUrl = await generateQrDataUrl(target);
-    await supabaseAdmin.from("cost_centers").update({ qr_code_url: qrDataUrl }).eq("id", created.id);
+    await supabaseAdmin
+      .from("cost_centers")
+      .update({ qr_code_url: qrDataUrl })
+      .eq("id", created.id);
 
     return { id: created.id, slug, qrTarget: target };
   });
@@ -178,7 +182,8 @@ export const updateCostCenter = createServerFn({ method: "POST" })
     if (data.name !== undefined) patch.name = data.name;
     if (data.type !== undefined) patch.type = data.type;
     if (data.description !== undefined) patch.description = data.description;
-    if (data.splitPlatformPercent !== undefined) patch.split_platform_percent = data.splitPlatformPercent;
+    if (data.splitPlatformPercent !== undefined)
+      patch.split_platform_percent = data.splitPlatformPercent;
     if (data.splitSellerPercent !== undefined) patch.split_seller_percent = data.splitSellerPercent;
     if (data.allowsInstallments !== undefined) patch.allows_installments = data.allowsInstallments;
     if (data.maxInstallments !== undefined) patch.max_installments = data.maxInstallments;
@@ -242,7 +247,7 @@ export const regenerateCostCenterQr = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!t) throw new Error("Igreja não encontrada");
 
-    const origin = process.env.PUBLIC_SITE_URL || "https://tk2projeto1.lovable.app";
+    const origin = process.env.PUBLIC_SITE_URL || BRAND_URL;
     const target = `${origin.replace(/\/$/, "")}/i/${(t as { slug: string }).slug}?cc=${cc.slug}`;
     const qr = await generateQrDataUrl(target);
     await supabaseAdmin.from("cost_centers").update({ qr_code_url: qr }).eq("id", data.id);

@@ -10,9 +10,9 @@ export interface SplitAmounts {
   donationAmount: number; // valor que vai para a igreja (centavos)
   platformFee: number; // taxa ADM da plataforma (3,5%)
   pagarmeFee: number; // taxa fixa Pagar.me absorvida
-  tk2OpFee: number; // taxa operacional TK2
+  g2OpFee: number; // taxa operacional G2
   transacaoFee: number; // taxa fixa por transação
-  splitPlatformAmount: number; // total para plataforma TK2
+  splitPlatformAmount: number; // total para plataforma G2
   totalAmount: number; // total cobrado do doador
 }
 
@@ -38,8 +38,8 @@ type FeeRow = {
   adquirencia_fixa: number | null;
   adquirencia_avista_percent: number | null;
   adquirencia_2x_percent: number | null;
-  tk2_operacional_fixo: number | null;
-  tk2_op_percent: number | null;
+  g2_operacional_fixo: number | null;
+  g2_op_percent: number | null;
   transacao_fixa: number;
 };
 
@@ -51,13 +51,17 @@ type FeeRow = {
 // (getPlatformFeeRow, em fee-config.server.ts) e passa aqui — essa função
 // em si nunca acessa banco, então nunca precisa de código exclusivo de
 // servidor e pode ser importada com segurança do lado do cliente.
-export function calculatePixAmounts(ofertaEmCentavos: number, splitOverridePercent?: number | null, feeRow?: FeeRow): SplitAmounts {
+export function calculatePixAmounts(
+  ofertaEmCentavos: number,
+  splitOverridePercent?: number | null,
+  feeRow?: FeeRow,
+): SplitAmounts {
   assertPositiveInt(ofertaEmCentavos, "donationAmount");
   const f = feeRow ?? FEES.pix;
   const donationAmount = ofertaEmCentavos;
   const admPercent = splitOverridePercent ?? Number(f.adm_percent);
   const pagarmeFee = Number(f.adquirencia_fixa ?? 0);
-  const tk2OpFee = Number(f.tk2_operacional_fixo ?? 0);
+  const g2OpFee = Number(f.g2_operacional_fixo ?? 0);
   const transacaoFee = Number(f.transacao_fixa);
 
   // GROSS-UP: o percentual da taxa ADM incide sobre o valor TOTAL cobrado
@@ -65,16 +69,16 @@ export function calculatePixAmounts(ofertaEmCentavos: number, splitOverridePerce
   // é isso que efetivamente sai do bolso do doador. Calcular
   // "donationAmount * admPercent" direto subestima a taxa sempre que
   // admPercent > 0. Resolvendo totalAmount = (donationAmount + fixos) / (1 - admPercent).
-  const fixedTotal = pagarmeFee + tk2OpFee;
+  const fixedTotal = pagarmeFee + g2OpFee;
   const totalAmount = Math.round((donationAmount + fixedTotal) / (1 - admPercent));
   const platformFee = totalAmount - donationAmount - fixedTotal;
-  const splitPlatformAmount = platformFee + pagarmeFee + tk2OpFee;
+  const splitPlatformAmount = platformFee + pagarmeFee + g2OpFee;
 
   return {
     donationAmount,
     platformFee,
     pagarmeFee,
-    tk2OpFee,
+    g2OpFee,
     transacaoFee,
     splitPlatformAmount,
     totalAmount,
@@ -90,34 +94,37 @@ export function calculateCardAmounts(
   feeRow?: FeeRow,
 ): SplitAmounts {
   assertPositiveInt(ofertaEmCentavos, "donationAmount");
-  const f = feeRow ?? (brand === "master_visa" ? FEES.cartao_master_visa : FEES.cartao_ello_hiper_amex);
+  const f =
+    feeRow ?? (brand === "master_visa" ? FEES.cartao_master_visa : FEES.cartao_ello_hiper_amex);
   const donationAmount = ofertaEmCentavos;
   const admPercent = splitOverridePercent ?? Number(f.adm_percent);
-  const adquirenciaPercent = Number(installments <= 1 ? f.adquirencia_avista_percent : f.adquirencia_2x_percent);
-  const tk2OpPercent = Number(f.tk2_op_percent ?? 0) * admPercent;
+  const adquirenciaPercent = Number(
+    installments <= 1 ? f.adquirencia_avista_percent : f.adquirencia_2x_percent,
+  );
+  const g2OpPercent = Number(f.g2_op_percent ?? 0) * admPercent;
 
   const pagarmeFee = 0;
   const transacaoFee = Number(f.transacao_fixa);
 
-  // GROSS-UP: os três percentuais (adm, tk2_op, adquirência) incidem sobre
+  // GROSS-UP: os três percentuais (adm, g2_op, adquirência) incidem sobre
   // o valor total cobrado do doador, não sobre a doação base — mesmo
   // problema do PIX/boleto. totalPct é a soma de tudo; resolvendo
   // totalAmount = donationAmount / (1 - totalPct), depois distribuindo
   // proporcionalmente entre os três componentes (o resto vai para
   // adquirenciaValor, para não perder centavo de arredondamento).
-  const totalPct = admPercent + tk2OpPercent + adquirenciaPercent;
+  const totalPct = admPercent + g2OpPercent + adquirenciaPercent;
   const totalAmount = Math.round(donationAmount / (1 - totalPct));
   const splitPlatformAmount = totalAmount - donationAmount;
 
   const platformFee = Math.round((splitPlatformAmount * admPercent) / totalPct);
-  const tk2OpFee = Math.round((splitPlatformAmount * tk2OpPercent) / totalPct);
-  const adquirenciaValor = splitPlatformAmount - platformFee - tk2OpFee;
+  const g2OpFee = Math.round((splitPlatformAmount * g2OpPercent) / totalPct);
+  const adquirenciaValor = splitPlatformAmount - platformFee - g2OpFee;
 
   return {
     donationAmount,
     platformFee,
     pagarmeFee,
-    tk2OpFee,
+    g2OpFee,
     transacaoFee,
     splitPlatformAmount,
     totalAmount,
@@ -125,26 +132,30 @@ export function calculateCardAmounts(
 }
 
 // ── BOLETO ───────────────────────────────────────────────────
-export function calculateBoletoAmounts(ofertaEmCentavos: number, splitOverridePercent?: number | null, feeRow?: FeeRow): SplitAmounts {
+export function calculateBoletoAmounts(
+  ofertaEmCentavos: number,
+  splitOverridePercent?: number | null,
+  feeRow?: FeeRow,
+): SplitAmounts {
   assertPositiveInt(ofertaEmCentavos, "donationAmount");
   const f = feeRow ?? FEES.boleto;
   const donationAmount = ofertaEmCentavos;
   const admPercent = splitOverridePercent ?? Number(f.adm_percent);
   const pagarmeFee = Number(f.adquirencia_fixa ?? 0);
-  const tk2OpFee = Number(f.tk2_operacional_fixo ?? 0);
+  const g2OpFee = Number(f.g2_operacional_fixo ?? 0);
   const transacaoFee = Number(f.transacao_fixa);
 
   // GROSS-UP: mesmo ajuste do PIX — ver comentário em calculatePixAmounts.
-  const fixedTotal = pagarmeFee + tk2OpFee;
+  const fixedTotal = pagarmeFee + g2OpFee;
   const totalAmount = Math.round((donationAmount + fixedTotal) / (1 - admPercent));
   const platformFee = totalAmount - donationAmount - fixedTotal;
-  const splitPlatformAmount = platformFee + tk2OpFee + pagarmeFee;
+  const splitPlatformAmount = platformFee + g2OpFee + pagarmeFee;
 
   return {
     donationAmount,
     platformFee,
     pagarmeFee,
-    tk2OpFee,
+    g2OpFee,
     transacaoFee,
     splitPlatformAmount,
     totalAmount,
@@ -152,7 +163,10 @@ export function calculateBoletoAmounts(ofertaEmCentavos: number, splitOverridePe
 }
 
 // ── BUILD SPLIT PAYLOAD ───────────────────────────────────────
-export function buildSplitPayload(amounts: SplitAmounts, sellerRecipientId: string): SplitPayload[] {
+export function buildSplitPayload(
+  amounts: SplitAmounts,
+  sellerRecipientId: string,
+): SplitPayload[] {
   if (!sellerRecipientId) {
     throw new Error("seller_recipient_id ausente — instituição não habilitada para pagamentos");
   }
@@ -192,7 +206,10 @@ export function buildSplitPayload(amounts: SplitAmounts, sellerRecipientId: stri
  * cliente; o valor final de verdade é calculado no servidor, com a taxa
  * atual configurada no banco (ver fee-config.server.ts).
  */
-export function calculateAmounts(donationAmount: number, method: PaymentMethod = "pix"): SplitAmounts {
+export function calculateAmounts(
+  donationAmount: number,
+  method: PaymentMethod = "pix",
+): SplitAmounts {
   if (method === "pix") return calculatePixAmounts(donationAmount);
   if (method === "boleto") return calculateBoletoAmounts(donationAmount);
   return calculateCardAmounts(donationAmount, 1, "master_visa");
@@ -238,11 +255,16 @@ export type CostCenterConfig = {
  * Busca configuração de um centro de custo, validando que pertence ao tenant
  * e está ativo. Lança erro caso contrário.
  */
-export async function fetchCostCenter(costCenterId: string, tenantId: string): Promise<CostCenterConfig> {
+export async function fetchCostCenter(
+  costCenterId: string,
+  tenantId: string,
+): Promise<CostCenterConfig> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("cost_centers")
-    .select("id, tenant_id, split_platform_percent, allows_installments, max_installments, is_active")
+    .select(
+      "id, tenant_id, split_platform_percent, allows_installments, max_installments, is_active",
+    )
     .eq("id", costCenterId)
     .maybeSingle();
   if (error) throw new Error(error.message);

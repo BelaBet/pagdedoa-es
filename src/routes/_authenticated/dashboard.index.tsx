@@ -34,11 +34,15 @@ function Dashboard() {
     },
   });
 
-  const onboardingDone = myTenant ? myTenant.logo_url != null && myTenant.name !== "Comunidade Demo" : false;
+  const onboardingDone = myTenant
+    ? myTenant.logo_url != null && myTenant.name !== "Comunidade Demo"
+    : false;
 
   const greeting = `Olá, ${profile?.full_name?.split(" ")[0] ?? "instituição"}`;
 
-  const qrUrl = myTenant?.slug ? `${typeof window !== "undefined" ? window.location.origin : ""}/i/${myTenant.slug}` : "";
+  const qrUrl = myTenant?.slug
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}/i/${myTenant.slug}`
+    : "";
   const primary = myTenant?.primary_color ?? "#1a3a5c";
 
   return (
@@ -52,7 +56,10 @@ function Dashboard() {
 
       {isStaff && (
         <div className="mt-6 flex flex-wrap gap-3">
-          <Link to="/dashboard/financeiro" className="inline-flex items-center gap-2 rounded-lg border bg-card px-4 py-2 text-sm hover:bg-accent">
+          <Link
+            to="/dashboard/financeiro"
+            className="inline-flex items-center gap-2 rounded-lg border bg-card px-4 py-2 text-sm hover:bg-accent"
+          >
             Ver financeiro →
           </Link>
           {myTenant?.slug && (
@@ -73,7 +80,10 @@ function Dashboard() {
       {myTenant?.slug && (
         <div className="mt-8 rounded-2xl border bg-card p-6 md:p-8">
           <div className="flex flex-col items-center text-center">
-            <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: myTenant.secondary_color ?? "#C9993A" }}>
+            <span
+              className="text-xs font-semibold uppercase tracking-widest"
+              style={{ color: myTenant.secondary_color ?? "#C9993A" }}
+            >
               QR Code
             </span>
             <h2 className="mt-2 font-display text-xl md:text-2xl" style={{ color: primary }}>
@@ -83,11 +93,11 @@ function Dashboard() {
               Escaneie com a câmera do celular e contribua de onde estiver
             </p>
 
-            <div className="mt-6 inline-flex flex-col items-center gap-4 rounded-2xl border p-6" style={{ borderColor: `${primary}22`, background: "#fafaf7" }}>
-              <div
-                ref={qrRef}
-                className="rounded-xl bg-white p-4 shadow-lg"
-              >
+            <div
+              className="mt-6 inline-flex flex-col items-center gap-4 rounded-2xl border p-6"
+              style={{ borderColor: `${primary}22`, background: "#fafaf7" }}
+            >
+              <div ref={qrRef} className="rounded-xl bg-white p-4 shadow-lg">
                 <QRCodeCanvas
                   value={qrUrl}
                   size={200}
@@ -97,7 +107,9 @@ function Dashboard() {
                 />
               </div>
 
-              <p className="max-w-[220px] break-all text-center text-xs text-muted-foreground">{qrUrl}</p>
+              <p className="max-w-[220px] break-all text-center text-xs text-muted-foreground">
+                {qrUrl}
+              </p>
 
               <button
                 type="button"
@@ -131,7 +143,10 @@ function Dashboard() {
           <h2 className="font-display text-xl">Próximos passos</h2>
           <ul className="mt-3 list-inside list-disc space-y-1 text-sm text-muted-foreground">
             <li>
-              <Link to="/igrejas/onboarding" className="underline decoration-primary hover:text-foreground transition-colors">
+              <Link
+                to="/igrejas/onboarding"
+                className="underline decoration-primary hover:text-foreground transition-colors"
+              >
                 Atualize seu <strong>perfil</strong> e preferências de privacidade.
               </Link>
             </li>

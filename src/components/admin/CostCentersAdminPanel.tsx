@@ -4,7 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Info } from "lucide-react";
 import { toast } from "sonner";
@@ -13,10 +18,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useEffectiveTenantId } from "@/lib/impersonation";
 import { supabase } from "@/integrations/supabase/client";
 import { DynamicQrButton } from "@/components/dynamic-qr-button";
-import {
-  listCostCenters,
-  toggleCostCenterActive,
-} from "@/lib/cost-centers.functions";
+import { listCostCenters, toggleCostCenterActive } from "@/lib/cost-centers.functions";
 import { usePagination } from "@/lib/use-pagination";
 import { TablePagination } from "@/components/table-pagination";
 
@@ -76,17 +78,29 @@ export function CostCentersAdminPanel() {
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableRow><TableCell colSpan={5} className="text-center text-sm text-muted-foreground">Carregando…</TableCell></TableRow>
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
+                    Carregando…
+                  </TableCell>
+                </TableRow>
               ) : !rows?.length ? (
-                <TableRow><TableCell colSpan={5} className="text-center text-sm text-muted-foreground">Nenhum centro disponível.</TableCell></TableRow>
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
+                    Nenhum centro disponível.
+                  </TableCell>
+                </TableRow>
               ) : (
                 paginated.map((r) => (
                   <TableRow key={r.id}>
                     <TableCell>
                       <div className="font-medium">{r.name}</div>
-                      {r.description && <div className="text-xs text-muted-foreground">{r.description}</div>}
+                      {r.description && (
+                        <div className="text-xs text-muted-foreground">{r.description}</div>
+                      )}
                     </TableCell>
-                    <TableCell><Badge variant="outline">{r.type}</Badge></TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{r.type}</Badge>
+                    </TableCell>
                     <TableCell className="text-center text-xs">
                       {r.allows_installments ? `até ${r.max_installments}x` : "à vista"}
                     </TableCell>

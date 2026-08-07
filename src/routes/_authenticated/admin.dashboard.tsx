@@ -4,7 +4,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { useImpersonation } from "@/lib/impersonation";
 import { KpiCard } from "@/components/kpi-card";
 import { Card } from "@/components/ui/card";
-import { Building2, Users, Heart, TrendingUp, Calendar, Megaphone, DollarSign, Wallet } from "lucide-react";
+import {
+  Building2,
+  Users,
+  Heart,
+  TrendingUp,
+  Calendar,
+  Megaphone,
+  DollarSign,
+  Wallet,
+} from "lucide-react";
 import { fmtDate } from "@/components/financeiro/format";
 
 export const Route = createFileRoute("/_authenticated/admin/dashboard")({
@@ -12,8 +21,7 @@ export const Route = createFileRoute("/_authenticated/admin/dashboard")({
   head: () => ({ meta: [{ title: "Painel — Visão geral" }] }),
 });
 
-const fmtBRL = (n: number) =>
-  n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const fmtBRL = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 function AdminDashboard() {
   const { active, tenantId } = useImpersonation();
@@ -22,7 +30,11 @@ function AdminDashboard() {
     queryKey: ["impersonated-tenant-name", tenantId],
     enabled: active && !!tenantId,
     queryFn: async () => {
-      const { data } = await supabase.from("tenants").select("name").eq("id", tenantId as string).maybeSingle();
+      const { data } = await supabase
+        .from("tenants")
+        .select("name")
+        .eq("id", tenantId as string)
+        .maybeSingle();
       return data;
     },
   });
@@ -30,18 +42,40 @@ function AdminDashboard() {
   const { data } = useQuery({
     queryKey: ["platform-kpis", active ? tenantId : null],
     queryFn: async () => {
-      const since = new Date(); since.setDate(since.getDate() - 30);
+      const since = new Date();
+      since.setDate(since.getDate() - 30);
       const sinceIso = since.toISOString();
       const filterTenant = active && tenantId ? tenantId : null;
 
       let donationsQ = supabase.from("donations").select("amount").is("deleted_at", null);
-      let monthlyQ = supabase.from("donations").select("amount").gte("created_at", sinceIso).is("deleted_at", null);
-      let txCountQ = supabase.from("payments").select("id", { count: "exact", head: true }).is("deleted_at", null);
-      let eventsQ = supabase.from("events").select("id", { count: "exact", head: true }).eq("status", "active");
+      let monthlyQ = supabase
+        .from("donations")
+        .select("amount")
+        .gte("created_at", sinceIso)
+        .is("deleted_at", null);
+      let txCountQ = supabase
+        .from("payments")
+        .select("id", { count: "exact", head: true })
+        .is("deleted_at", null);
+      let eventsQ = supabase
+        .from("events")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "active");
       let membersQ = supabase.from("profiles").select("id", { count: "exact", head: true });
-      let subsQ = supabase.from("tenant_subscriptions").select("plan_id, subscription_plans(monthly_price)").eq("status", "active").is("deleted_at", null);
-      let tenantsQ = supabase.from("tenants").select("id", { count: "exact", head: true }).is("deleted_at", null);
-      let activeTQ = supabase.from("tenants").select("id", { count: "exact", head: true }).is("deleted_at", null).eq("active", true);
+      let subsQ = supabase
+        .from("tenant_subscriptions")
+        .select("plan_id, subscription_plans(monthly_price)")
+        .eq("status", "active")
+        .is("deleted_at", null);
+      let tenantsQ = supabase
+        .from("tenants")
+        .select("id", { count: "exact", head: true })
+        .is("deleted_at", null);
+      let activeTQ = supabase
+        .from("tenants")
+        .select("id", { count: "exact", head: true })
+        .is("deleted_at", null)
+        .eq("active", true);
 
       if (filterTenant) {
         donationsQ = donationsQ.eq("tenant_id", filterTenant);
@@ -54,17 +88,37 @@ function AdminDashboard() {
         activeTQ = activeTQ.eq("id", filterTenant);
       }
 
-      const [tenants, activeT, donations, monthly, txCount, events, members, subs] = await Promise.all([
-        tenantsQ, activeTQ, donationsQ, monthlyQ, txCountQ, eventsQ, membersQ, subsQ,
-      ]);
-      const total = (donations.data ?? []).reduce((s, d: { amount: number }) => s + Number(d.amount), 0);
-      const month = (monthly.data ?? []).reduce((s, d: { amount: number }) => s + Number(d.amount), 0);
+      const [tenants, activeT, donations, monthly, txCount, events, members, subs] =
+        await Promise.all([
+          tenantsQ,
+          activeTQ,
+          donationsQ,
+          monthlyQ,
+          txCountQ,
+          eventsQ,
+          membersQ,
+          subsQ,
+        ]);
+      const total = (donations.data ?? []).reduce(
+        (s, d: { amount: number }) => s + Number(d.amount),
+        0,
+      );
+      const month = (monthly.data ?? []).reduce(
+        (s, d: { amount: number }) => s + Number(d.amount),
+        0,
+      );
       const txN = txCount.count ?? 0;
-      const mrr = (subs.data ?? []).reduce((s, x: { subscription_plans?: { monthly_price?: number } | null }) => s + Number(x.subscription_plans?.monthly_price ?? 0), 0);
+      const mrr = (subs.data ?? []).reduce(
+        (s, x: { subscription_plans?: { monthly_price?: number } | null }) =>
+          s + Number(x.subscription_plans?.monthly_price ?? 0),
+        0,
+      );
       return {
         tenants: tenants.count ?? 0,
         activeT: activeT.count ?? 0,
-        total, month, txN,
+        total,
+        month,
+        txN,
         ticket: txN ? total / txN : 0,
         events: events.count ?? 0,
         members: members.count ?? 0,
@@ -74,15 +128,15 @@ function AdminDashboard() {
   });
 
   const kpis = [
-    { label: "Igrejas",            value: data?.tenants ?? "—",                     icon: Building2 },
-    { label: "Igrejas ativas",     value: data?.activeT ?? "—",                     icon: Building2 },
-    { label: "Doadores únicos",    value: data?.members ?? "—",                     icon: Users },
-    { label: "Eventos ativos",     value: data?.events ?? "—",                      icon: Calendar },
-    { label: "Total arrecadado",   value: data ? fmtBRL(data.total) : "—",          icon: Heart },
-    { label: "Últimos 30 dias",    value: data ? fmtBRL(data.month) : "—",          icon: TrendingUp },
-    { label: "Transações",         value: data?.txN ?? "—",                         icon: Wallet },
-    { label: "Ticket médio",       value: data ? fmtBRL(data.ticket) : "—",         icon: DollarSign },
-    { label: "MRR",                value: data ? fmtBRL(data.mrr) : "—",            icon: Megaphone },
+    { label: "Igrejas", value: data?.tenants ?? "—", icon: Building2 },
+    { label: "Igrejas ativas", value: data?.activeT ?? "—", icon: Building2 },
+    { label: "Doadores únicos", value: data?.members ?? "—", icon: Users },
+    { label: "Eventos ativos", value: data?.events ?? "—", icon: Calendar },
+    { label: "Total arrecadado", value: data ? fmtBRL(data.total) : "—", icon: Heart },
+    { label: "Últimos 30 dias", value: data ? fmtBRL(data.month) : "—", icon: TrendingUp },
+    { label: "Transações", value: data?.txN ?? "—", icon: Wallet },
+    { label: "Ticket médio", value: data ? fmtBRL(data.ticket) : "—", icon: DollarSign },
+    { label: "MRR", value: data ? fmtBRL(data.mrr) : "—", icon: Megaphone },
   ].filter((k) => {
     // Numa visão de uma única instituição, "Igrejas" e "Igrejas ativas" sempre
     // seriam 1 — não fazem sentido nesse contexto, então somem da grade.
@@ -130,7 +184,9 @@ function AdminDashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-3xl">
-          {active && tenantId ? `Visão de: ${tenantInfo?.name ?? "…"}` : "Visão Global da Plataforma"}
+          {active && tenantId
+            ? `Visão de: ${tenantInfo?.name ?? "…"}`
+            : "Visão Global da Plataforma"}
         </h1>
         <p className="text-sm text-muted-foreground">
           {active && tenantId
@@ -163,7 +219,9 @@ function AdminDashboard() {
               </div>
             ))}
             {(tenantDonations?.length ?? 0) === 0 && (
-              <p className="py-6 text-center text-sm text-muted-foreground">Nenhuma doação registrada ainda.</p>
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                Nenhuma doação registrada ainda.
+              </p>
             )}
           </div>
         </Card>
@@ -179,7 +237,9 @@ function AdminDashboard() {
             {(ranking ?? []).map((t, i) => (
               <div key={t.id} className="flex items-center justify-between py-2 text-sm">
                 <div className="flex items-center gap-3">
-                  <span className="w-6 text-right font-mono text-xs text-muted-foreground">#{i + 1}</span>
+                  <span className="w-6 text-right font-mono text-xs text-muted-foreground">
+                    #{i + 1}
+                  </span>
                   <span className="font-medium">{t.name}</span>
                   <span className="text-xs text-muted-foreground">{t.slug}</span>
                 </div>
@@ -187,7 +247,9 @@ function AdminDashboard() {
               </div>
             ))}
             {(ranking?.length ?? 0) === 0 && (
-              <p className="py-6 text-center text-sm text-muted-foreground">Nenhuma arrecadação registrada ainda.</p>
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                Nenhuma arrecadação registrada ainda.
+              </p>
             )}
           </div>
         </Card>

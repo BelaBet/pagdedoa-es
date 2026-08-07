@@ -197,7 +197,7 @@ async function persistPayment(args: {
       donation_amount: a.donationAmount,
       platform_fee: a.platformFee,
       pagarme_fee: a.pagarmeFee,
-      tk2_op_fee: a.tk2OpFee,
+      g2_op_fee: a.g2OpFee,
       transacao_fee: a.transacaoFee,
       split_platform_amount: a.splitPlatformAmount,
       split_seller_amount: a.donationAmount,
@@ -251,12 +251,18 @@ export const createPixPayment = createServerFn({ method: "POST" })
     const { assertFinancialActive } = await import("@/lib/compliance");
     await assertFinancialActive(data.tenantId);
     const sellerRecipientId = await fetchSellerRecipientId(data.tenantId);
-    const costCenter = data.costCenterId ? await fetchCostCenter(data.costCenterId, data.tenantId) : null;
+    const costCenter = data.costCenterId
+      ? await fetchCostCenter(data.costCenterId, data.tenantId)
+      : null;
     const splitOverride = costCenter?.split_platform_percent ?? null;
     const feeRow = await getPlatformFeeRow("pix", data.tenantId);
     const amounts = calculatePixAmounts(data.donationAmount, splitOverride, feeRow ?? undefined);
     if (process.env.NODE_ENV !== "production") {
-      console.log("[pix] amounts", amounts, { sellerRecipientId, costCenterId: data.costCenterId, splitOverride });
+      console.log("[pix] amounts", amounts, {
+        sellerRecipientId,
+        costCenterId: data.costCenterId,
+        splitOverride,
+      });
     }
     const expiresIn = 60 * 60;
 
@@ -314,7 +320,8 @@ export const createPixPayment = createServerFn({ method: "POST" })
     const tx = charge?.last_transaction;
     const qrCode: string = tx?.qr_code ?? "";
     const qrCodeUrl: string = tx?.qr_code_url ?? "";
-    const expiresAt: string = tx?.expires_at ?? new Date(Date.now() + expiresIn * 1000).toISOString();
+    const expiresAt: string =
+      tx?.expires_at ?? new Date(Date.now() + expiresIn * 1000).toISOString();
     const gatewayId: string = json?.id ?? charge?.id ?? "";
 
     if (!gatewayId) {
@@ -330,7 +337,9 @@ export const createPixPayment = createServerFn({ method: "POST" })
         gatewayResponse: call.response,
         errorMessage: `Pagar.me não retornou identificador. Status: ${json?.status ?? "?"}`,
       });
-      throw new Error(`Pagar.me não retornou identificador do pedido. Status: ${json?.status ?? "?"}.`);
+      throw new Error(
+        `Pagar.me não retornou identificador do pedido. Status: ${json?.status ?? "?"}.`,
+      );
     }
 
     const ids = await persistPayment({
@@ -385,11 +394,14 @@ export const pollPixCharge = createServerFn({ method: "POST" })
     const timer = setTimeout(() => controller.abort(), PAGARME_TIMEOUT_MS);
     let res: Response;
     try {
-      res = await fetch(`https://api.pagar.me/core/v5/orders/${encodeURIComponent(data.gatewayId)}`, {
-        method: "GET",
-        headers: { Authorization: auth },
-        signal: controller.signal,
-      });
+      res = await fetch(
+        `https://api.pagar.me/core/v5/orders/${encodeURIComponent(data.gatewayId)}`,
+        {
+          method: "GET",
+          headers: { Authorization: auth },
+          signal: controller.signal,
+        },
+      );
     } catch (e) {
       const timedOut = e instanceof Error && e.name === "AbortError";
       throw new Error(
@@ -424,7 +436,11 @@ export const pollPixCharge = createServerFn({ method: "POST" })
     // silenciosamente no banco, deixando o pagamento preso em 'pending'
     // mesmo já confirmado no Pagar.me.
     const mapped: "confirmed" | "failed" | null =
-      chargeStatus === "paid" ? "confirmed" : chargeStatus === "failed" || chargeStatus === "refused" ? "failed" : null;
+      chargeStatus === "paid"
+        ? "confirmed"
+        : chargeStatus === "failed" || chargeStatus === "refused"
+          ? "failed"
+          : null;
 
     if (mapped) {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -443,7 +459,9 @@ export const createCreditCardPayment = createServerFn({ method: "POST" })
     const { assertFinancialActive } = await import("@/lib/compliance");
     await assertFinancialActive(data.tenantId);
     const sellerRecipientId = await fetchSellerRecipientId(data.tenantId);
-    const costCenter = data.costCenterId ? await fetchCostCenter(data.costCenterId, data.tenantId) : null;
+    const costCenter = data.costCenterId
+      ? await fetchCostCenter(data.costCenterId, data.tenantId)
+      : null;
     if (costCenter) {
       if (!costCenter.allows_installments && data.installments > 1) {
         throw new Error("Este centro de custo não permite parcelamento.");
@@ -453,8 +471,17 @@ export const createCreditCardPayment = createServerFn({ method: "POST" })
       }
     }
     const splitOverride = costCenter?.split_platform_percent ?? null;
-    const feeRow = await getPlatformFeeRow(data.brand === "master_visa" ? "cartao_master_visa" : "cartao_ello_hiper_amex", data.tenantId);
-    const amounts = calculateCardAmounts(data.donationAmount, data.installments, data.brand, splitOverride, feeRow ?? undefined);
+    const feeRow = await getPlatformFeeRow(
+      data.brand === "master_visa" ? "cartao_master_visa" : "cartao_ello_hiper_amex",
+      data.tenantId,
+    );
+    const amounts = calculateCardAmounts(
+      data.donationAmount,
+      data.installments,
+      data.brand,
+      splitOverride,
+      feeRow ?? undefined,
+    );
     if (process.env.NODE_ENV !== "production") {
       console.log("[card] amounts", amounts, {
         sellerRecipientId,
@@ -536,7 +563,11 @@ export const createCreditCardPayment = createServerFn({ method: "POST" })
     const gatewayId: string = json?.id ?? charge?.id ?? "";
 
     const mapped: "pending" | "confirmed" | "failed" =
-      status === "paid" ? "confirmed" : status === "failed" || status === "refused" ? "failed" : "pending";
+      status === "paid"
+        ? "confirmed"
+        : status === "failed" || status === "refused"
+          ? "failed"
+          : "pending";
 
     const ids = await persistPayment({
       tenantId: data.tenantId,
@@ -550,7 +581,8 @@ export const createCreditCardPayment = createServerFn({ method: "POST" })
       gatewayId,
       gatewayRequest: call.request,
       gatewayResponse: call.response,
-      errorMessage: mapped === "failed" ? (charge?.last_transaction?.acquirer_message ?? null) : null,
+      errorMessage:
+        mapped === "failed" ? (charge?.last_transaction?.acquirer_message ?? null) : null,
       donor: {
         name: resolved.name ?? null,
         email: resolved.email ?? null,

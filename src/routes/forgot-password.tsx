@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { translateError } from "@/lib/translate-error";
+import { BRAND_URL } from "@/lib/brand";
 
 export const Route = createFileRoute("/forgot-password")({
   component: ForgotPasswordPage,
@@ -27,9 +28,7 @@ function ForgotPasswordPage() {
       host.includes("lovableproject.com") ||
       host.includes("id-preview--") ||
       host === "localhost";
-    const appOrigin = isEditor
-      ? "https://tk2projeto1.lovable.app"
-      : window.location.origin;
+    const appOrigin = isEditor ? BRAND_URL : window.location.origin;
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${appOrigin}/redefinir-senha`,
@@ -42,7 +41,9 @@ function ForgotPasswordPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <Link to="/login" className="mb-8 block text-sm text-muted-foreground hover:underline">← Voltar</Link>
+        <Link to="/login" className="mb-8 block text-sm text-muted-foreground hover:underline">
+          ← Voltar
+        </Link>
         <h1 className="font-display text-3xl">Recuperar senha</h1>
         {sent ? (
           <p className="mt-4 text-sm text-muted-foreground">
@@ -52,7 +53,13 @@ function ForgotPasswordPage() {
           <form onSubmit={submit} className="auth-fields mt-8 space-y-4">
             <div>
               <Label htmlFor="email">E-mail</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Enviando..." : "Enviar link"}

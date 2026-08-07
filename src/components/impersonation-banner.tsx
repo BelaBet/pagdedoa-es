@@ -27,9 +27,9 @@ export function ImpersonationBanner() {
       <div className="flex items-center gap-2">
         <ShieldAlert className="h-4 w-4" />
         <span>
-          Acessando como{" "}
-          <strong>{tenant?.name ?? tenantId?.slice(0, 8) + "…"}</strong>
-          {tenant?.slug && <span className="ml-1 text-amber-900/70">({tenant.slug})</span>} — toda ação é auditada.
+          Acessando como <strong>{tenant?.name ?? tenantId?.slice(0, 8) + "…"}</strong>
+          {tenant?.slug && <span className="ml-1 text-amber-900/70">({tenant.slug})</span>} — toda
+          ação é auditada.
         </span>
       </div>
       <Button size="sm" variant="secondary" onClick={() => stop()}>

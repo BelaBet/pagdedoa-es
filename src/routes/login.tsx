@@ -72,7 +72,9 @@ function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <Link to="/" className="mb-8 block text-sm text-muted-foreground hover:underline">← Voltar</Link>
+        <Link to="/" className="mb-8 block text-sm text-muted-foreground hover:underline">
+          ← Voltar
+        </Link>
         <h1 className="font-display text-3xl">Bem-vindo ao Centro de Doações</h1>
         <p className="mt-1 text-sm text-muted-foreground">Acesse sua conta.</p>
         {emailConfirmed && (
@@ -83,7 +85,14 @@ function LoginPage() {
         <form onSubmit={submit} className="auth-fields mt-8 space-y-4">
           <div>
             <Label htmlFor="email">E-mail</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+            />
           </div>
           <div>
             <Label htmlFor="password">Senha</Label>
@@ -112,7 +121,9 @@ function LoginPage() {
           </Button>
         </form>
         <div className="mt-4 text-center">
-          <Link to="/forgot-password" className="text-sm text-muted-foreground hover:underline">Esqueci minha senha</Link>
+          <Link to="/forgot-password" className="text-sm text-muted-foreground hover:underline">
+            Esqueci minha senha
+          </Link>
         </div>
         <div className="mt-6 rounded-lg border border-dashed p-4 text-center">
           <p className="text-sm font-medium">Conhecer a plataforma</p>
@@ -130,7 +141,10 @@ function LoginPage() {
           </Button>
         </div>
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          Sem conta? <Link to="/signup" className="text-primary hover:underline">Cadastrar-me</Link>
+          Sem conta?{" "}
+          <Link to="/signup" className="text-primary hover:underline">
+            Cadastrar-me
+          </Link>
         </p>
       </div>
     </div>

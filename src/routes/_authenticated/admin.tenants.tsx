@@ -8,11 +8,30 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { EmptyRow, LoadingRow } from "@/components/empty-row";
@@ -49,16 +68,25 @@ function TenantsPage() {
       const ids = (tenants ?? []).map((t) => t.id);
       if (!ids.length) return [];
       const [{ data: subs }, { data: dons }, { data: events }] = await Promise.all([
-        supabase.from("tenant_subscriptions").select("tenant_id, status, subscription_plans(name, code, monthly_price)").in("tenant_id", ids),
-        supabase.from("donations").select("tenant_id, amount, created_at").in("tenant_id", ids).is("deleted_at", null),
+        supabase
+          .from("tenant_subscriptions")
+          .select("tenant_id, status, subscription_plans(name, code, monthly_price)")
+          .in("tenant_id", ids),
+        supabase
+          .from("donations")
+          .select("tenant_id, amount, created_at")
+          .in("tenant_id", ids)
+          .is("deleted_at", null),
         supabase.from("events").select("tenant_id, id").in("tenant_id", ids).eq("status", "active"),
       ]);
-      const since = new Date(); since.setDate(since.getDate() - 30);
+      const since = new Date();
+      since.setDate(since.getDate() - 30);
       return (tenants ?? []).map((t) => {
         const sub = subs?.find((s: { tenant_id: string }) => s.tenant_id === t.id);
         const myDons = (dons ?? []).filter((d: { tenant_id: string }) => d.tenant_id === t.id);
         const total = myDons.reduce((s, d: { amount: number }) => s + Number(d.amount), 0);
-        const monthly = myDons.filter((d: { created_at: string }) => new Date(d.created_at) >= since)
+        const monthly = myDons
+          .filter((d: { created_at: string }) => new Date(d.created_at) >= since)
           .reduce((s, d: { amount: number }) => s + Number(d.amount), 0);
         const ev = (events ?? []).filter((e: { tenant_id: string }) => e.tenant_id === t.id).length;
         return { ...t, sub, total, monthly, eventsCount: ev };
@@ -69,18 +97,29 @@ function TenantsPage() {
   const toggleActive = async (id: string, current: boolean) => {
     const { error } = await supabase.from("tenants").update({ active: !current }).eq("id", id);
     if (error) toast.error(translateError(error));
-    else { toast.success(current ? "Igreja suspensa" : "Igreja reativada"); qc.invalidateQueries({ queryKey: ["admin-tenants"] }); }
+    else {
+      toast.success(current ? "Igreja suspensa" : "Igreja reativada");
+      qc.invalidateQueries({ queryKey: ["admin-tenants"] });
+    }
   };
 
   const confirmDelete = async () => {
     if (!deleteId) return;
     const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase.from("tenants").update({
-      deleted_at: new Date().toISOString(), deleted_by: u.user?.id, active: false,
-    }).eq("id", deleteId);
+    const { error } = await supabase
+      .from("tenants")
+      .update({
+        deleted_at: new Date().toISOString(),
+        deleted_by: u.user?.id,
+        active: false,
+      })
+      .eq("id", deleteId);
     setDeleteId(null);
     if (error) toast.error(translateError(error));
-    else { toast.success("Igreja excluída"); qc.invalidateQueries({ queryKey: ["admin-tenants"] }); }
+    else {
+      toast.success("Igreja excluída");
+      qc.invalidateQueries({ queryKey: ["admin-tenants"] });
+    }
   };
 
   const confirmImpersonate = async () => {
@@ -88,7 +127,8 @@ function TenantsPage() {
     try {
       await start(imperId, imperReason || undefined);
       toast.success("Impersonação iniciada");
-      setImperId(null); setImperReason("");
+      setImperId(null);
+      setImperReason("");
       nav({ to: "/dashboard" });
     } catch (e) {
       toast.error(translateError(e));
@@ -104,7 +144,15 @@ function TenantsPage() {
       (t.custom_domain ?? "").toLowerCase().includes(q)
     );
   });
-  const { page, setPage, totalPages, paginated, total, start: rangeStart, end: rangeEnd } = usePagination(filtered, 10);
+  const {
+    page,
+    setPage,
+    totalPages,
+    paginated,
+    total,
+    start: rangeStart,
+    end: rangeEnd,
+  } = usePagination(filtered, 10);
 
   return (
     <div className="space-y-4">
@@ -126,7 +174,10 @@ function TenantsPage() {
         <Input
           placeholder="Buscar por nome, slug ou domínio"
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           className="pl-8"
         />
       </div>
@@ -151,25 +202,37 @@ function TenantsPage() {
             {!isLoading && filtered.length === 0 && (
               <EmptyRow
                 colSpan={9}
-                message={search ? "Nenhuma igreja encontrada para essa busca." : "Nenhuma igreja cadastrada."}
+                message={
+                  search
+                    ? "Nenhuma igreja encontrada para essa busca."
+                    : "Nenhuma igreja cadastrada."
+                }
               />
             )}
             {paginated.map((t) => (
               <TableRow key={t.id}>
                 <TableCell className="font-medium">{t.name}</TableCell>
                 <TableCell className="text-xs text-muted-foreground">
-                  {t.slug}{t.custom_domain ? ` · ${t.custom_domain}` : ""}
+                  {t.slug}
+                  {t.custom_domain ? ` · ${t.custom_domain}` : ""}
                 </TableCell>
                 <TableCell>
-                  {t.active ? <Badge variant="secondary">Ativa</Badge> : <Badge variant="destructive">Suspensa</Badge>}
+                  {t.active ? (
+                    <Badge variant="secondary">Ativa</Badge>
+                  ) : (
+                    <Badge variant="destructive">Suspensa</Badge>
+                  )}
                 </TableCell>
                 <TableCell className="text-xs">
-                  {t.sub?.subscription_plans?.name ?? "—"} <span className="text-muted-foreground">({t.sub?.status ?? "—"})</span>
+                  {t.sub?.subscription_plans?.name ?? "—"}{" "}
+                  <span className="text-muted-foreground">({t.sub?.status ?? "—"})</span>
                 </TableCell>
                 <TableCell className="text-right">{fmtBRL(t.monthly)}</TableCell>
                 <TableCell className="text-right">{fmtBRL(t.total)}</TableCell>
                 <TableCell className="text-right">{t.eventsCount}</TableCell>
-                <TableCell className="text-xs">{new Date(t.created_at).toLocaleDateString("pt-BR")}</TableCell>
+                <TableCell className="text-xs">
+                  {new Date(t.created_at).toLocaleDateString("pt-BR")}
+                </TableCell>
                 <TableCell>
                   <div className="flex justify-end gap-1">
                     <Button size="icon" variant="ghost" title="Editar igreja" asChild>
@@ -177,13 +240,31 @@ function TenantsPage() {
                         <Pencil className="h-4 w-4" />
                       </Link>
                     </Button>
-                    <Button size="icon" variant="ghost" title="Acessar como" onClick={() => { setImperId(t.id); setImperReason(""); }}>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      title="Acessar como"
+                      onClick={() => {
+                        setImperId(t.id);
+                        setImperReason("");
+                      }}
+                    >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button size="icon" variant="ghost" title={t.active ? "Suspender" : "Reativar"} onClick={() => toggleActive(t.id, t.active)}>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      title={t.active ? "Suspender" : "Reativar"}
+                      onClick={() => toggleActive(t.id, t.active)}
+                    >
                       {t.active ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                     </Button>
-                    <Button size="icon" variant="ghost" title="Excluir" onClick={() => setDeleteId(t.id)}>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      title="Excluir"
+                      onClick={() => setDeleteId(t.id)}
+                    >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
@@ -208,19 +289,31 @@ function TenantsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir esta igreja?</AlertDialogTitle>
             <AlertDialogDescription>
-              A igreja será marcada como excluída e suspensa. Dados financeiros são preservados para auditoria.
+              A igreja será marcada como excluída e suspensa. Dados financeiros são preservados para
+              auditoria.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               Excluir
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      <Dialog open={!!imperId} onOpenChange={(v) => { if (!v) { setImperId(null); setImperReason(""); } }}>
+      <Dialog
+        open={!!imperId}
+        onOpenChange={(v) => {
+          if (!v) {
+            setImperId(null);
+            setImperReason("");
+          }
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Acessar como esta igreja</DialogTitle>
@@ -237,7 +330,15 @@ function TenantsPage() {
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setImperId(null); setImperReason(""); }}>Cancelar</Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setImperId(null);
+                setImperReason("");
+              }}
+            >
+              Cancelar
+            </Button>
             <Button onClick={confirmImpersonate}>Iniciar impersonação</Button>
           </DialogFooter>
         </DialogContent>

@@ -22,8 +22,8 @@ export type FeeConfigRow = {
   adquirencia_fixa: number | null;
   adquirencia_avista_percent: number | null;
   adquirencia_2x_percent: number | null;
-  tk2_operacional_fixo: number | null;
-  tk2_op_percent: number | null;
+  g2_operacional_fixo: number | null;
+  g2_op_percent: number | null;
   transacao_fixa: number;
   antecipacao_custo_percent: number | null;
   updated_at: string;
@@ -91,8 +91,8 @@ const UpdateSchema = z.object({
   adquirencia_fixa: z.number().int().min(0).nullable().optional(),
   adquirencia_avista_percent: z.number().min(0).max(90).nullable().optional(),
   adquirencia_2x_percent: z.number().min(0).max(90).nullable().optional(),
-  tk2_operacional_fixo: z.number().int().min(0).nullable().optional(),
-  tk2_op_percent: z.number().min(0).max(90).nullable().optional(),
+  g2_operacional_fixo: z.number().int().min(0).nullable().optional(),
+  g2_op_percent: z.number().min(0).max(90).nullable().optional(),
   transacao_fixa: z.number().int().min(0),
   antecipacao_custo_percent: z.number().min(0).max(90).nullable().optional(),
 });
@@ -111,8 +111,8 @@ export const updateFeeConfig = createServerFn({ method: "POST" })
       adquirencia_fixa: data.adquirencia_fixa ?? null,
       adquirencia_avista_percent: pct(data.adquirencia_avista_percent),
       adquirencia_2x_percent: pct(data.adquirencia_2x_percent),
-      tk2_operacional_fixo: data.tk2_operacional_fixo ?? null,
-      tk2_op_percent: pct(data.tk2_op_percent),
+      g2_operacional_fixo: data.g2_operacional_fixo ?? null,
+      g2_op_percent: pct(data.g2_op_percent),
       transacao_fixa: data.transacao_fixa,
       antecipacao_custo_percent: pct(data.antecipacao_custo_percent),
       updated_at: new Date().toISOString(),

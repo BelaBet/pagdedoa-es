@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +14,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { translateError } from "@/lib/translate-error";
@@ -50,8 +58,13 @@ export function CostCenterFormModal({ open, onOpenChange, tenantId, row, onSaved
       setMaxInst(row.max_installments);
       setDisplayOrder(row.display_order);
     } else {
-      setName(""); setType("online"); setDescription("");
-      setPlatformPct(4.15); setAllowsInst(true); setMaxInst(12); setDisplayOrder(0);
+      setName("");
+      setType("online");
+      setDescription("");
+      setPlatformPct(4.15);
+      setAllowsInst(true);
+      setMaxInst(12);
+      setDisplayOrder(0);
     }
   }, [row, open]);
 
@@ -63,7 +76,8 @@ export function CostCenterFormModal({ open, onOpenChange, tenantId, row, onSaved
         return updateFn({
           data: {
             id: row.id,
-            name, type,
+            name,
+            type,
             description: description || null,
             splitPlatformPercent: splitPlatform,
             splitSellerPercent: splitSeller,
@@ -75,7 +89,9 @@ export function CostCenterFormModal({ open, onOpenChange, tenantId, row, onSaved
       }
       return createFn({
         data: {
-          tenantId, name, type,
+          tenantId,
+          name,
+          type,
           description: description || null,
           splitPlatformPercent: splitPlatform,
           splitSellerPercent: splitSeller,
@@ -102,13 +118,20 @@ export function CostCenterFormModal({ open, onOpenChange, tenantId, row, onSaved
         <div className="grid gap-3 py-2">
           <div className="grid gap-1.5">
             <Label htmlFor="cc-name">Nome</Label>
-            <Input id="cc-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex.: Dízimo Online" />
+            <Input
+              id="cc-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Ex.: Dízimo Online"
+            />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1.5">
               <Label>Tipo</Label>
               <Select value={type} onValueChange={(v) => setType(v as typeof type)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="online">Online</SelectItem>
                   <SelectItem value="presencial">Presencial</SelectItem>
@@ -176,7 +199,9 @@ export function CostCenterFormModal({ open, onOpenChange, tenantId, row, onSaved
           )}
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
           <Button onClick={() => mut.mutate()} disabled={mut.isPending || !name.trim()}>
             {mut.isPending ? "Salvando…" : row ? "Salvar alterações" : "Criar centro"}
           </Button>

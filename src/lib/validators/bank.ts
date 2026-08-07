@@ -9,17 +9,14 @@ const DIGIT = /^[0-9Xx]$/;
 export const validateBankCode = (v: string) =>
   BANK_CODE.test(v) || "Código do banco deve ter 3 dígitos.";
 
-export const validateBranch = (v: string) =>
-  BRANCH.test(v) || "Agência inválida.";
+export const validateBranch = (v: string) => BRANCH.test(v) || "Agência inválida.";
 
 export const validateBranchDigit = (v: string | undefined | null) =>
   !v || DIGIT.test(v) || "Dígito da agência inválido.";
 
-export const validateAccount = (v: string) =>
-  ACCOUNT.test(v) || "Conta inválida.";
+export const validateAccount = (v: string) => ACCOUNT.test(v) || "Conta inválida.";
 
-export const validateAccountDigit = (v: string) =>
-  DIGIT.test(v) || "Dígito da conta inválido.";
+export const validateAccountDigit = (v: string) => DIGIT.test(v) || "Dígito da conta inválido.";
 
 export const BANK_ACCOUNT_TYPES = [
   "checking",

@@ -19,22 +19,30 @@ type AuthCtx = {
   user: User | null;
   session: Session | null;
   profile: Profile | null;
-  roles: string[];                  // tenant roles (admin/manager/member)
-  platformRoles: PlatformRole[];    // global platform roles
+  roles: string[]; // tenant roles (admin/manager/member)
+  platformRoles: PlatformRole[]; // global platform roles
   loading: boolean;
   isStaff: boolean;
   isAdmin: boolean;
-  isPlatformAdmin: boolean;         // any platform role
-  isSuperAdmin: boolean;            // strict super_admin
+  isPlatformAdmin: boolean; // any platform role
+  isSuperAdmin: boolean; // strict super_admin
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
 };
 
 const Ctx = createContext<AuthCtx>({
-  user: null, session: null, profile: null, roles: [], platformRoles: [],
-  loading: true, isStaff: false, isAdmin: false,
-  isPlatformAdmin: false, isSuperAdmin: false,
-  signOut: async () => {}, refresh: async () => {},
+  user: null,
+  session: null,
+  profile: null,
+  roles: [],
+  platformRoles: [],
+  loading: true,
+  isStaff: false,
+  isAdmin: false,
+  isPlatformAdmin: false,
+  isSuperAdmin: false,
+  signOut: async () => {},
+  refresh: async () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -57,13 +65,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Audit login event
     if (prof) {
-      await supabase.from("audit_logs").insert({
-        tenant_id: (prof as Profile).tenant_id,
-        user_id: uid,
-        action: "auth:login",
-        entity: "session",
-        metadata: { at: new Date().toISOString() },
-      }).then(() => {}, () => {});
+      await supabase
+        .from("audit_logs")
+        .insert({
+          tenant_id: (prof as Profile).tenant_id,
+          user_id: uid,
+          action: "auth:login",
+          entity: "session",
+          metadata: { at: new Date().toISOString() },
+        })
+        .then(
+          () => {},
+          () => {},
+        );
     }
   };
 
@@ -74,7 +88,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (s?.user) {
         setTimeout(() => loadProfile(s.user.id), 0);
       } else {
-        setProfile(null); setRoles([]); setPlatformRoles([]);
+        setProfile(null);
+        setRoles([]);
+        setPlatformRoles([]);
       }
       // Redirect to password reset page when user clicks recovery link.
       // Preserva o hash da URL (#access_token=...&type=recovery) no
@@ -100,26 +116,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     if (user && profile) {
-      await supabase.from("audit_logs").insert({
-        tenant_id: profile.tenant_id,
-        user_id: user.id,
-        action: "auth:logout",
-        entity: "session",
-      }).then(() => {}, () => {});
+      await supabase
+        .from("audit_logs")
+        .insert({
+          tenant_id: profile.tenant_id,
+          user_id: user.id,
+          action: "auth:logout",
+          entity: "session",
+        })
+        .then(
+          () => {},
+          () => {},
+        );
     }
     await supabase.auth.signOut();
   };
-  const refresh = async () => { if (user) await loadProfile(user.id); };
+  const refresh = async () => {
+    if (user) await loadProfile(user.id);
+  };
 
   return (
-    <Ctx.Provider value={{
-      user, session, profile, roles, platformRoles, loading,
-      isStaff: roles.includes("manager") || roles.includes("admin"),
-      isAdmin: roles.includes("admin"),
-      isPlatformAdmin: platformRoles.length > 0,
-      isSuperAdmin: platformRoles.includes("super_admin"),
-      signOut, refresh,
-    }}>
+    <Ctx.Provider
+      value={{
+        user,
+        session,
+        profile,
+        roles,
+        platformRoles,
+        loading,
+        isStaff: roles.includes("manager") || roles.includes("admin"),
+        isAdmin: roles.includes("admin"),
+        isPlatformAdmin: platformRoles.length > 0,
+        isSuperAdmin: platformRoles.includes("super_admin"),
+        signOut,
+        refresh,
+      }}
+    >
       {children}
     </Ctx.Provider>
   );

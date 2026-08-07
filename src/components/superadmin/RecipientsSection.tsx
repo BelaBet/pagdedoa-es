@@ -5,7 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Copy, Settings2, RefreshCw, AlertTriangle, CheckCircle2, Clock, Ban } from "lucide-react";
 import { toast } from "sonner";
@@ -45,7 +50,10 @@ export function RecipientsSection() {
     queryKey: ["superadmin-recipients"],
     queryFn: () => list(),
   });
-  const { page, setPage, totalPages, paginated, total, start, end } = usePagination(tenants ?? [], 10);
+  const { page, setPage, totalPages, paginated, total, start, end } = usePagination(
+    tenants ?? [],
+    10,
+  );
 
   const counts = useMemo(() => {
     const c = { configured: 0, pending: 0, missing: 0, error: 0 };
@@ -77,10 +85,26 @@ export function RecipientsSection() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <StatusTile icon={<CheckCircle2 className="h-4 w-4 text-emerald-500" />} label="Configurados" value={counts.configured} />
-            <StatusTile icon={<Clock className="h-4 w-4 text-amber-500" />} label="Em análise" value={counts.pending} />
-            <StatusTile icon={<Ban className="h-4 w-4 text-muted-foreground" />} label="Não configurados" value={counts.missing} />
-            <StatusTile icon={<AlertTriangle className="h-4 w-4 text-destructive" />} label="Com erro" value={counts.error} />
+            <StatusTile
+              icon={<CheckCircle2 className="h-4 w-4 text-emerald-500" />}
+              label="Configurados"
+              value={counts.configured}
+            />
+            <StatusTile
+              icon={<Clock className="h-4 w-4 text-amber-500" />}
+              label="Em análise"
+              value={counts.pending}
+            />
+            <StatusTile
+              icon={<Ban className="h-4 w-4 text-muted-foreground" />}
+              label="Não configurados"
+              value={counts.missing}
+            />
+            <StatusTile
+              icon={<AlertTriangle className="h-4 w-4 text-destructive" />}
+              label="Com erro"
+              value={counts.error}
+            />
           </div>
 
           <div className="rounded-lg border">
@@ -96,32 +120,55 @@ export function RecipientsSection() {
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  <TableRow><TableCell colSpan={5} className="text-center text-sm text-muted-foreground">Carregando…</TableCell></TableRow>
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
+                      Carregando…
+                    </TableCell>
+                  </TableRow>
                 ) : !tenants?.length ? (
-                  <TableRow><TableCell colSpan={5} className="text-center text-sm text-muted-foreground">Nenhum tenant.</TableCell></TableRow>
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
+                      Nenhum tenant.
+                    </TableCell>
+                  </TableRow>
                 ) : (
                   paginated.map((t) => (
                     <TableRow key={t.id}>
                       <TableCell className="font-medium">{t.name}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{t.document ?? "—"}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {t.document ?? "—"}
+                      </TableCell>
                       <TableCell className="text-xs">{t.bank_code ?? "—"}</TableCell>
                       <TableCell>{statusBadge(t.recipient_status)}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
                           {t.recipient_id && (
-                            <Button size="icon" variant="ghost" onClick={() => copyId(t.recipient_id)} aria-label="Copiar recipient_id">
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => copyId(t.recipient_id)}
+                              aria-label="Copiar recipient_id"
+                            >
                               <Copy className="h-4 w-4" />
                             </Button>
                           )}
                           <Button
                             size="sm"
-                            variant={t.recipient_id && t.recipient_status !== "error" ? "outline" : "default"}
+                            variant={
+                              t.recipient_id && t.recipient_status !== "error"
+                                ? "outline"
+                                : "default"
+                            }
                             onClick={() => setSelected(t)}
                           >
                             {t.recipient_id && t.recipient_status !== "error" ? (
-                              <><RefreshCw className="mr-1 h-3 w-3" /> Status</>
+                              <>
+                                <RefreshCw className="mr-1 h-3 w-3" /> Status
+                              </>
                             ) : (
-                              <><Settings2 className="mr-1 h-3 w-3" /> Configurar</>
+                              <>
+                                <Settings2 className="mr-1 h-3 w-3" /> Configurar
+                              </>
                             )}
                           </Button>
                         </div>
@@ -148,14 +195,24 @@ export function RecipientsSection() {
         <BankingSetupModal
           tenant={selected}
           open={!!selected}
-          onOpenChange={(o) => { if (!o) setSelected(null); }}
+          onOpenChange={(o) => {
+            if (!o) setSelected(null);
+          }}
         />
       )}
     </>
   );
 }
 
-function StatusTile({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
+function StatusTile({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+}) {
   return (
     <div className="flex items-center justify-between rounded-lg border bg-card p-3">
       <div>

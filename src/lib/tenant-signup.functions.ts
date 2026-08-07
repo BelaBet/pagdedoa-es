@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { BRAND_URL } from "@/lib/brand";
 
 /**
  * getTenantForEdit e updateTenantFull expõem/alteram dados sensíveis de
@@ -103,7 +104,10 @@ const FinancialSchema = z
     use_pagarme: z.boolean().optional(),
     pagarme_recipient_id: z
       .string()
-      .regex(/^re_[A-Za-z0-9]+$/, "pagarme_recipient_id inválido (deve começar com 're_', formato do Pagar.me v5)")
+      .regex(
+        /^re_[A-Za-z0-9]+$/,
+        "pagarme_recipient_id inválido (deve começar com 're_', formato do Pagar.me v5)",
+      )
       .optional(),
     split_platform_percent: z.number().min(0).max(1).optional(),
     auto_anticipation: z.boolean().optional(),
@@ -155,9 +159,12 @@ async function lookupPagarmeRecipient(recipientId: string): Promise<PagarmeLooku
   const key = process.env.PAGARME_SECRET_KEY;
   if (!key) return { status: null, found: false };
   const auth = "Basic " + Buffer.from(`${key}:`).toString("base64");
-  const res = await fetch(`https://api.pagar.me/core/v5/recipients/${encodeURIComponent(recipientId)}`, {
-    headers: { Authorization: auth },
-  });
+  const res = await fetch(
+    `https://api.pagar.me/core/v5/recipients/${encodeURIComponent(recipientId)}`,
+    {
+      headers: { Authorization: auth },
+    },
+  );
   if (res.status === 404) return { status: null, found: false };
   if (!res.ok) return { status: null, found: false };
   const json: any = await res.json().catch(() => null);
@@ -185,7 +192,7 @@ export const provisionTenant = createServerFn({ method: "POST" })
   .handler(async ({ data }: { data: Input }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const warnings: string[] = [];
-    const origin = process.env.PUBLIC_SITE_URL || "https://tk2projeto1.lovable.app";
+    const origin = process.env.PUBLIC_SITE_URL || BRAND_URL;
 
     const onlyDigitsDoc = data.document.replace(/\D/g, "");
 
@@ -256,7 +263,11 @@ export const provisionTenant = createServerFn({ method: "POST" })
     const base = slugify(data.church_name) || `igreja-${Date.now()}`;
     let slug = base;
     for (let i = 1; i < 50; i++) {
-      const { data: clash } = await supabaseAdmin.from("tenants").select("id").eq("slug", slug).maybeSingle();
+      const { data: clash } = await supabaseAdmin
+        .from("tenants")
+        .select("id")
+        .eq("slug", slug)
+        .maybeSingle();
       if (!clash) break;
       slug = `${base}-${i}`;
     }
@@ -372,7 +383,8 @@ export const provisionTenant = createServerFn({ method: "POST" })
       }
     }
 
-    const splitPlatform = typeof fin.split_platform_percent === "number" ? fin.split_platform_percent : 0.0415;
+    const splitPlatform =
+      typeof fin.split_platform_percent === "number" ? fin.split_platform_percent : 0.0415;
 
     {
       const { error } = await supabaseAdmin.from("tenant_financial_config" as any).insert({
@@ -408,7 +420,8 @@ export const provisionTenant = createServerFn({ method: "POST" })
       } as any)
       .select("id")
       .single();
-    if (ccErr || !cc) throw new Error(`Falha ao criar centro de custo padrão: ${ccErr?.message ?? "?"}`);
+    if (ccErr || !cc)
+      throw new Error(`Falha ao criar centro de custo padrão: ${ccErr?.message ?? "?"}`);
     const costCenterId = cc.id as string;
 
     // 7. QR Code
@@ -416,23 +429,29 @@ export const provisionTenant = createServerFn({ method: "POST" })
     let qrCodeUrl: string | null = null;
     try {
       qrCodeUrl = await generateQrDataUrl(publicUrl);
-      await supabaseAdmin.from("cost_centers").update({ qr_code_url: qrCodeUrl }).eq("id", costCenterId);
+      await supabaseAdmin
+        .from("cost_centers")
+        .update({ qr_code_url: qrCodeUrl })
+        .eq("id", costCenterId);
     } catch (e) {
       console.warn("[onboarding] falha ao gerar QR:", e);
     }
 
     // 8. Admin
     if (data.admin) {
-      const { data: invited, error: invErr } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.admin.email, {
-        data: {
-          full_name: data.admin.full_name ?? "",
-          phone: data.admin.phone ?? "",
-          tenant_id: tenantId,
-          is_tenant_founder: true,
-          lgpd_consent: true,
+      const { data: invited, error: invErr } = await supabaseAdmin.auth.admin.inviteUserByEmail(
+        data.admin.email,
+        {
+          data: {
+            full_name: data.admin.full_name ?? "",
+            phone: data.admin.phone ?? "",
+            tenant_id: tenantId,
+            is_tenant_founder: true,
+            lgpd_consent: true,
+          },
+          redirectTo: `${origin}/login?confirmed=1`,
         },
-        redirectTo: `${origin}/login?confirmed=1`,
-      });
+      );
       if (invErr) {
         warnings.push(`convite admin: ${invErr.message}`);
       } else if (invited?.user?.id) {
@@ -446,7 +465,9 @@ export const provisionTenant = createServerFn({ method: "POST" })
     }
 
     // 9. Recompute compliance
-    const { data: status } = await supabaseAdmin.rpc("recompute_tenant_compliance" as any, { _tenant_id: tenantId });
+    const { data: status } = await supabaseAdmin.rpc("recompute_tenant_compliance" as any, {
+      _tenant_id: tenantId,
+    });
 
     return {
       tenant_id: tenantId,
@@ -479,15 +500,40 @@ export const getTenantForEdit = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertPlatformAdmin(context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const [{ data: tenant }, { data: legal }, { data: address }, { data: phones }, { data: bank }, { data: fin }] =
-      await Promise.all([
-        supabaseAdmin.from("tenants").select("*").eq("id", data.tenantId).maybeSingle(),
-        supabaseAdmin.from("tenant_legal_responsible" as any).select("*").eq("tenant_id", data.tenantId).maybeSingle(),
-        supabaseAdmin.from("tenant_address" as any).select("*").eq("tenant_id", data.tenantId).maybeSingle(),
-        supabaseAdmin.from("tenant_contact_phone" as any).select("*").eq("tenant_id", data.tenantId),
-        supabaseAdmin.from("tenant_bank_account" as any).select("*").eq("tenant_id", data.tenantId).maybeSingle(),
-        supabaseAdmin.from("tenant_financial_config" as any).select("*").eq("tenant_id", data.tenantId).maybeSingle(),
-      ]);
+    const [
+      { data: tenant },
+      { data: legal },
+      { data: address },
+      { data: phones },
+      { data: bank },
+      { data: fin },
+    ] = await Promise.all([
+      supabaseAdmin.from("tenants").select("*").eq("id", data.tenantId).maybeSingle(),
+      supabaseAdmin
+        .from("tenant_legal_responsible" as any)
+        .select("*")
+        .eq("tenant_id", data.tenantId)
+        .maybeSingle(),
+      supabaseAdmin
+        .from("tenant_address" as any)
+        .select("*")
+        .eq("tenant_id", data.tenantId)
+        .maybeSingle(),
+      supabaseAdmin
+        .from("tenant_contact_phone" as any)
+        .select("*")
+        .eq("tenant_id", data.tenantId),
+      supabaseAdmin
+        .from("tenant_bank_account" as any)
+        .select("*")
+        .eq("tenant_id", data.tenantId)
+        .maybeSingle(),
+      supabaseAdmin
+        .from("tenant_financial_config" as any)
+        .select("*")
+        .eq("tenant_id", data.tenantId)
+        .maybeSingle(),
+    ]);
     if (!tenant) throw new Error("Instituição não encontrada.");
     return { tenant, legal, address, phones: phones ?? [], bank, fin };
   });
@@ -511,7 +557,8 @@ export const updateTenantFull = createServerFn({ method: "POST" })
     };
     if (inst.trade_name !== undefined) tenantUpdate.trade_name = inst.trade_name;
     if (inst.legal_name !== undefined) tenantUpdate.legal_name = inst.legal_name;
-    if (inst.institutional_email !== undefined) tenantUpdate.institutional_email = inst.institutional_email;
+    if (inst.institutional_email !== undefined)
+      tenantUpdate.institutional_email = inst.institutional_email;
     if (inst.main_phone !== undefined) tenantUpdate.main_phone = inst.main_phone;
     if (inst.website !== undefined) tenantUpdate.website = inst.website;
     if (inst.description !== undefined) tenantUpdate.description = inst.description;
@@ -522,7 +569,10 @@ export const updateTenantFull = createServerFn({ method: "POST" })
     if (br.accent_color !== undefined) tenantUpdate.accent_color = br.accent_color;
     if (br.tagline !== undefined) tenantUpdate.tagline = br.tagline;
 
-    const { error: tErr } = await supabaseAdmin.from("tenants").update(tenantUpdate as any).eq("id", tenantId);
+    const { error: tErr } = await supabaseAdmin
+      .from("tenants")
+      .update(tenantUpdate as any)
+      .eq("id", tenantId);
     if (tErr) throw new Error(`Falha ao atualizar a instituição: ${tErr.message}`);
 
     if (data.legal_responsible) {
@@ -565,7 +615,10 @@ export const updateTenantFull = createServerFn({ method: "POST" })
     }
 
     if (data.phones) {
-      await supabaseAdmin.from("tenant_contact_phone" as any).delete().eq("tenant_id", tenantId);
+      await supabaseAdmin
+        .from("tenant_contact_phone" as any)
+        .delete()
+        .eq("tenant_id", tenantId);
       if (data.phones.length) {
         const { error } = await supabaseAdmin
           .from("tenant_contact_phone" as any)
@@ -588,7 +641,8 @@ export const updateTenantFull = createServerFn({ method: "POST" })
 
     if (data.financial) {
       const fin = data.financial;
-      const splitPlatform = typeof fin.split_platform_percent === "number" ? fin.split_platform_percent : 0.0415;
+      const splitPlatform =
+        typeof fin.split_platform_percent === "number" ? fin.split_platform_percent : 0.0415;
       const { error } = await supabaseAdmin.from("tenant_financial_config" as any).upsert(
         {
           tenant_id: tenantId,

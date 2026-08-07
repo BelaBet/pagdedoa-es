@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  calculatePixAmounts,
-  calculateCardAmounts,
-  calculateBoletoAmounts,
-} from "../split.utils";
+import { calculatePixAmounts, calculateCardAmounts, calculateBoletoAmounts } from "../split.utils";
 
 // Helper: garante que todos os campos monetários são inteiros (centavos).
 function expectAllIntegers(a: object) {
@@ -26,7 +22,7 @@ describe("calculatePixAmounts", () => {
       donationAmount: 10_000,
       platformFee: 367,
       pagarmeFee: 40,
-      tk2OpFee: 25,
+      g2OpFee: 25,
       transacaoFee: 28,
       splitPlatformAmount: 432, // 367 + 40 + 25
       totalAmount: 10_432,
@@ -74,7 +70,7 @@ describe("calculateCardAmounts", () => {
       donationAmount: 10_000,
       platformFee: 373,
       pagarmeFee: 0,
-      tk2OpFee: 6,
+      g2OpFee: 6,
       transacaoFee: 28,
       splitPlatformAmount: 599,
       totalAmount: 10_599,
@@ -97,7 +93,7 @@ describe("calculateCardAmounts", () => {
       donationAmount: 10_000,
       platformFee: 375,
       pagarmeFee: 0,
-      tk2OpFee: 6,
+      g2OpFee: 6,
       transacaoFee: 28,
       splitPlatformAmount: 646,
       totalAmount: 10_646,
@@ -129,8 +125,8 @@ describe("calculateCardAmounts", () => {
       adquirencia_fixa: null,
       adquirencia_avista_percent: 0.03,
       adquirencia_2x_percent: 0.03,
-      tk2_operacional_fixo: null,
-      tk2_op_percent: 0.02,
+      g2_operacional_fixo: null,
+      g2_op_percent: 0.02,
       transacao_fixa: 50,
     };
     const a = calculateCardAmounts(10_000, 1, "master_visa", undefined, customRow);
@@ -153,7 +149,7 @@ describe("calculateBoletoAmounts", () => {
       donationAmount: 10_000,
       platformFee: 378,
       pagarmeFee: 100,
-      tk2OpFee: 250,
+      g2OpFee: 250,
       transacaoFee: 28,
       splitPlatformAmount: 728,
       totalAmount: 10_728,
@@ -175,7 +171,7 @@ describe("calculateBoletoAmounts", () => {
 
   it("aceita override de percentual (taxa de campanha customizada)", () => {
     const padrao = calculateBoletoAmounts(10_000);
-    const custom = calculateBoletoAmounts(10_000, 0.10); // 10% em vez de 3,52%
+    const custom = calculateBoletoAmounts(10_000, 0.1); // 10% em vez de 3,52%
     expect(custom.totalAmount).toBeGreaterThan(padrao.totalAmount);
   });
 

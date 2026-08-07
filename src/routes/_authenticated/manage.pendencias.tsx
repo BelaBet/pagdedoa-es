@@ -97,7 +97,10 @@ function PendenciasPage() {
           ) : (
             <p>
               Enquanto houver pendências, você pode usar o sistema normalmente, mas
-              <strong className="text-foreground"> PIX, cartão, boleto, transferências e split </strong>
+              <strong className="text-foreground">
+                {" "}
+                PIX, cartão, boleto, transferências e split{" "}
+              </strong>
               ficam bloqueados.
             </p>
           )}
@@ -110,7 +113,9 @@ function PendenciasPage() {
         </CardHeader>
         <CardContent>
           {reqPending.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Todos os documentos obrigatórios estão aprovados.</p>
+            <p className="text-sm text-muted-foreground">
+              Todos os documentos obrigatórios estão aprovados.
+            </p>
           ) : (
             <ul className="divide-y">
               {reqPending.map((d) => (
@@ -149,11 +154,7 @@ function PendenciasPage() {
 
 function DocRow({ doc }: { doc: { label: string; status: string; required: boolean } }) {
   const Icon =
-    doc.status === "approved"
-      ? CheckCircle2
-      : doc.status === "rejected"
-        ? ShieldX
-        : Clock;
+    doc.status === "approved" ? CheckCircle2 : doc.status === "rejected" ? ShieldX : Clock;
   const tone =
     doc.status === "approved"
       ? "text-emerald-600"
@@ -165,7 +166,11 @@ function DocRow({ doc }: { doc: { label: string; status: string; required: boole
       <span className="flex items-center gap-2">
         <Icon className={`h-4 w-4 ${tone}`} />
         {doc.label}
-        {doc.required && <Badge variant="outline" className="ml-2 text-[10px]">obrigatório</Badge>}
+        {doc.required && (
+          <Badge variant="outline" className="ml-2 text-[10px]">
+            obrigatório
+          </Badge>
+        )}
       </span>
       <span className="text-xs uppercase tracking-wide text-muted-foreground">{doc.status}</span>
     </li>

@@ -418,7 +418,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
     const { data, error } = await supabaseAdmin
       .from("payments")
       .select(
-        "platform_fee, pagarme_fee, tk2_op_fee, transacao_fee, split_platform_amount, split_seller_amount, seller_recipient_id",
+        "platform_fee, pagarme_fee, g2_op_fee, transacao_fee, split_platform_amount, split_seller_amount, seller_recipient_id",
       )
       .eq("status", "confirmed")
       .is("deleted_at", null);
@@ -426,7 +426,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
     type Row = {
       platform_fee: number | null;
       pagarme_fee: number | null;
-      tk2_op_fee: number | null;
+      g2_op_fee: number | null;
       transacao_fee: number | null;
       split_platform_amount: number | null;
       split_seller_amount: number | null;
@@ -437,7 +437,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
       (acc, r) => {
         acc.platformRevenue += r.platform_fee ?? 0;
         acc.pagarmeAbsorbed += r.pagarme_fee ?? 0;
-        acc.tk2OpRevenue += r.tk2_op_fee ?? 0;
+        acc.g2OpRevenue += r.g2_op_fee ?? 0;
         acc.transacaoAbsorbed += r.transacao_fee ?? 0;
         acc.totalPlatform += r.split_platform_amount ?? 0;
         acc.totalSeller += r.split_seller_amount ?? 0;
@@ -446,7 +446,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
       {
         platformRevenue: 0,
         pagarmeAbsorbed: 0,
-        tk2OpRevenue: 0,
+        g2OpRevenue: 0,
         transacaoAbsorbed: 0,
         totalPlatform: 0,
         totalSeller: 0,
@@ -457,7 +457,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
       {
         sellerRecipientId: string;
         platformRevenue: number;
-        tk2OpRevenue: number;
+        g2OpRevenue: number;
         totalPlatform: number;
         totalSeller: number;
         count: number;
@@ -468,13 +468,13 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
       const cur = bySellerMap.get(k) ?? {
         sellerRecipientId: k,
         platformRevenue: 0,
-        tk2OpRevenue: 0,
+        g2OpRevenue: 0,
         totalPlatform: 0,
         totalSeller: 0,
         count: 0,
       };
       cur.platformRevenue += r.platform_fee ?? 0;
-      cur.tk2OpRevenue += r.tk2_op_fee ?? 0;
+      cur.g2OpRevenue += r.g2_op_fee ?? 0;
       cur.totalPlatform += r.split_platform_amount ?? 0;
       cur.totalSeller += r.split_seller_amount ?? 0;
       cur.count += 1;
@@ -504,15 +504,14 @@ export type WithdrawalReportItem = {
  */
 export const getWithdrawalsReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
-    (d: { periodStart: string; periodEnd: string; tenantId?: string }) =>
-      z
-        .object({
-          periodStart: z.string().min(8),
-          periodEnd: z.string().min(8),
-          tenantId: z.string().uuid().optional(),
-        })
-        .parse(d),
+  .inputValidator((d: { periodStart: string; periodEnd: string; tenantId?: string }) =>
+    z
+      .object({
+        periodStart: z.string().min(8),
+        periodEnd: z.string().min(8),
+        tenantId: z.string().uuid().optional(),
+      })
+      .parse(d),
   )
   .handler(async ({ data, context }) => {
     const ctx = context as unknown as {
@@ -552,9 +551,7 @@ export const getWithdrawalsReport = createServerFn({ method: "POST" })
     const start = new Date(`${data.periodStart}T00:00:00.000Z`).getTime();
     const end = new Date(`${data.periodEnd}T23:59:59.999Z`).getTime();
 
-    async function fetchAllPages<T extends { created_at: string }>(
-      path: string,
-    ): Promise<T[]> {
+    async function fetchAllPages<T extends { created_at: string }>(path: string): Promise<T[]> {
       const out: T[] = [];
       let page = 1;
       // Os resultados vêm ordenados do mais recente para o mais antigo; para

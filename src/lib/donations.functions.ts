@@ -114,7 +114,6 @@ export const getDonationsList = createServerFn({ method: "POST" })
     const access = await resolveAccess(ctx);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    
     let countQuery = supabaseAdmin
       .from("payments")
       .select("id", { count: "exact", head: true })
@@ -279,15 +278,13 @@ function extractBillingAddress(gatewayRequest: unknown): BillingAddress {
   const addr =
     (req.billing_address as Record<string, unknown> | undefined) ??
     ((req.customer as Record<string, unknown> | undefined)?.address as
-      | Record<string, unknown>
-      | undefined);
+      Record<string, unknown> | undefined);
   if (!addr) return null;
   const line1 = [addr.line_1, addr.line1].find((v) => typeof v === "string") as string | undefined;
   const city = addr.city as string | undefined;
   const state = addr.state as string | undefined;
   const zip = [addr.zip_code, addr.zipCode].find((v) => typeof v === "string") as
-    | string
-    | undefined;
+    string | undefined;
   if (!line1 && !city && !zip) return null;
   return { line1: line1 ?? "", city: city ?? "", state: state ?? "", zipCode: zip ?? "" };
 }
@@ -322,7 +319,6 @@ export const getDonationDetail = createServerFn({ method: "POST" })
     const access = await resolveAccess(ctx);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    
     let query = supabaseAdmin
       .from("payments")
       .select(
@@ -377,7 +373,7 @@ export const getDonationDetail = createServerFn({ method: "POST" })
         donorPhone = d.donor_phone;
         grossAmountCents = d.gross_amount;
         netAmountCents = d.net_amount ?? netAmountCents;
-        // NOTA: admin_fee no banco guarda só a parcela ADM TK2 (3,52%), não a
+        // NOTA: admin_fee no banco guarda só a parcela ADM G2 (3,52%), não a
         // taxa total (também inclui adquirente + taxa fixa Pagar.me). A taxa
         // real cobrada do doador é sempre bruto − líquido — mesmo cálculo já
         // usado em getDonationsReport(). Não usar d.admin_fee diretamente aqui.
@@ -446,27 +442,24 @@ export type DonationReportItem = {
  * Relatório completo de doações (PDF). Traz todas as informações captadas
  * no momento do pagamento, e só dois valores monetários por doação:
  * valor da doação (bruto) e taxa de administração — já consolidada em
- * uma única taxa (soma de adquirente + operacional TK2 + fixa por
+ * uma única taxa (soma de adquirente + operacional G2 + fixa por
  * transação), calculada em computeFees() no momento da cobrança.
  */
 export const getDonationsReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
-    (d: { periodStart: string; periodEnd: string; tenantId?: string }) =>
-      z
-        .object({
-          periodStart: z.string().min(8),
-          periodEnd: z.string().min(8),
-          tenantId: z.string().uuid().optional(),
-        })
-        .parse(d),
+  .inputValidator((d: { periodStart: string; periodEnd: string; tenantId?: string }) =>
+    z
+      .object({
+        periodStart: z.string().min(8),
+        periodEnd: z.string().min(8),
+        tenantId: z.string().uuid().optional(),
+      })
+      .parse(d),
   )
   .handler(async ({ data, context }) => {
     const ctx = context as unknown as Ctx;
     const access = await resolveAccess(ctx);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    
 
     // Consulta a tabela base diretamente (a view donations_staff foi
     // removida e nunca recriada — ver nota em getDonationsList).
@@ -523,8 +516,8 @@ export const getDonationsReport = createServerFn({ method: "POST" })
       const net = d.net_amount ?? 0;
       const gross = d.gross_amount ?? net;
       // Taxa de administração real cobrada do doador = tudo que veio além da doação
-      // (inclui ADM TK2 + adquirente + taxa fixa Pagar.me). O campo admin_fee guarda
-      // apenas a parcela ADM TK2 (3,52%), por isso não pode ser usado como "taxa total".
+      // (inclui ADM G2 + adquirente + taxa fixa Pagar.me). O campo admin_fee guarda
+      // apenas a parcela ADM G2 (3,52%), por isso não pode ser usado como "taxa total".
       const totalFee = Math.max(gross - net, 0);
       return {
         id: d.id,
@@ -542,7 +535,6 @@ export const getDonationsReport = createServerFn({ method: "POST" })
       };
     });
 
-
     return { items, isPlatformAdmin: access.isPlatformAdmin };
   });
 
@@ -557,7 +549,6 @@ export const getTenantOptions = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     if (!access.isPlatformAdmin) return { items: [] as TenantOption[], isPlatformAdmin: false };
 
-    
     const { data, error } = await supabaseAdmin
       .from("tenants")
       .select("id, name")

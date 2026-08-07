@@ -10,7 +10,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Percent, Save } from "lucide-react";
 import { toast } from "sonner";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -37,7 +41,10 @@ const METHOD_LABEL: Record<PaymentMethodKey, string> = {
 };
 
 const HAS_FIXED_ADQUIRENCIA: PaymentMethodKey[] = ["pix", "boleto"];
-const HAS_PERCENT_ADQUIRENCIA: PaymentMethodKey[] = ["cartao_master_visa", "cartao_ello_hiper_amex"];
+const HAS_PERCENT_ADQUIRENCIA: PaymentMethodKey[] = [
+  "cartao_master_visa",
+  "cartao_ello_hiper_amex",
+];
 
 function TaxasPage() {
   const qc = useQueryClient();
@@ -62,9 +69,9 @@ function TaxasPage() {
       <div>
         <h1 className="font-display text-3xl">Configuração de Taxas</h1>
         <p className="text-sm text-muted-foreground">
-          Taxas cobradas em cada doação, por método de pagamento. Editar aqui muda o valor
-          cobrado em <strong>todas as próximas doações</strong>, em todas as instituições — sem
-          precisar de deploy. Doações já processadas não são afetadas.
+          Taxas cobradas em cada doação, por método de pagamento. Editar aqui muda o valor cobrado
+          em <strong>todas as próximas doações</strong>, em todas as instituições — sem precisar de
+          deploy. Doações já processadas não são afetadas.
         </p>
       </div>
 
@@ -80,7 +87,9 @@ function TaxasPage() {
           <SelectContent>
             <SelectItem value={PLATFORM_VALUE}>Padrão da plataforma (todas)</SelectItem>
             {(tenants ?? []).map((t) => (
-              <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+              <SelectItem key={t.id} value={t.id}>
+                {t.name}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -112,7 +121,9 @@ function TaxasPage() {
               }}
               onReset={async () => {
                 if (!tenantId) return;
-                await resetFn({ data: { tenant_id: tenantId, payment_method: row.payment_method } });
+                await resetFn({
+                  data: { tenant_id: tenantId, payment_method: row.payment_method },
+                });
                 toast.success("Voltou ao padrão da plataforma.");
                 qc.invalidateQueries({ queryKey: ["fee-config"] });
               }}
@@ -141,8 +152,8 @@ function FeeCard({
     adquirencia_fixa?: number | null;
     adquirencia_avista_percent?: number | null;
     adquirencia_2x_percent?: number | null;
-    tk2_operacional_fixo?: number | null;
-    tk2_op_percent?: number | null;
+    g2_operacional_fixo?: number | null;
+    g2_op_percent?: number | null;
     transacao_fixa: number;
     antecipacao_custo_percent?: number | null;
   }) => Promise<void>;
@@ -151,13 +162,25 @@ function FeeCard({
   // valores fixos em reais (0.40) — convertidos para decimal/centavos só
   // no momento de salvar.
   const [admPercent, setAdmPercent] = useState((row.adm_percent * 100).toString());
-  const [adquirenciaFixa, setAdquirenciaFixa] = useState(row.adquirencia_fixa != null ? (row.adquirencia_fixa / 100).toFixed(2) : "");
-  const [adquirenciaAvista, setAdquirenciaAvista] = useState(row.adquirencia_avista_percent != null ? (row.adquirencia_avista_percent * 100).toString() : "");
-  const [adquirencia2x, setAdquirencia2x] = useState(row.adquirencia_2x_percent != null ? (row.adquirencia_2x_percent * 100).toString() : "");
-  const [tk2OpFixo, setTk2OpFixo] = useState(row.tk2_operacional_fixo != null ? (row.tk2_operacional_fixo / 100).toFixed(2) : "");
-  const [tk2OpPercent, setTk2OpPercent] = useState(row.tk2_op_percent != null ? (row.tk2_op_percent * 100).toString() : "");
+  const [adquirenciaFixa, setAdquirenciaFixa] = useState(
+    row.adquirencia_fixa != null ? (row.adquirencia_fixa / 100).toFixed(2) : "",
+  );
+  const [adquirenciaAvista, setAdquirenciaAvista] = useState(
+    row.adquirencia_avista_percent != null ? (row.adquirencia_avista_percent * 100).toString() : "",
+  );
+  const [adquirencia2x, setAdquirencia2x] = useState(
+    row.adquirencia_2x_percent != null ? (row.adquirencia_2x_percent * 100).toString() : "",
+  );
+  const [g2OpFixo, setG2OpFixo] = useState(
+    row.g2_operacional_fixo != null ? (row.g2_operacional_fixo / 100).toFixed(2) : "",
+  );
+  const [g2OpPercent, setG2OpPercent] = useState(
+    row.g2_op_percent != null ? (row.g2_op_percent * 100).toString() : "",
+  );
   const [transacaoFixa, setTransacaoFixa] = useState((row.transacao_fixa / 100).toFixed(2));
-  const [antecipacao, setAntecipacao] = useState(row.antecipacao_custo_percent != null ? (row.antecipacao_custo_percent * 100).toString() : "");
+  const [antecipacao, setAntecipacao] = useState(
+    row.antecipacao_custo_percent != null ? (row.antecipacao_custo_percent * 100).toString() : "",
+  );
   const [saving, setSaving] = useState(false);
 
   const hasFixed = HAS_FIXED_ADQUIRENCIA.includes(row.payment_method);
@@ -172,8 +195,8 @@ function FeeCard({
         adquirencia_fixa: hasFixed ? Math.round(Number(adquirenciaFixa) * 100) : null,
         adquirencia_avista_percent: hasPercent ? Number(adquirenciaAvista) : null,
         adquirencia_2x_percent: hasPercent ? Number(adquirencia2x) : null,
-        tk2_operacional_fixo: hasFixed ? Math.round(Number(tk2OpFixo) * 100) : null,
-        tk2_op_percent: hasPercent ? Number(tk2OpPercent) : null,
+        g2_operacional_fixo: hasFixed ? Math.round(Number(g2OpFixo) * 100) : null,
+        g2_op_percent: hasPercent ? Number(g2OpPercent) : null,
         transacao_fixa: Math.round(Number(transacaoFixa) * 100),
         antecipacao_custo_percent: hasPercent ? Number(antecipacao) : null,
       });
@@ -201,11 +224,21 @@ function FeeCard({
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
             <Label className="text-xs">Taxa administrativa (%)</Label>
-            <Input type="number" step="0.01" value={admPercent} onChange={(e) => setAdmPercent(e.target.value)} />
+            <Input
+              type="number"
+              step="0.01"
+              value={admPercent}
+              onChange={(e) => setAdmPercent(e.target.value)}
+            />
           </div>
           <div className="space-y-1">
             <Label className="text-xs">Taxa fixa/transação (R$)</Label>
-            <Input type="number" step="0.01" value={transacaoFixa} onChange={(e) => setTransacaoFixa(e.target.value)} />
+            <Input
+              type="number"
+              step="0.01"
+              value={transacaoFixa}
+              onChange={(e) => setTransacaoFixa(e.target.value)}
+            />
           </div>
         </div>
 
@@ -213,11 +246,21 @@ function FeeCard({
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label className="text-xs">Adquirência fixa (R$)</Label>
-              <Input type="number" step="0.01" value={adquirenciaFixa} onChange={(e) => setAdquirenciaFixa(e.target.value)} />
+              <Input
+                type="number"
+                step="0.01"
+                value={adquirenciaFixa}
+                onChange={(e) => setAdquirenciaFixa(e.target.value)}
+              />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">Operacional TK2 fixo (R$)</Label>
-              <Input type="number" step="0.01" value={tk2OpFixo} onChange={(e) => setTk2OpFixo(e.target.value)} />
+              <Label className="text-xs">Operacional G2 fixo (R$)</Label>
+              <Input
+                type="number"
+                step="0.01"
+                value={g2OpFixo}
+                onChange={(e) => setG2OpFixo(e.target.value)}
+              />
             </div>
           </div>
         )}
@@ -227,21 +270,41 @@ function FeeCard({
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">Adquirência à vista (%)</Label>
-                <Input type="number" step="0.01" value={adquirenciaAvista} onChange={(e) => setAdquirenciaAvista(e.target.value)} />
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={adquirenciaAvista}
+                  onChange={(e) => setAdquirenciaAvista(e.target.value)}
+                />
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Adquirência parcelado (%)</Label>
-                <Input type="number" step="0.01" value={adquirencia2x} onChange={(e) => setAdquirencia2x(e.target.value)} />
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={adquirencia2x}
+                  onChange={(e) => setAdquirencia2x(e.target.value)}
+                />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs">Operacional TK2 (%)</Label>
-                <Input type="number" step="0.01" value={tk2OpPercent} onChange={(e) => setTk2OpPercent(e.target.value)} />
+                <Label className="text-xs">Operacional G2 (%)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={g2OpPercent}
+                  onChange={(e) => setG2OpPercent(e.target.value)}
+                />
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Custo antecipação (%)</Label>
-                <Input type="number" step="0.01" value={antecipacao} onChange={(e) => setAntecipacao(e.target.value)} />
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={antecipacao}
+                  onChange={(e) => setAntecipacao(e.target.value)}
+                />
               </div>
             </div>
           </>

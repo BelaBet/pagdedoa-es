@@ -15,10 +15,7 @@ interface ThemeContextValue {
   resetOverrides: () => void;
 }
 
-const DEFAULT_THEME: ChurchTheme = buildTheme(
-  { primary: "#1a3a5c", accent: "#C9993A" },
-  "default",
-);
+const DEFAULT_THEME: ChurchTheme = buildTheme({ primary: "#1a3a5c", accent: "#C9993A" }, "default");
 
 const ThemeContext = createContext<ThemeContextValue>({
   theme: DEFAULT_THEME,
@@ -37,12 +34,12 @@ interface ProviderProps {
   children: React.ReactNode;
 }
 
-export function ChurchThemeProvider({
-  source,
-  injectCssVars = true,
-  children,
-}: ProviderProps) {
-  const [extracted, setExtracted] = useState<{ primary?: string; accent?: string; background?: string }>({});
+export function ChurchThemeProvider({ source, injectCssVars = true, children }: ProviderProps) {
+  const [extracted, setExtracted] = useState<{
+    primary?: string;
+    accent?: string;
+    background?: string;
+  }>({});
   const [overrides, setOverridesState] = useState<Partial<ChurchTheme>>(source?.overrides ?? {});
 
   // Auto-extract from logo + cover when sources change.
@@ -50,8 +47,12 @@ export function ChurchThemeProvider({
     let cancelled = false;
     (async () => {
       const [logoPalette, coverPalette] = await Promise.all([
-        source?.logoUrl ? extractPalette(source.logoUrl) : Promise.resolve({} as Awaited<ReturnType<typeof extractPalette>>),
-        source?.coverUrl ? extractPalette(source.coverUrl) : Promise.resolve({} as Awaited<ReturnType<typeof extractPalette>>),
+        source?.logoUrl
+          ? extractPalette(source.logoUrl)
+          : Promise.resolve({} as Awaited<ReturnType<typeof extractPalette>>),
+        source?.coverUrl
+          ? extractPalette(source.coverUrl)
+          : Promise.resolve({} as Awaited<ReturnType<typeof extractPalette>>),
       ]);
       if (cancelled) return;
       setExtracted({

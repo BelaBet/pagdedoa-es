@@ -11,8 +11,12 @@ export const Route = createFileRoute("/_authenticated/notifications")({
 });
 
 type Notification = {
-  id: string; title: string; body: string | null; read: boolean;
-  type: string | null; created_at: string;
+  id: string;
+  title: string;
+  body: string | null;
+  read: boolean;
+  type: string | null;
+  created_at: string;
 };
 
 function NotificationsPage() {
@@ -33,11 +37,20 @@ function NotificationsPage() {
     if (!user) return;
     const channel = supabase
       .channel("notif-list")
-      .on("postgres_changes",
-        { event: "*", schema: "public", table: "notifications", filter: `profile_id=eq.${user.id}` },
-        () => load())
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+          filter: `profile_id=eq.${user.id}`,
+        },
+        () => load(),
+      )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const markRead = async (id: string) => {

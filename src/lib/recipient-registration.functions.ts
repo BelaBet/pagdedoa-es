@@ -11,7 +11,8 @@ const PAGARME_BASE = "https://api.pagar.me/core/v5";
 function authHeader(): string {
   const key = process.env.PAGARME_SECRET_KEY;
   if (!key) throw new Error("PAGARME_SECRET_KEY não configurado");
-  const token = typeof btoa === "function" ? btoa(`${key}:`) : Buffer.from(`${key}:`).toString("base64");
+  const token =
+    typeof btoa === "function" ? btoa(`${key}:`) : Buffer.from(`${key}:`).toString("base64");
   return `Basic ${token}`;
 }
 
@@ -27,7 +28,11 @@ async function pagarme<T = unknown>(path: string, init?: RequestInit): Promise<T
   });
   const text = await res.text();
   let body: unknown = null;
-  try { body = text ? JSON.parse(text) : null; } catch { body = text; }
+  try {
+    body = text ? JSON.parse(text) : null;
+  } catch {
+    body = text;
+  }
   if (!res.ok) {
     const msg =
       typeof body === "object" && body && "message" in body
@@ -62,12 +67,7 @@ const BankingSchema = z.object({
 });
 
 export type RecipientStatus =
-  | "not_configured"
-  | "registration"
-  | "affiliation"
-  | "active"
-  | "refused"
-  | "error";
+  "not_configured" | "registration" | "affiliation" | "active" | "refused" | "error";
 
 export type TenantRecipientRow = {
   id: string;
@@ -126,7 +126,8 @@ export const registerTenantRecipient = createServerFn({ method: "POST" })
     const documentClean = data.holderDocument.replace(/\D/g, "");
     const tenantDoc = (t.document ?? "").replace(/\D/g, "") || documentClean;
     const docType: "individual" | "company" = tenantDoc.length === 11 ? "individual" : "company";
-    const holderType: "individual" | "company" = documentClean.length === 11 ? "individual" : "company";
+    const holderType: "individual" | "company" =
+      documentClean.length === 11 ? "individual" : "company";
 
     const payload = {
       name: data.legalName,
@@ -176,21 +177,19 @@ export const registerTenantRecipient = createServerFn({ method: "POST" })
       })
       .eq("id", data.tenantId);
 
-    await supabaseAdmin
-      .from("tenant_bank_account")
-      .upsert(
-        {
-          tenant_id: data.tenantId,
-          bank_code: data.bankCode,
-          branch: data.bankAgency,
-          account: data.bankAccount,
-          account_digit: data.bankAccountDv,
-          account_type: data.accountType === "savings" ? "savings" : "checking",
-          holder_name: data.holderName,
-          holder_document: documentClean,
-        },
-        { onConflict: "tenant_id" },
-      );
+    await supabaseAdmin.from("tenant_bank_account").upsert(
+      {
+        tenant_id: data.tenantId,
+        bank_code: data.bankCode,
+        branch: data.bankAgency,
+        account: data.bankAccount,
+        account_digit: data.bankAccountDv,
+        account_type: data.accountType === "savings" ? "savings" : "checking",
+        holder_name: data.holderName,
+        holder_document: documentClean,
+      },
+      { onConflict: "tenant_id" },
+    );
 
     return {
       recipientId: result.id,
@@ -220,7 +219,9 @@ export const syncRecipientStatus = createServerFn({ method: "POST" })
     }
 
     try {
-      const result = await pagarme<{ id: string; status: string }>(`/recipients/${tenant.recipient_id}`);
+      const result = await pagarme<{ id: string; status: string }>(
+        `/recipients/${tenant.recipient_id}`,
+      );
       await supabaseAdmin
         .from("tenants")
         .update({ recipient_status: result.status })
@@ -255,7 +256,9 @@ export const listTenantsWithRecipientStatus = createServerFn({ method: "POST" })
     if (ids.length > 0) {
       const { data: banks } = await supabaseAdmin
         .from("tenant_bank_account")
-        .select("tenant_id, bank_code, branch, account, account_digit, account_type, holder_name, holder_document")
+        .select(
+          "tenant_id, bank_code, branch, account, account_digit, account_type, holder_name, holder_document",
+        )
         .in("tenant_id", ids);
       bankByTenant = Object.fromEntries(
         ((banks ?? []) as Array<Record<string, unknown>>).map((b) => [b.tenant_id as string, b]),

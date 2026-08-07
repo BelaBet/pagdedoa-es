@@ -41,8 +41,11 @@ export function TablePagination({
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 border-t px-2 py-3 text-sm">
       <p className="text-xs text-muted-foreground">
-        Exibindo <span className="font-medium text-foreground">{start}–{end}</span> de{" "}
-        <span className="font-medium text-foreground">{total}</span> {itemLabel}
+        Exibindo{" "}
+        <span className="font-medium text-foreground">
+          {start}–{end}
+        </span>{" "}
+        de <span className="font-medium text-foreground">{total}</span> {itemLabel}
       </p>
       <div className="flex items-center gap-1">
         <Button

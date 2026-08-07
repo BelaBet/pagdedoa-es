@@ -24,8 +24,7 @@ export const BRAND = {
   tagline: "Plataforma de Gestão",
 
   /** Descrição usada em <meta description> e cartões de compartilhamento. */
-  description:
-    "Plataforma para gestão de comunidades religiosas — eventos, doações, mensagens.",
+  description: "Plataforma para gestão de comunidades religiosas — eventos, doações, mensagens.",
 
   /** Domínio raiz, sem protocolo e sem barra final. */
   domain: "meuhub.site",

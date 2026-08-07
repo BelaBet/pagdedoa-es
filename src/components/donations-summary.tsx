@@ -57,7 +57,12 @@ function getDateRange(periodo: Periodo, dataInicio: string, dataFim: string) {
   }
 }
 
-function useDashboardMetrics(periodo: Periodo, dataInicio: string, dataFim: string, tenantId: string | null) {
+function useDashboardMetrics(
+  periodo: Periodo,
+  dataInicio: string,
+  dataFim: string,
+  tenantId: string | null,
+) {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -180,7 +185,12 @@ export function DonationsSummary({ tenantId }: { tenantId: string | null }) {
   const [appliedInicio, setAppliedInicio] = useState("");
   const [appliedFim, setAppliedFim] = useState("");
 
-  const { rows, loading, range } = useDashboardMetrics(periodo, appliedInicio, appliedFim, tenantId);
+  const { rows, loading, range } = useDashboardMetrics(
+    periodo,
+    appliedInicio,
+    appliedFim,
+    tenantId,
+  );
 
   const aplicarCustom = () => {
     if (!dataInicio || !dataFim) {

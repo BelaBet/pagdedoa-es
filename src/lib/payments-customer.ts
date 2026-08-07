@@ -32,9 +32,7 @@ export async function resolveCustomer(input: {
 }): Promise<ResolvedCustomer> {
   const name = input.customerName ?? null;
   const email = input.customerEmail ?? null;
-  const docDigits = input.customerDocument
-    ? input.customerDocument.replace(/\D/g, "")
-    : "";
+  const docDigits = input.customerDocument ? input.customerDocument.replace(/\D/g, "") : "";
   const document = docDigits || null;
   const documentType: "CPF" | "CNPJ" | null = document
     ? document.length === 14
@@ -61,9 +59,8 @@ export function validateDocument(raw: string | null | undefined): boolean {
   if (d.length === 14) {
     if (/^(\d)\1{13}$/.test(d)) return false;
     const calc = (len: number) => {
-      const weights = len === 12
-        ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-        : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+      const weights =
+        len === 12 ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2] : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
       let sum = 0;
       for (let i = 0; i < len; i++) sum += Number(d[i]) * weights[i];
       const r = sum % 11;
@@ -89,4 +86,3 @@ export function buildPagarmeCustomer(c: ResolvedCustomer) {
   }
   return obj;
 }
-

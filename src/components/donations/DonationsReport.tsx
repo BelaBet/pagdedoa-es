@@ -147,7 +147,8 @@ async function buildPdf(
       donorDocument: maskDocument(item.donorDocument),
       donorPhone: item.donorPhone ?? "—",
       donorEmail: item.donorEmail ?? "—",
-      paymentMethod: translateMethod(item.paymentMethod) + (item.cardBrand ? ` (${item.cardBrand})` : ""),
+      paymentMethod:
+        translateMethod(item.paymentMethod) + (item.cardBrand ? ` (${item.cardBrand})` : ""),
       donationAmountCents: brl(item.donationAmountCents),
       adminFeeCents: brl(item.adminFeeCents),
     };
@@ -218,10 +219,17 @@ async function buildPdf(
 
     let totalWithdrawn = 0;
     let totalWithdrawalFee = 0;
-    const typeLabel: Record<string, string> = { transfer: "Retirada (saque)", anticipation: "Antecipação" };
+    const typeLabel: Record<string, string> = {
+      transfer: "Retirada (saque)",
+      anticipation: "Antecipação",
+    };
     const statusLabel: Record<string, string> = {
-      paid: "Pago", transferred: "Transferido", pending: "Pendente",
-      processing: "Processando", failed: "Falhou", canceled: "Cancelado",
+      paid: "Pago",
+      transferred: "Transferido",
+      pending: "Pendente",
+      processing: "Processando",
+      failed: "Falhou",
+      canceled: "Cancelado",
     };
 
     for (const w of withdrawalItems) {
@@ -310,7 +318,8 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
   });
 
   const items = report.data?.items ?? [];
-  const isPlatformAdmin = showTenantFilter && !impersonating && (report.data?.isPlatformAdmin ?? false);
+  const isPlatformAdmin =
+    showTenantFilter && !impersonating && (report.data?.isPlatformAdmin ?? false);
   const totalDonation = items.reduce((sum, i) => sum + i.donationAmountCents, 0);
   const totalFee = items.reduce((sum, i) => sum + i.adminFeeCents, 0);
   // Paginação é só da pré-visualização em tela — o PDF (buildPdf) sempre
@@ -399,7 +408,14 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
           onClick={async () => {
             setGeneratingPdf(true);
             try {
-              await buildPdf(items, withdrawalItems, period.periodStart, period.periodEnd, isPlatformAdmin, tenantLabel);
+              await buildPdf(
+                items,
+                withdrawalItems,
+                period.periodStart,
+                period.periodEnd,
+                isPlatformAdmin,
+                tenantLabel,
+              );
             } finally {
               setGeneratingPdf(false);
             }
@@ -434,10 +450,12 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
               <strong className="text-foreground">{items.length}</strong> doações
             </span>
             <span>
-              Valor total das doações: <strong className="text-foreground">{brl(totalDonation)}</strong>
+              Valor total das doações:{" "}
+              <strong className="text-foreground">{brl(totalDonation)}</strong>
             </span>
             <span>
-              Taxa de administração total: <strong className="text-foreground">{brl(totalFee)}</strong>
+              Taxa de administração total:{" "}
+              <strong className="text-foreground">{brl(totalFee)}</strong>
             </span>
           </div>
           <Card>
@@ -458,12 +476,18 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
                 <TableBody>
                   {itemsPg.paginated.map((d) => (
                     <TableRow key={d.id}>
-                      <TableCell className="text-muted-foreground">{fmtDate(d.createdAt)}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {fmtDate(d.createdAt)}
+                      </TableCell>
                       {isPlatformAdmin && (
-                        <TableCell className="text-muted-foreground">{d.tenantName ?? "—"}</TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {d.tenantName ?? "—"}
+                        </TableCell>
                       )}
                       <TableCell className="font-medium">{d.donorName ?? "—"}</TableCell>
-                      <TableCell className="text-muted-foreground">{maskDocument(d.donorDocument)}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {maskDocument(d.donorDocument)}
+                      </TableCell>
                       <TableCell className="text-muted-foreground">
                         <div className="flex flex-col">
                           <span>{d.donorPhone ?? "—"}</span>
@@ -474,7 +498,9 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
                         {translateMethod(d.paymentMethod)}
                         {d.cardBrand ? ` · ${d.cardBrand}` : ""}
                       </TableCell>
-                      <TableCell className="w-32 text-right font-medium tabular-nums">{brl(d.donationAmountCents)}</TableCell>
+                      <TableCell className="w-32 text-right font-medium tabular-nums">
+                        {brl(d.donationAmountCents)}
+                      </TableCell>
                       <TableCell className="w-24 text-right text-muted-foreground tabular-nums">
                         {brl(d.adminFeeCents)}
                       </TableCell>
@@ -507,8 +533,8 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
         </Card>
       ) : withdrawals.data?.unavailable ? (
         <p className="text-xs text-muted-foreground">
-          Retiradas e antecipações não ficam disponíveis para "Todas as instituições" — selecione uma
-          instituição específica para ver esses dados.
+          Retiradas e antecipações não ficam disponíveis para "Todas as instituições" — selecione
+          uma instituição específica para ver esses dados.
         </p>
       ) : withdrawalItems.length > 0 ? (
         <>
@@ -538,11 +564,15 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
                 <TableBody>
                   {withdrawalsPg.paginated.map((w) => (
                     <TableRow key={w.id}>
-                      <TableCell className="text-muted-foreground">{fmtDate(w.createdAt)}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {fmtDate(w.createdAt)}
+                      </TableCell>
                       <TableCell className="font-medium">
                         {w.type === "transfer" ? "Retirada (saque)" : "Antecipação"}
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{translateStatus(w.status)}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {translateStatus(w.status)}
+                      </TableCell>
                       <TableCell className="text-right font-medium">{brl(w.amountCents)}</TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         {w.feeCents > 0 ? brl(w.feeCents) : "—"}
@@ -566,8 +596,8 @@ export function DonationsReport({ showTenantFilter = true }: { showTenantFilter?
       ) : null}
 
       <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <FileText className="h-3.5 w-3.5" />
-        O PDF inclui todos os dados exibidos acima, com totais consolidados no rodapé.
+        <FileText className="h-3.5 w-3.5" />O PDF inclui todos os dados exibidos acima, com totais
+        consolidados no rodapé.
       </p>
     </div>
   );

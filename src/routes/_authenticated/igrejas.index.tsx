@@ -13,7 +13,9 @@ function IgrejasList() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-2xl">Igrejas</h1>
-          <p className="text-sm text-muted-foreground">Gerencie as igrejas cadastradas na plataforma.</p>
+          <p className="text-sm text-muted-foreground">
+            Gerencie as igrejas cadastradas na plataforma.
+          </p>
         </div>
         <Button asChild>
           <Link to="/igrejas/nova" search={{ tenantId: undefined }}>
@@ -28,7 +30,8 @@ function IgrejasList() {
         </div>
         <h2 className="font-medium">Nenhuma igreja cadastrada</h2>
         <p className="max-w-md text-sm text-muted-foreground">
-          Cadastre a primeira igreja para habilitar a identidade visual e o recebimento de contribuições.
+          Cadastre a primeira igreja para habilitar a identidade visual e o recebimento de
+          contribuições.
         </p>
         <Button asChild className="mt-2">
           <Link to="/igrejas/onboarding">Iniciar cadastro</Link>

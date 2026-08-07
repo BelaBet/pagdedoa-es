@@ -79,7 +79,7 @@ export function AppSidebar() {
   // página atual — pensado pra página pública (church-page.tsx), não pro
   // painel logado. Quem acessa o painel pelo domínio compartilhado (não
   // pelo subdomínio próprio da igreja) caía no fallback "default" desse
-  // resolvedor, que aponta pro tenant interno da TK2 — mostrando o nome
+  // resolvedor, que aponta pro tenant interno da G2 — mostrando o nome
   // dela no menu de qualquer igreja. Aqui usamos o tenant de quem está
   // logado (considerando impersonação), nunca a URL.
   const { data: tenant } = useQuery({
@@ -145,7 +145,9 @@ export function AppSidebar() {
 
         {isSuperAdmin && (
           <SidebarGroup>
-            <SidebarGroupLabel className="h-auto py-2 leading-tight">Plataforma&nbsp;{"\n"}Centro de Doações</SidebarGroupLabel>
+            <SidebarGroupLabel className="h-auto py-2 leading-tight">
+              Plataforma&nbsp;{"\n"}Centro de Doações
+            </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {PLATFORM_ITEMS.map((i) => (

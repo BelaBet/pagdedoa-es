@@ -31,7 +31,6 @@ async function assertPlatformAdmin(userId: string) {
   }
 }
 
-
 /** Upload do banner de um evento para o bucket público event-banners. */
 export const uploadEventBanner = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -71,14 +70,16 @@ export const uploadEventBanner = createServerFn({ method: "POST" })
 /** Lista todos os eventos de todas as igrejas (apenas plataforma). */
 export const getAllEvents = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({ tenantId: z.string().uuid().optional() }).parse(d ?? {}))
+  .inputValidator((d: unknown) =>
+    z.object({ tenantId: z.string().uuid().optional() }).parse(d ?? {}),
+  )
   .handler(async ({ data, context }) => {
     await assertPlatformAdmin(context.userId);
 
     let query = supabaseAdmin
       .from("events")
       .select(
-        "id,title,date,location,description,banner_url,external_url,status,created_at,tenant_id,tenants(name,slug)"
+        "id,title,date,location,description,banner_url,external_url,status,created_at,tenant_id,tenants(name,slug)",
       )
       .order("date", { ascending: false, nullsFirst: false });
     if (data.tenantId) query = query.eq("tenant_id", data.tenantId);
@@ -161,5 +162,3 @@ export const deleteEventAsAdmin = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
-
-

@@ -1,11 +1,7 @@
 import { useRef } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { QrCode, Download } from "lucide-react";
 import { toast } from "sonner";
 
@@ -39,7 +35,9 @@ export function DynamicQrButton({
         <div ref={qrRef} className="rounded-lg bg-white p-3 shadow-sm">
           <QRCodeCanvas value={url} size={160} level="M" includeMargin={false} fgColor={primary} />
         </div>
-        <p className="max-w-[160px] break-all text-center text-[10px] text-muted-foreground">{url}</p>
+        <p className="max-w-[160px] break-all text-center text-[10px] text-muted-foreground">
+          {url}
+        </p>
         <Button
           size="sm"
           variant="outline"

@@ -36,15 +36,16 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { getPublicChurchEvents } from "@/lib/church.functions";
+import { BRAND } from "@/lib/brand";
 
-function TK2LandingPage() {
+function G2LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-900">
       <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-white/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2">
             <div className="grid h-9 w-9 place-items-center rounded-lg bg-slate-900 text-sm font-bold text-white">
-              TK2
+              {BRAND.name}
             </div>
           </div>
           <nav className="hidden items-center gap-7 text-sm text-slate-600 md:flex">
@@ -123,7 +124,7 @@ function TK2LandingPage() {
                   <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-400 to-rose-500" />
                   <div>
                     <div className="text-sm font-semibold">Sua Igreja</div>
-                    <div className="text-xs text-slate-500">tk2.com.br/i/sua-igreja</div>
+                    <div className="text-xs text-slate-500">{`${BRAND.domain}/i/sua-igreja`}</div>
                   </div>
                 </div>
                 <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">

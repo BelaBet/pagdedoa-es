@@ -12,7 +12,7 @@ let serverEntryPromise: Promise<ServerEntry> | undefined;
 async function getServerEntry(): Promise<ServerEntry> {
   if (!serverEntryPromise) {
     serverEntryPromise = import("@tanstack/react-start/server-entry").then(
-      (m) => ((m as { default?: ServerEntry }).default ?? (m as unknown as ServerEntry)),
+      (m) => (m as { default?: ServerEntry }).default ?? (m as unknown as ServerEntry),
     );
   }
   return serverEntryPromise;
@@ -72,8 +72,7 @@ export default {
       // Force HTTPS — redirect any http:// request to https:// (skip localhost for dev).
       const url = new URL(request.url);
       const forwardedProto = request.headers.get("x-forwarded-proto");
-      const isInsecure =
-        url.protocol === "http:" || (forwardedProto && forwardedProto !== "https");
+      const isInsecure = url.protocol === "http:" || (forwardedProto && forwardedProto !== "https");
       const isLocal =
         url.hostname === "localhost" ||
         url.hostname === "127.0.0.1" ||

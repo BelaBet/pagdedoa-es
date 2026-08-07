@@ -58,7 +58,9 @@ export const updateChurchIdentity = createServerFn({ method: "POST" })
 
     let logoUrl: string | null = null;
     if (data.logo) {
-      const ext = (data.logo.filename.split(".").pop() || "png").toLowerCase().replace("jpeg", "jpg");
+      const ext = (data.logo.filename.split(".").pop() || "png")
+        .toLowerCase()
+        .replace("jpeg", "jpg");
       const path = `${tenantId}/logo-${Date.now()}.${ext}`;
       const buffer = Buffer.from(data.logo.base64, "base64");
       const { error: uErr } = await supabaseAdmin.storage

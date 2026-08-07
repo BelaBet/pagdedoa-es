@@ -35,30 +35,36 @@ type Props = {
 
 const PRESETS = [10, 25, 50, 100, 200];
 
-const METHOD_COPY: Record<ContribMethod["key"], { title: string; subtitle: string; cta: string }> = {
-  pix: {
-    title: "Contribuir via Pix",
-    subtitle: "Sua contribuição é processada com segurança. Não é necessário criar conta.",
-    cta: "Gerar QR Code PIX",
-  },
-  boleto: {
-    title: "Gerar Boleto",
-    subtitle: "Preencha seus dados para emissão do comprovante. Não é necessário criar conta.",
-    cta: "Gerar boleto",
-  },
-  fatura: {
-    title: "Contribuir com Cartão",
-    subtitle: "Preencha seus dados para emissão do comprovante. Não é necessário criar conta.",
-    cta: "Confirmar doação",
-  },
-  mais: { title: "Escolher forma de pagamento", subtitle: "Qual valor você quer contribuir?", cta: "Continuar" },
-  custom: { title: "Contribuir", subtitle: "Qual valor você quer contribuir?", cta: "Continuar" },
-};
+const METHOD_COPY: Record<ContribMethod["key"], { title: string; subtitle: string; cta: string }> =
+  {
+    pix: {
+      title: "Contribuir via Pix",
+      subtitle: "Sua contribuição é processada com segurança. Não é necessário criar conta.",
+      cta: "Gerar QR Code PIX",
+    },
+    boleto: {
+      title: "Gerar Boleto",
+      subtitle: "Preencha seus dados para emissão do comprovante. Não é necessário criar conta.",
+      cta: "Gerar boleto",
+    },
+    fatura: {
+      title: "Contribuir com Cartão",
+      subtitle: "Preencha seus dados para emissão do comprovante. Não é necessário criar conta.",
+      cta: "Confirmar doação",
+    },
+    mais: {
+      title: "Escolher forma de pagamento",
+      subtitle: "Qual valor você quer contribuir?",
+      cta: "Continuar",
+    },
+    custom: { title: "Contribuir", subtitle: "Qual valor você quer contribuir?", cta: "Continuar" },
+  };
 
 function generateBoletoCode(valor: number) {
   // mock formatted "linha digitável" 47-digit boleto
   const cents = String(Math.round(valor * 100)).padStart(10, "0");
-  const rnd = (n: number) => Array.from({ length: n }, () => Math.floor(Math.random() * 10)).join("");
+  const rnd = (n: number) =>
+    Array.from({ length: n }, () => Math.floor(Math.random() * 10)).join("");
   return `${rnd(5)}.${rnd(5)} ${rnd(5)}.${rnd(6)} ${rnd(5)}.${rnd(6)} ${rnd(1)} ${rnd(4)}${cents}`;
 }
 
@@ -128,7 +134,8 @@ function isValidCNPJ(raw: string) {
   const cnpj = raw.replace(/\D/g, "");
   if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
   const calc = (len: number) => {
-    const weights = len === 12 ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2] : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+    const weights =
+      len === 12 ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2] : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
     let sum = 0;
     for (let i = 0; i < len; i++) sum += Number(cnpj[i]) * weights[i];
     const r = sum % 11;
@@ -451,8 +458,10 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
         const [mm, yy] = cardExp.split("/").map((s) => s?.trim());
         const expMonth = Number(mm);
         const expYear = yy?.length === 2 ? 2000 + Number(yy) : Number(yy);
-        if (!expMonth || expMonth < 1 || expMonth > 12) return setError("Validade inválida (MM/AA).");
-        if (!expYear || expYear < new Date().getFullYear()) return setError("Validade inválida (MM/AA).");
+        if (!expMonth || expMonth < 1 || expMonth > 12)
+          return setError("Validade inválida (MM/AA).");
+        if (!expYear || expYear < new Date().getFullYear())
+          return setError("Validade inválida (MM/AA).");
         if (cardCvv.length < 3) return setError("CVV inválido.");
         if (addrLine.trim().length < 3) return setError("Informe o endereço de cobrança.");
         if (addrZip.replace(/\D/g, "").length !== 8) return setError("CEP inválido.");
@@ -659,7 +668,9 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
     doc.setFont("helvetica", "italic");
     doc.setFontSize(7);
     doc.setTextColor(120);
-    doc.text(`Documento gerado em ${new Date().toLocaleString("pt-BR")}`, W / 2, 285, { align: "center" });
+    doc.text(`Documento gerado em ${new Date().toLocaleString("pt-BR")}`, W / 2, 285, {
+      align: "center",
+    });
 
     // Gera blob e abre em nova aba (funciona em iframe e Safari iOS,
     // onde doc.save() é bloqueado silenciosamente).
@@ -732,7 +743,9 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
                 </p>
 
                 <div className="mt-5 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-4">
-                  <div className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">Expira em</div>
+                  <div className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+                    Expira em
+                  </div>
                   <div className="mt-0.5 text-sm font-semibold text-[#111827]">
                     {pix.expiresAt.toLocaleString("pt-BR")}
                   </div>
@@ -755,7 +768,9 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
 
                 {pix.code && (
                   <div className="mt-4">
-                    <div className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">PIX Copia e Cola</div>
+                    <div className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+                      PIX Copia e Cola
+                    </div>
                     <div className="mt-1 break-all rounded-xl border border-[#E5E7EB] bg-white p-3 font-mono text-[12px] text-[#111827]">
                       {pix.code}
                     </div>
@@ -800,14 +815,19 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
                   <CheckCircle2 className="h-14 w-14 text-emerald-500" />
                   <h2 className="mt-3 text-[24px] font-bold text-[#111827]">Pagamento aprovado</h2>
                   <p className="mt-1 text-sm text-[#6B7280]">
-                    Sua contribuição de R$ {cardResult.valor.toFixed(2).replace(".", ",")} foi confirmada.
+                    Sua contribuição de R$ {cardResult.valor.toFixed(2).replace(".", ",")} foi
+                    confirmada.
                   </p>
                 </>
               ) : cardResult.status === "pending" ? (
                 <>
                   <Loader2 className="h-14 w-14 animate-spin text-[#7C3AED]" />
-                  <h2 className="mt-3 text-[24px] font-bold text-[#111827]">Processando pagamento</h2>
-                  <p className="mt-1 text-sm text-[#6B7280]">Aguardando confirmação da operadora.</p>
+                  <h2 className="mt-3 text-[24px] font-bold text-[#111827]">
+                    Processando pagamento
+                  </h2>
+                  <p className="mt-1 text-sm text-[#6B7280]">
+                    Aguardando confirmação da operadora.
+                  </p>
                 </>
               ) : (
                 <>
@@ -828,38 +848,60 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
           </>
         ) : boleto ? (
           <>
-            <h2 className="mt-1 text-[24px] font-bold leading-tight text-[#111827]">Boleto gerado</h2>
-            <p className="mt-1 text-sm text-[#6B7280]">Pague no app do seu banco usando o código abaixo.</p>
+            <h2 className="mt-1 text-[24px] font-bold leading-tight text-[#111827]">
+              Boleto gerado
+            </h2>
+            <p className="mt-1 text-sm text-[#6B7280]">
+              Pague no app do seu banco usando o código abaixo.
+            </p>
 
             <div className="mt-5 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-4">
-              <div className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">Valor</div>
+              <div className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+                Valor
+              </div>
               <div className="mt-0.5 text-2xl font-bold text-[#111827]">
                 R$ {boleto.valor.toFixed(2).replace(".", ",")}
               </div>
-              <div className="mt-3 text-xs font-medium uppercase tracking-wide text-[#6B7280]">Vencimento</div>
+              <div className="mt-3 text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+                Vencimento
+              </div>
               <div className="mt-0.5 text-sm font-semibold text-[#111827]">
                 {boleto.due.toLocaleDateString("pt-BR")} · válido por 3 dias úteis
               </div>
             </div>
 
             <div className="mt-5 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-4">
-              <div className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">Instituição beneficiária</div>
-              <div className="mt-0.5 text-sm font-semibold text-[#111827]">{tenant?.name ?? "—"}</div>
+              <div className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+                Instituição beneficiária
+              </div>
+              <div className="mt-0.5 text-sm font-semibold text-[#111827]">
+                {tenant?.name ?? "—"}
+              </div>
               {tenant?.slug && <div className="text-xs text-[#6B7280]">@{tenant.slug}</div>}
               <div className="mt-3 grid grid-cols-1 gap-2 text-xs">
                 <div>
-                  <div className="font-medium uppercase tracking-wide text-[#6B7280]">ID do pagamento</div>
-                  <div className="break-all font-mono text-[#111827]">{boleto.paymentId ?? "—"}</div>
+                  <div className="font-medium uppercase tracking-wide text-[#6B7280]">
+                    ID do pagamento
+                  </div>
+                  <div className="break-all font-mono text-[#111827]">
+                    {boleto.paymentId ?? "—"}
+                  </div>
                 </div>
                 <div>
-                  <div className="font-medium uppercase tracking-wide text-[#6B7280]">ID da doação</div>
-                  <div className="break-all font-mono text-[#111827]">{boleto.donationId ?? "—"}</div>
+                  <div className="font-medium uppercase tracking-wide text-[#6B7280]">
+                    ID da doação
+                  </div>
+                  <div className="break-all font-mono text-[#111827]">
+                    {boleto.donationId ?? "—"}
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="mt-4">
-              <div className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">Linha digitável</div>
+              <div className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+                Linha digitável
+              </div>
               <div className="mt-1 break-all rounded-xl border border-[#E5E7EB] bg-white p-3 font-mono text-[13px] text-[#111827]">
                 {boleto.code}
               </div>
@@ -893,7 +935,9 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
               Valor mais escolhido
             </div>
 
-            <h2 className="mt-4 text-[28px] font-bold leading-tight text-[#111827]">{copy.title}</h2>
+            <h2 className="mt-4 text-[28px] font-bold leading-tight text-[#111827]">
+              {copy.title}
+            </h2>
             <p className="mt-1 text-sm text-[#6B7280]">{copy.subtitle}</p>
 
             <div className="mt-5 flex items-center rounded-xl border-2 border-[#7C3AED] px-4 py-3">
@@ -923,7 +967,9 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
                   >
                     <span>R${v}</span>
                     {v === 25 && active && (
-                      <span className="mt-0.5 text-[10px] font-normal opacity-90">Mais escolhido</span>
+                      <span className="mt-0.5 text-[10px] font-normal opacity-90">
+                        Mais escolhido
+                      </span>
                     )}
                   </button>
                 );
@@ -974,7 +1020,9 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
                     placeholder="000.000.000-00 ou 00.000.000/0001-00"
                     className="mt-1 h-11 w-full rounded-xl border border-[#E5E7EB] bg-white px-3 text-sm text-[#111827] outline-none focus:border-[#7C3AED]"
                   />
-                  <p className="mt-1 text-xs text-[#6B7280]">Necessário para identificar sua contribuição</p>
+                  <p className="mt-1 text-xs text-[#6B7280]">
+                    Necessário para identificar sua contribuição
+                  </p>
                 </div>
                 <div>
                   <label className="text-xs font-medium text-[#6B7280]">Celular *</label>
@@ -997,14 +1045,18 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
                     placeholder="(00) 00000-0000"
                     className="mt-1 h-11 w-full rounded-xl border border-[#E5E7EB] bg-white px-3 text-sm text-[#111827] outline-none focus:border-[#7C3AED]"
                   />
-                  <p className="mt-1 text-[11px] text-[#6B7280]">Obrigatório para confirmação do pagamento</p>
+                  <p className="mt-1 text-[11px] text-[#6B7280]">
+                    Obrigatório para confirmação do pagamento
+                  </p>
                 </div>
               </div>
             )}
 
             {isBoleto && (
               <div className="mt-4 space-y-2.5 border-t border-[#E5E7EB] pt-4">
-                <div className="text-xs font-semibold uppercase tracking-wide text-[#6B7280]">Endereço do pagador</div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-[#6B7280]">
+                  Endereço do pagador
+                </div>
                 <div>
                   <label className="text-xs font-medium text-[#6B7280]">Rua e número *</label>
                   <input
@@ -1077,7 +1129,9 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
 
             {isCard && (
               <div className="mt-4 space-y-2.5 border-t border-[#E5E7EB] pt-4">
-                <div className="text-xs font-semibold uppercase tracking-wide text-[#6B7280]">Dados do cartão</div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-[#6B7280]">
+                  Dados do cartão
+                </div>
                 {/* Número — com bandeiras */}
                 <div>
                   <label className="text-xs font-medium text-[#6B7280]">Número do cartão</label>
@@ -1107,14 +1161,20 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
                           { key: "amex", Comp: CardFlagAmex },
                         ];
                         return flags.map(({ key, Comp }) => (
-                          <Comp key={key} active={brand === key} dim={brand !== null && brand !== key} />
+                          <Comp
+                            key={key}
+                            active={brand === key}
+                            dim={brand !== null && brand !== key}
+                          />
                         ));
                       })()}
                     </div>
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-[#6B7280]">Nome impresso no cartão</label>
+                  <label className="text-xs font-medium text-[#6B7280]">
+                    Nome impresso no cartão
+                  </label>
                   <input
                     type="text"
                     value={cardHolder}
@@ -1153,7 +1213,9 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
                 </div>
                 {(() => {
                   const allowsInst = costCenter ? costCenter.allows_installments : true;
-                  const maxInst = costCenter ? Math.max(1, Math.min(2, costCenter.max_installments)) : 2;
+                  const maxInst = costCenter
+                    ? Math.max(1, Math.min(2, costCenter.max_installments))
+                    : 2;
                   if (!allowsInst) return null;
                   return (
                     <div>
@@ -1165,7 +1227,9 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
                       >
                         {Array.from({ length: maxInst }, (_, i) => i + 1).map((n) => {
                           const cents =
-                            Number(value || 0) > 0 ? calculateAmounts(Math.round(Number(value) * 100)).totalAmount : 0;
+                            Number(value || 0) > 0
+                              ? calculateAmounts(Math.round(Number(value) * 100)).totalAmount
+                              : 0;
                           return (
                             <option key={n} value={n}>
                               {n}x de R$ {formatBRL(Math.round(cents / n))}
@@ -1239,7 +1303,10 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
                   : isCard
                     ? "credit_card"
                     : "boleto";
-                const { totalAmount } = calculateAmounts(Math.round(Number(value) * 100), methodForCalc);
+                const { totalAmount } = calculateAmounts(
+                  Math.round(Number(value) * 100),
+                  methodForCalc,
+                );
                 return (
                   <div className="mt-5 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-3 text-sm">
                     <div className="flex items-center justify-between text-[#6B7280]">
@@ -1253,7 +1320,9 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
                     </div>
                     <div className="mt-2 border-t border-[#E5E7EB] pt-2 flex items-center justify-between">
                       <span className="font-semibold text-[#111827]">Total cobrado</span>
-                      <span className="text-base font-bold text-[#7C3AED]">R$ {formatBRL(totalAmount)}</span>
+                      <span className="text-base font-bold text-[#7C3AED]">
+                        R$ {formatBRL(totalAmount)}
+                      </span>
                     </div>
                   </div>
                 );
@@ -1288,7 +1357,12 @@ export function ContribuicaoModal({ isOpen, onClose, onConfirm, method, costCent
 
 function detectCardBrand(num: string): "visa" | "master" | "elo" | "hiper" | "amex" | null {
   const d = num.replace(/\s/g, "");
-  if (/^4011|^4312|^4389|^4514|^4573|^5041|^5066|^5067|^509|^6277|^6362|^6363|^650|^6516|^6550/.test(d)) return "elo";
+  if (
+    /^4011|^4312|^4389|^4514|^4573|^5041|^5066|^5067|^509|^6277|^6362|^6363|^650|^6516|^6550/.test(
+      d,
+    )
+  )
+    return "elo";
   if (/^(606282|3841)/.test(d)) return "hiper";
   if (/^3[47]/.test(d)) return "amex";
   if (/^5[1-5]|^2(2[2-9]|[3-6]\d|7[01])/.test(d)) return "master";
@@ -1304,7 +1378,12 @@ function CardFlagVisa({ active, dim }: { active: boolean; dim: boolean }) {
       viewBox="0 0 36 24"
       width={36}
       height={24}
-      style={{ borderRadius: 4, opacity, transform: scale, transition: "opacity .2s, transform .2s" }}
+      style={{
+        borderRadius: 4,
+        opacity,
+        transform: scale,
+        transition: "opacity .2s, transform .2s",
+      }}
     >
       <rect width="36" height="24" rx="4" fill="#1A1F71" />
       <text
@@ -1331,7 +1410,12 @@ function CardFlagMaster({ active, dim }: { active: boolean; dim: boolean }) {
       viewBox="0 0 36 24"
       width={36}
       height={24}
-      style={{ borderRadius: 4, opacity, transform: scale, transition: "opacity .2s, transform .2s" }}
+      style={{
+        borderRadius: 4,
+        opacity,
+        transform: scale,
+        transition: "opacity .2s, transform .2s",
+      }}
     >
       <rect width="36" height="24" rx="4" fill="#252525" />
       <circle cx="14" cy="12" r="7" fill="#EB001B" />
@@ -1349,7 +1433,12 @@ function CardFlagElo({ active, dim }: { active: boolean; dim: boolean }) {
       viewBox="0 0 36 24"
       width={36}
       height={24}
-      style={{ borderRadius: 4, opacity, transform: scale, transition: "opacity .2s, transform .2s" }}
+      style={{
+        borderRadius: 4,
+        opacity,
+        transform: scale,
+        transition: "opacity .2s, transform .2s",
+      }}
     >
       <rect width="36" height="24" rx="4" fill="#FFD100" />
       <text
@@ -1375,13 +1464,34 @@ function CardFlagHiper({ active, dim }: { active: boolean; dim: boolean }) {
       viewBox="0 0 36 24"
       width={36}
       height={24}
-      style={{ borderRadius: 4, opacity, transform: scale, transition: "opacity .2s, transform .2s" }}
+      style={{
+        borderRadius: 4,
+        opacity,
+        transform: scale,
+        transition: "opacity .2s, transform .2s",
+      }}
     >
       <rect width="36" height="24" rx="4" fill="#F08000" />
-      <text x="18" y="10" textAnchor="middle" fontFamily="Arial,sans-serif" fontSize="6" fontWeight="bold" fill="white">
+      <text
+        x="18"
+        y="10"
+        textAnchor="middle"
+        fontFamily="Arial,sans-serif"
+        fontSize="6"
+        fontWeight="bold"
+        fill="white"
+      >
         HIPER
       </text>
-      <text x="18" y="18" textAnchor="middle" fontFamily="Arial,sans-serif" fontSize="6" fontWeight="bold" fill="white">
+      <text
+        x="18"
+        y="18"
+        textAnchor="middle"
+        fontFamily="Arial,sans-serif"
+        fontSize="6"
+        fontWeight="bold"
+        fill="white"
+      >
         CARD
       </text>
     </svg>
@@ -1396,7 +1506,12 @@ function CardFlagAmex({ active, dim }: { active: boolean; dim: boolean }) {
       viewBox="0 0 36 24"
       width={36}
       height={24}
-      style={{ borderRadius: 4, opacity, transform: scale, transition: "opacity .2s, transform .2s" }}
+      style={{
+        borderRadius: 4,
+        opacity,
+        transform: scale,
+        transition: "opacity .2s, transform .2s",
+      }}
     >
       <rect width="36" height="24" rx="4" fill="#007BC1" />
       <text

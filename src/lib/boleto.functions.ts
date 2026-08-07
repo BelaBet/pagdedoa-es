@@ -1,6 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { buildSplitPayload, calculateBoletoAmounts, fetchSellerRecipientId, fetchCostCenter } from "./split.utils";
+import {
+  buildSplitPayload,
+  calculateBoletoAmounts,
+  fetchSellerRecipientId,
+  fetchCostCenter,
+} from "./split.utils";
 import { getPlatformFeeRow } from "./fee-config.server";
 import { buildPagarmeCustomer, resolveCustomer, validateDocument } from "./payments-customer";
 
@@ -42,12 +47,18 @@ export const createBoletoPayment = createServerFn({ method: "POST" })
     if (!secretKey) throw new Error("PAGARME_SECRET_KEY não configurada");
 
     const sellerRecipientId = await fetchSellerRecipientId(data.tenantId);
-    const costCenter = data.costCenterId ? await fetchCostCenter(data.costCenterId, data.tenantId) : null;
+    const costCenter = data.costCenterId
+      ? await fetchCostCenter(data.costCenterId, data.tenantId)
+      : null;
     const splitOverride = costCenter?.split_platform_percent ?? null;
     const feeRow = await getPlatformFeeRow("boleto", data.tenantId);
     const amounts = calculateBoletoAmounts(data.donationAmount, splitOverride, feeRow ?? undefined);
     if (process.env.NODE_ENV !== "production") {
-      console.log("[boleto] amounts", amounts, { sellerRecipientId, costCenterId: data.costCenterId, splitOverride });
+      console.log("[boleto] amounts", amounts, {
+        sellerRecipientId,
+        costCenterId: data.costCenterId,
+        splitOverride,
+      });
     }
     const platformRecipientId = process.env.PLATFORM_RECIPIENT_ID;
     const dueAt = addBusinessDays(new Date(), 3).toISOString();
@@ -170,7 +181,7 @@ export const createBoletoPayment = createServerFn({ method: "POST" })
         donation_amount: amounts.donationAmount,
         platform_fee: amounts.platformFee,
         pagarme_fee: amounts.pagarmeFee,
-        tk2_op_fee: amounts.tk2OpFee,
+        g2_op_fee: amounts.g2OpFee,
         transacao_fee: amounts.transacaoFee,
         split_platform_amount: amounts.splitPlatformAmount,
         split_seller_amount: amounts.donationAmount,
@@ -210,10 +221,7 @@ export const createBoletoPayment = createServerFn({ method: "POST" })
       throw new Error(donErr?.message ?? "Falha ao registrar doação");
     }
 
-    await supabaseAdmin
-      .from("payments")
-      .update({ reference_id: donation.id })
-      .eq("id", payment.id);
+    await supabaseAdmin.from("payments").update({ reference_id: donation.id }).eq("id", payment.id);
 
     return {
       paymentId: payment.id as string,

@@ -25,13 +25,31 @@ function Row({
     setTimeout(() => setCopied(false), 1500);
   };
   return (
-    <div style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 0", borderBottom: "1px solid #f0eee9" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: 12,
+        alignItems: "flex-start",
+        padding: "10px 0",
+        borderBottom: "1px solid #f0eee9",
+      }}
+    >
       <Icon size={18} style={{ color: accent, marginTop: 2, flexShrink: 0 }} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", color: "#888", fontWeight: 600 }}>
+        <div
+          style={{
+            fontSize: 11,
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            color: "#888",
+            fontWeight: 600,
+          }}
+        >
           {label}
         </div>
-        <div style={{ fontSize: 14, color: "#1a1a1a", marginTop: 2, wordBreak: "break-word" }}>{value}</div>
+        <div style={{ fontSize: 14, color: "#1a1a1a", marginTop: 2, wordBreak: "break-word" }}>
+          {value}
+        </div>
       </div>
       {copyable && (
         <button
@@ -132,15 +150,31 @@ export function PaymentInfoSection({
             padding: "20px 24px",
           }}
         >
-          <Row icon={Building2} label="Razão Social" value={r?.legalName ?? data.tenantName} accent={accent} />
+          <Row
+            icon={Building2}
+            label="Razão Social"
+            value={r?.legalName ?? data.tenantName}
+            accent={accent}
+          />
           {r?.tradingName && r.tradingName !== r.legalName && (
             <Row icon={Building2} label="Nome Fantasia" value={r.tradingName} accent={accent} />
           )}
-          <Row icon={Building2} label={r?.documentType === "cpf" ? "CPF" : "CNPJ"} value={r?.document} copyable accent={accent} />
+          <Row
+            icon={Building2}
+            label={r?.documentType === "cpf" ? "CPF" : "CNPJ"}
+            value={r?.document}
+            copyable
+            accent={accent}
+          />
           <Row icon={KeyRound} label="Chave PIX" value={data.pixKey} copyable accent={accent} />
           <Row icon={Landmark} label="Conta bancária" value={bankLine} accent={accent} />
           {r?.bankAccount?.holderName && (
-            <Row icon={Building2} label="Titular da conta" value={r.bankAccount.holderName} accent={accent} />
+            <Row
+              icon={Building2}
+              label="Titular da conta"
+              value={r.bankAccount.holderName}
+              accent={accent}
+            />
           )}
           <Row icon={MapPin} label="Endereço" value={fullAddress} accent={accent} />
           <Row icon={Phone} label="Telefone" value={r?.phone} accent={accent} />

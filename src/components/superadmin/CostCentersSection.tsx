@@ -7,10 +7,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Plus, Pencil } from "lucide-react";
 import { toast } from "sonner";
@@ -31,15 +40,15 @@ export function CostCentersSection() {
   const toggleFn = useServerFn(toggleCostCenterActive);
 
   const [tenantId, setTenantId] = useState<string>("");
-  const [modal, setModal] = useState<{ open: boolean; row: CostCenterRow | null }>({ open: false, row: null });
+  const [modal, setModal] = useState<{ open: boolean; row: CostCenterRow | null }>({
+    open: false,
+    row: null,
+  });
 
   const { data: tenants } = useQuery({
     queryKey: ["super-admin", "tenants-min"],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("tenants")
-        .select("id,name,slug")
-        .order("name");
+      const { data } = await supabase.from("tenants").select("id,name,slug").order("name");
       return (data ?? []) as { id: string; name: string; slug: string }[];
     },
   });
@@ -69,11 +78,21 @@ export function CostCentersSection() {
         <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0">
           <CardTitle className="text-base">Centros de Custo</CardTitle>
           <div className="flex items-center gap-2">
-            <Select value={tenantId} onValueChange={(v) => { setTenantId(v); setPage(1); }}>
-              <SelectTrigger className="h-9 w-[220px]"><SelectValue placeholder="Selecione a igreja" /></SelectTrigger>
+            <Select
+              value={tenantId}
+              onValueChange={(v) => {
+                setTenantId(v);
+                setPage(1);
+              }}
+            >
+              <SelectTrigger className="h-9 w-[220px]">
+                <SelectValue placeholder="Selecione a igreja" />
+              </SelectTrigger>
               <SelectContent>
                 {tenants?.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                  <SelectItem key={t.id} value={t.id}>
+                    {t.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -101,9 +120,17 @@ export function CostCentersSection() {
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground">Carregando…</TableCell></TableRow>
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center text-sm text-muted-foreground">
+                      Carregando…
+                    </TableCell>
+                  </TableRow>
                 ) : !rows?.length ? (
-                  <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground">Nenhum centro de custo.</TableCell></TableRow>
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center text-sm text-muted-foreground">
+                      Nenhum centro de custo.
+                    </TableCell>
+                  </TableRow>
                 ) : (
                   paginated.map((r) => (
                     <TableRow key={r.id}>
@@ -111,9 +138,12 @@ export function CostCentersSection() {
                         <div className="font-medium">{r.name}</div>
                         <div className="text-xs text-muted-foreground">/{r.slug}</div>
                       </TableCell>
-                      <TableCell><Badge variant="outline">{r.type}</Badge></TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{r.type}</Badge>
+                      </TableCell>
                       <TableCell className="text-right text-xs">
-                        {(r.split_platform_percent * 100).toFixed(2)}% / {(r.split_seller_percent * 100).toFixed(2)}%
+                        {(r.split_platform_percent * 100).toFixed(2)}% /{" "}
+                        {(r.split_seller_percent * 100).toFixed(2)}%
                       </TableCell>
                       <TableCell className="text-center text-xs">
                         {r.allows_installments ? `até ${r.max_installments}x` : "à vista"}
@@ -135,7 +165,12 @@ export function CostCentersSection() {
                             }
                             fileName={`qr-${r.slug}`}
                           />
-                          <Button size="icon" variant="ghost" onClick={() => setModal({ open: true, row: r })} aria-label="Editar">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => setModal({ open: true, row: r })}
+                            aria-label="Editar"
+                          >
                             <Pencil className="h-4 w-4" />
                           </Button>
                         </div>

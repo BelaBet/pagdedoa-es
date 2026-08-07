@@ -4,7 +4,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Check, ChevronLeft, ChevronRight, Plus, Trash2, Loader2, Upload, Image as ImageIcon } from "lucide-react";
+import {
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Trash2,
+  Loader2,
+  Upload,
+  Image as ImageIcon,
+} from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { cpf, cnpj } from "cpf-cnpj-validator";
@@ -21,19 +30,27 @@ function OnboardingGate() {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center text-muted-foreground">Carregando...</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center text-muted-foreground">
+        Carregando...
+      </div>
+    );
   }
 
   if (!user?.email_confirmed_at) {
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="w-full max-w-md text-center">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 text-2xl">✉</div>
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 text-2xl">
+            ✉
+          </div>
           <h1 className="font-display text-2xl">Confirme seu e-mail</h1>
           <p className="mt-3 text-muted-foreground">
             Você precisa confirmar seu e-mail antes de iniciar o cadastro da igreja.
           </p>
-          <Button asChild variant="outline" className="mt-6"><Link to="/login">Voltar ao login</Link></Button>
+          <Button asChild variant="outline" className="mt-6">
+            <Link to="/login">Voltar ao login</Link>
+          </Button>
         </div>
       </div>
     );
@@ -91,7 +108,11 @@ const schema = z
       if (!isValidCNPJ(data.document))
         ctx.addIssue({ path: ["document"], code: "custom", message: "CNPJ inválido" });
       if (!data.company_name || data.company_name.trim().length < 2)
-        ctx.addIssue({ path: ["company_name"], code: "custom", message: "Informe o nome da empresa" });
+        ctx.addIssue({
+          path: ["company_name"],
+          code: "custom",
+          message: "Informe o nome da empresa",
+        });
       if (data.company_email && !/^\S+@\S+\.\S+$/.test(data.company_email))
         ctx.addIssue({ path: ["company_email"], code: "custom", message: "E-mail inválido" });
     } else {
@@ -141,7 +162,13 @@ function OnboardingPage() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
-  const [savedTenant, setSavedTenant] = useState<{ name: string; tagline: string; logo_url: string | null; completo: boolean; pendencias: string[] } | null>(null);
+  const [savedTenant, setSavedTenant] = useState<{
+    name: string;
+    tagline: string;
+    logo_url: string | null;
+    completo: boolean;
+    pendencias: string[];
+  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const submitChurch = useServerFn(updateChurchIdentity);
   const queryClient = useQueryClient();
@@ -149,7 +176,13 @@ function OnboardingPage() {
   const meta = (user?.user_metadata ?? {}) as Record<string, string | undefined>;
   const prefilledDoc = (meta.document ?? "").replace(/\D/g, "");
   const prefilledType: "pj" | "pf" =
-    meta.document_type === "cpf" ? "pf" : meta.document_type === "cnpj" ? "pj" : prefilledDoc.length === 11 ? "pf" : "pj";
+    meta.document_type === "cpf"
+      ? "pf"
+      : meta.document_type === "cnpj"
+        ? "pj"
+        : prefilledDoc.length === 11
+          ? "pf"
+          : "pj";
   const prefilledDocMasked = prefilledDoc
     ? prefilledType === "pj"
       ? maskCNPJ(prefilledDoc)
@@ -209,9 +242,11 @@ function OnboardingPage() {
     reader.readAsDataURL(file);
   }
 
-
   async function next() {
-    const fieldsByKey: Record<string, (keyof FormValues | `partners.${number}.${"full_name" | "cpf" | "email"}`)[]> = {
+    const fieldsByKey: Record<
+      string,
+      (keyof FormValues | `partners.${number}.${"full_name" | "cpf" | "email"}`)[]
+    > = {
       identidade: ["church_name", "church_tagline"],
       ident: ["type", "document"],
       empresa: ["company_name", "company_email"],
@@ -238,7 +273,9 @@ function OnboardingPage() {
 
   function addPartner() {
     if (partners.length >= 2) return;
-    setValue("partners", [...partners, { full_name: "", cpf: "", email: "" }], { shouldValidate: false });
+    setValue("partners", [...partners, { full_name: "", cpf: "", email: "" }], {
+      shouldValidate: false,
+    });
   }
 
   function removePartner(i: number) {
@@ -293,9 +330,21 @@ function OnboardingPage() {
       // responsavel legal sao coletados em outras telas, entao esta etapa
       // quase sempre termina incompleta — e precisa dizer isso.
       const [addr, bank, resp] = await Promise.all([
-        supabase.from("tenant_address").select("tenant_id").eq("tenant_id", result.tenantId).maybeSingle(),
-        supabase.from("tenant_bank_account").select("tenant_id").eq("tenant_id", result.tenantId).maybeSingle(),
-        supabase.from("tenant_legal_responsible").select("tenant_id").eq("tenant_id", result.tenantId).maybeSingle(),
+        supabase
+          .from("tenant_address")
+          .select("tenant_id")
+          .eq("tenant_id", result.tenantId)
+          .maybeSingle(),
+        supabase
+          .from("tenant_bank_account")
+          .select("tenant_id")
+          .eq("tenant_id", result.tenantId)
+          .maybeSingle(),
+        supabase
+          .from("tenant_legal_responsible")
+          .select("tenant_id")
+          .eq("tenant_id", result.tenantId)
+          .maybeSingle(),
       ]);
       const pendencias: string[] = [];
       if (!addr.data) pendencias.push("Endereço da instituição");
@@ -379,7 +428,9 @@ function OnboardingPage() {
               <p className="text-xs font-medium text-foreground">Ainda falta cadastrar</p>
               <ul className="mt-2 space-y-1">
                 {savedTenant.pendencias.map((p) => (
-                  <li key={p} className="text-xs text-muted-foreground">{p}</li>
+                  <li key={p} className="text-xs text-muted-foreground">
+                    {p}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -398,8 +449,6 @@ function OnboardingPage() {
       </div>
     );
   }
-
-
 
   return (
     <div className="min-h-[calc(100vh-4rem)] px-4 py-10">
@@ -438,8 +487,8 @@ function OnboardingPage() {
                       active
                         ? "bg-primary/10 text-primary"
                         : done
-                        ? "text-primary/80 hover:text-primary"
-                        : "text-muted-foreground"
+                          ? "text-primary/80 hover:text-primary"
+                          : "text-muted-foreground"
                     } ${clickable ? "cursor-pointer" : "cursor-not-allowed"}`}
                   >
                     <span
@@ -447,8 +496,8 @@ function OnboardingPage() {
                         active
                           ? "bg-primary text-primary-foreground"
                           : done
-                          ? "bg-primary/20 text-primary"
-                          : "bg-muted text-muted-foreground"
+                            ? "bg-primary/20 text-primary"
+                            : "bg-muted text-muted-foreground"
                       }`}
                     >
                       {done ? <Check className="h-3 w-3" /> : i + 1}
@@ -476,7 +525,11 @@ function OnboardingPage() {
                     <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-muted">
                       {logoPreview ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={logoPreview} alt="Pré-visualização da logo" className="h-full w-full object-cover" />
+                        <img
+                          src={logoPreview}
+                          alt="Pré-visualização da logo"
+                          className="h-full w-full object-cover"
+                        />
                       ) : (
                         <ImageIcon className="h-7 w-7 text-muted-foreground" />
                       )}
@@ -499,7 +552,9 @@ function OnboardingPage() {
                         <Upload className="h-4 w-4" />
                         {logoFile ? "Trocar imagem" : "Enviar logo"}
                       </Button>
-                      <p className="text-[11px] text-muted-foreground">PNG, JPG, WEBP ou SVG · até 4 MB</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        PNG, JPG, WEBP ou SVG · até 4 MB
+                      </p>
                     </div>
                   </div>
                   <ErrorMsg msg={logoError ?? undefined} />
@@ -563,7 +618,8 @@ function OnboardingPage() {
                   <input
                     {...register("document")}
                     onChange={(e) => {
-                      const masked = type === "pj" ? maskCNPJ(e.target.value) : maskCPF(e.target.value);
+                      const masked =
+                        type === "pj" ? maskCNPJ(e.target.value) : maskCPF(e.target.value);
                       setValue("document", masked, { shouldValidate: false });
                     }}
                     placeholder={type === "pj" ? "00.000.000/0000-00" : "000.000.000-00"}
@@ -581,7 +637,11 @@ function OnboardingPage() {
                 <h2 className="text-lg font-medium">Dados da empresa</h2>
                 <div>
                   <Label required>Nome da empresa</Label>
-                  <input {...register("company_name")} className={fieldBase} placeholder="Razão social" />
+                  <input
+                    {...register("company_name")}
+                    className={fieldBase}
+                    placeholder="Razão social"
+                  />
                   <ErrorMsg msg={errors.company_name?.message} />
                 </div>
                 <div>
@@ -626,7 +686,9 @@ function OnboardingPage() {
                         <input
                           {...register(`partners.${i}.cpf`)}
                           onChange={(e) =>
-                            setValue(`partners.${i}.cpf`, maskCPF(e.target.value), { shouldValidate: false })
+                            setValue(`partners.${i}.cpf`, maskCPF(e.target.value), {
+                              shouldValidate: false,
+                            })
                           }
                           placeholder="000.000.000-00"
                           inputMode="numeric"
@@ -702,13 +764,18 @@ function OnboardingPage() {
                     </div>
                     <div className="text-sm">
                       <p className="font-medium text-foreground">{churchName || "—"}</p>
-                      <p className="text-xs text-muted-foreground">{getValues("church_tagline") || "—"}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {getValues("church_tagline") || "—"}
+                      </p>
                     </div>
                   </div>
                 </ReviewBlock>
 
                 <ReviewBlock title="Documento">
-                  <Row label="Tipo" value={getValues("type") === "pj" ? "Pessoa Jurídica" : "Pessoa Física"} />
+                  <Row
+                    label="Tipo"
+                    value={getValues("type") === "pj" ? "Pessoa Jurídica" : "Pessoa Física"}
+                  />
                   <Row label="Documento" value={getValues("document")} />
                 </ReviewBlock>
 
@@ -719,10 +786,14 @@ function OnboardingPage() {
                   </ReviewBlock>
                 )}
 
-                <ReviewBlock title={getValues("partners").length > 1 ? "Responsáveis" : "Responsável"}>
+                <ReviewBlock
+                  title={getValues("partners").length > 1 ? "Responsáveis" : "Responsável"}
+                >
                   {getValues("partners").map((p, i) => (
                     <div key={i} className="rounded-md border border-border bg-background p-3">
-                      <p className="mb-1 text-[10px] uppercase tracking-wider text-primary">Responsável {i + 1}</p>
+                      <p className="mb-1 text-[10px] uppercase tracking-wider text-primary">
+                        Responsável {i + 1}
+                      </p>
                       <Row label="Nome" value={p.full_name} />
                       <Row label="CPF" value={p.cpf} />
                       <Row label="E-mail" value={p.email} />
@@ -755,7 +826,8 @@ function OnboardingPage() {
                   disabled={
                     (currentKey === "identidade" && !!errors.church_name) ||
                     (currentKey === "ident" && !!errors.document) ||
-                    (currentKey === "empresa" && (!!errors.company_name || !!errors.company_email)) ||
+                    (currentKey === "empresa" &&
+                      (!!errors.company_name || !!errors.company_email)) ||
                     (currentKey === "socio" && !!errors.partners)
                   }
                   className="flex items-center gap-1.5 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"

@@ -18,14 +18,8 @@ export async function extractPalette(imageUrl: string): Promise<ExtractedPalette
   try {
     const palette = await Vibrant.from(imageUrl).getPalette();
     const result: ExtractedPalette = {
-      primary:
-        palette.Vibrant?.hex ||
-        palette.DarkVibrant?.hex ||
-        palette.Muted?.hex,
-      accent:
-        palette.LightVibrant?.hex ||
-        palette.LightMuted?.hex ||
-        palette.Vibrant?.hex,
+      primary: palette.Vibrant?.hex || palette.DarkVibrant?.hex || palette.Muted?.hex,
+      accent: palette.LightVibrant?.hex || palette.LightMuted?.hex || palette.Vibrant?.hex,
       background: palette.LightMuted?.hex || palette.Muted?.hex,
     };
     cache.set(imageUrl, result);

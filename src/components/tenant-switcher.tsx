@@ -3,7 +3,11 @@ import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useImpersonation } from "@/lib/impersonation";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Building2 } from "lucide-react";
 import { toast } from "sonner";
@@ -39,7 +43,7 @@ export function TenantSwitcher() {
   return (
     <div className="flex items-center gap-2">
       <Building2 className="h-4 w-4 text-muted-foreground" />
-      <Select value={active ? tenantId ?? undefined : undefined} onValueChange={handleChange}>
+      <Select value={active ? (tenantId ?? undefined) : undefined} onValueChange={handleChange}>
         <SelectTrigger className="h-8 w-[220px] text-xs">
           <SelectValue placeholder="Alternar para igreja…" />
         </SelectTrigger>

@@ -28,7 +28,8 @@ function ScanPage() {
 
   const validate = async () => {
     if (!code.trim() || !tenantId) return;
-    setLoading(true); setResult(null);
+    setLoading(true);
+    setResult(null);
     const { data, error } = await supabase
       .from("tickets")
       .select("id, status, profiles(full_name), events(title)")
@@ -37,13 +38,18 @@ function ScanPage() {
       .maybeSingle();
     if (error || !data) {
       setResult({ ok: false, reason: "Ingresso não encontrado." });
-      setLoading(false); return;
+      setLoading(false);
+      return;
     }
     if (data.status !== "active") {
       setResult({ ok: false, reason: `Ingresso ${data.status}.` });
-      setLoading(false); return;
+      setLoading(false);
+      return;
     }
-    const { error: upErr } = await supabase.from("tickets").update({ status: "used" }).eq("id", data.id);
+    const { error: upErr } = await supabase
+      .from("tickets")
+      .update({ status: "used" })
+      .eq("id", data.id);
     if (upErr) {
       setResult({ ok: false, reason: upErr.message });
     } else {
@@ -63,20 +69,29 @@ function ScanPage() {
 
       <div className="mt-6 space-y-3 rounded-2xl border bg-card p-6">
         <Label htmlFor="code">Código do ingresso</Label>
-        <Input id="code" value={code} onChange={(e) => setCode(e.target.value)} placeholder="TKT-..." />
+        <Input
+          id="code"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder="TKT-..."
+        />
         <Button onClick={validate} disabled={loading} className="w-full">
           <ScanLine className="h-4 w-4" /> {loading ? "Validando..." : "Validar"}
         </Button>
       </div>
 
       {result && (
-        <div className={`mt-4 rounded-2xl border p-5 ${result.ok ? "border-primary/30 bg-primary/5" : "border-destructive/30 bg-destructive/5"}`}>
+        <div
+          className={`mt-4 rounded-2xl border p-5 ${result.ok ? "border-primary/30 bg-primary/5" : "border-destructive/30 bg-destructive/5"}`}
+        >
           {result.ok ? (
             <div className="flex items-start gap-3">
               <CheckCircle2 className="mt-0.5 h-5 w-5 text-primary" />
               <div>
                 <p className="font-medium">Ingresso válido</p>
-                <p className="text-sm text-muted-foreground">{result.eventTitle} · {result.member}</p>
+                <p className="text-sm text-muted-foreground">
+                  {result.eventTitle} · {result.member}
+                </p>
               </div>
             </div>
           ) : (

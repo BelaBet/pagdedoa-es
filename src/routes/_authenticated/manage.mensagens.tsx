@@ -57,14 +57,15 @@ function MessagesPage() {
               title: title || "Nova mensagem",
               body: content.slice(0, 200),
               type: "broadcast",
-            }))
+            })),
           );
         }
         toast.success(`Enviado para ${recipientIds.length} pessoa(s)`);
       } else {
         toast.success(`Mensagem enfileirada (${channel}). Integração em breve.`);
       }
-      setTitle(""); setContent("");
+      setTitle("");
+      setContent("");
     } catch (err) {
       toast.error(translateError(err));
     } finally {
@@ -84,8 +85,11 @@ function MessagesPage() {
         <form onSubmit={send} className="space-y-4">
           <div>
             <label className="text-sm font-medium">Canal</label>
-            <select className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm"
-              value={channel} onChange={(e) => setChannel(e.target.value as typeof channel)}>
+            <select
+              className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm"
+              value={channel}
+              onChange={(e) => setChannel(e.target.value as typeof channel)}
+            >
               <option value="in_app">In-app</option>
               <option value="sms">SMS (em breve)</option>
               <option value="whatsapp">WhatsApp (em breve)</option>
@@ -95,13 +99,22 @@ function MessagesPage() {
           {channel === "in_app" && (
             <div>
               <label className="text-sm font-medium">Título</label>
-              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Culto especial" />
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Ex: Culto especial"
+              />
             </div>
           )}
 
           <div>
             <label className="text-sm font-medium">Mensagem</label>
-            <Textarea value={content} onChange={(e) => setContent(e.target.value)} required rows={5} />
+            <Textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              required
+              rows={5}
+            />
           </div>
 
           <Button type="submit" disabled={sending}>

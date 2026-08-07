@@ -49,7 +49,10 @@ export function buildTheme(
   const text = ensureContrast("#0B0F14", background);
   const textMuted = tinycolor(text).setAlpha(0.65).toRgbString();
 
-  const textOnPrimary = ensureContrast(readableTextOn(primary.toHexString()), primary.toHexString());
+  const textOnPrimary = ensureContrast(
+    readableTextOn(primary.toHexString()),
+    primary.toHexString(),
+  );
   const textOnAccent = ensureContrast(readableTextOn(accent.toHexString()), accent.toHexString());
 
   const primaryLight = primary.clone().lighten(12).toHexString();

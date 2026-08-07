@@ -6,7 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { translateError } from "@/lib/translate-error";
@@ -37,7 +43,11 @@ const baseSchema = z
   })
   .superRefine((d, ctx) => {
     if (d.password !== d.confirmPassword) {
-      ctx.addIssue({ path: ["confirmPassword"], code: "custom", message: "As senhas não conferem." });
+      ctx.addIssue({
+        path: ["confirmPassword"],
+        code: "custom",
+        message: "As senhas não conferem.",
+      });
     }
     if (d.documentType === "cnpj" && !cnpj.isValid(d.document)) {
       ctx.addIssue({ path: ["document"], code: "custom", message: "CNPJ inválido" });
@@ -208,8 +218,8 @@ function SignupPage() {
           </div>
           <h1 className="font-display text-2xl font-bold">Instituição cadastrada!</h1>
           <p className="mt-3 text-muted-foreground">
-            <strong>{churchName}</strong> foi cadastrada com sucesso. Verifique o e-mail <strong>{email}</strong> para
-            confirmar sua conta e em seguida faça o login.
+            <strong>{churchName}</strong> foi cadastrada com sucesso. Verifique o e-mail{" "}
+            <strong>{email}</strong> para confirmar sua conta e em seguida faça o login.
           </p>
           <Button asChild className="mt-6">
             <Link to="/login">Ir para o login →</Link>
@@ -232,7 +242,9 @@ function SignupPage() {
 
         <form onSubmit={submit} className="auth-fields mt-8 space-y-5">
           <div className="space-y-4 rounded-lg border bg-muted/30 p-4">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Instituição</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Instituição
+            </p>
             <div>
               <Label htmlFor="church">Nome da igreja / instituição</Label>
               <Input
@@ -275,7 +287,9 @@ function SignupPage() {
           </div>
 
           <div className="space-y-4">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Administrador</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Administrador
+            </p>
             <div>
               <Label htmlFor="name">Nome completo</Label>
               <Input
@@ -302,7 +316,9 @@ function SignupPage() {
                 maxLength={255}
                 aria-invalid={!!emailError}
                 aria-describedby={emailError ? "email-error" : undefined}
-                className={emailError ? "border-destructive focus-visible:ring-destructive" : undefined}
+                className={
+                  emailError ? "border-destructive focus-visible:ring-destructive" : undefined
+                }
               />
               {emailError && (
                 <p id="email-error" className="mt-1.5 text-xs text-destructive">
@@ -370,14 +386,22 @@ function SignupPage() {
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   aria-label={showConfirmPassword ? "Ocultar senha" : "Mostrar senha"}
                 >
-                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </button>
               </div>
             </div>
           </div>
 
           <label className="flex items-start gap-3 text-xs text-muted-foreground">
-            <Checkbox checked={consent} onCheckedChange={(v) => setConsent(v === true)} className="mt-0.5" />
+            <Checkbox
+              checked={consent}
+              onCheckedChange={(v) => setConsent(v === true)}
+              className="mt-0.5"
+            />
             <span>
               Concordo com o tratamento dos meus dados pessoais conforme a{" "}
               <Dialog>
@@ -392,11 +416,12 @@ function SignupPage() {
                   </DialogHeader>
                   <div className="space-y-3 text-sm text-muted-foreground">
                     <p>
-                      <strong>Dados coletados:</strong> nome, e-mail, telefone, documento da instituição, status de
-                      instituição.
+                      <strong>Dados coletados:</strong> nome, e-mail, telefone, documento da
+                      instituição, status de instituição.
                     </p>
                     <p>
-                      <strong>Finalidade:</strong> gestão da comunidade, comunicação, controle de acesso.
+                      <strong>Finalidade:</strong> gestão da comunidade, comunicação, controle de
+                      acesso.
                     </p>
                     <p>
                       <strong>Base legal:</strong> consentimento (Art. 7º, I da Lei 13.709/2018).
@@ -419,7 +444,9 @@ function SignupPage() {
             Entrar
           </Link>
         </p>
-        {tenant?.name && <p className="mt-2 text-center text-xs text-muted-foreground">Visitando: {tenant.name}</p>}
+        {tenant?.name && (
+          <p className="mt-2 text-center text-xs text-muted-foreground">Visitando: {tenant.name}</p>
+        )}
       </div>
     </div>
   );

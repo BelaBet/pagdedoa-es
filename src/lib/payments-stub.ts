@@ -13,7 +13,8 @@ export async function createStubPayment(args: {
   referenceType: "ticket" | "donation";
   referenceId?: string | null;
 }) {
-  const safeCols = "id, tenant_id, profile_id, amount, method, status, reference_type, reference_id, gateway_id, created_at";
+  const safeCols =
+    "id, tenant_id, profile_id, amount, method, status, reference_type, reference_id, gateway_id, created_at";
   const { data, error } = await supabase
     .from("payments")
     .insert({

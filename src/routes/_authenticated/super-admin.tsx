@@ -42,7 +42,10 @@ function SuperAdminPage() {
       const [t, p, s, pr] = await Promise.all([
         supabase.from("tenants").select("id", { count: "exact", head: true }),
         supabase.from("profiles").select("id", { count: "exact", head: true }),
-        supabase.from("tenant_subscriptions").select("id", { count: "exact", head: true }).eq("status", "active"),
+        supabase
+          .from("tenant_subscriptions")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "active"),
         supabase.from("platform_roles").select("user_id", { count: "exact", head: true }),
       ]);
       return {
@@ -105,7 +108,9 @@ function SuperAdminPage() {
               Centro de Doações
             </p>
             <h1 className="font-display text-2xl leading-tight">Plataforma de igrejas</h1>
-            <p className="text-sm text-muted-foreground">Gestão das igrejas administradas pela plataforma</p>
+            <p className="text-sm text-muted-foreground">
+              Gestão das igrejas administradas pela plataforma
+            </p>
           </div>
         </div>
         <Button asChild variant="outline" size="sm">
@@ -114,10 +119,26 @@ function SuperAdminPage() {
       </header>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={<Building2 className="h-4 w-4" />} label="Igrejas" value={stats?.tenants ?? "—"} />
-        <StatCard icon={<Users className="h-4 w-4" />} label="Usuários" value={stats?.users ?? "—"} />
-        <StatCard icon={<CreditCard className="h-4 w-4" />} label="Assinaturas ativas" value={stats?.activeSubs ?? "—"} />
-        <StatCard icon={<Activity className="h-4 w-4" />} label="Equipe plataforma" value={stats?.platformMembers ?? "—"} />
+        <StatCard
+          icon={<Building2 className="h-4 w-4" />}
+          label="Igrejas"
+          value={stats?.tenants ?? "—"}
+        />
+        <StatCard
+          icon={<Users className="h-4 w-4" />}
+          label="Usuários"
+          value={stats?.users ?? "—"}
+        />
+        <StatCard
+          icon={<CreditCard className="h-4 w-4" />}
+          label="Assinaturas ativas"
+          value={stats?.activeSubs ?? "—"}
+        />
+        <StatCard
+          icon={<Activity className="h-4 w-4" />}
+          label="Equipe plataforma"
+          value={stats?.platformMembers ?? "—"}
+        />
       </section>
 
       <Card>
@@ -144,7 +165,10 @@ function SuperAdminPage() {
         <CardContent className="space-y-2">
           {platformMembers?.length ? (
             platformMembers.map((m) => (
-              <div key={`${m.user_id}-${m.role}`} className="flex items-center justify-between rounded-lg border bg-card px-3 py-2 text-sm">
+              <div
+                key={`${m.user_id}-${m.role}`}
+                className="flex items-center justify-between rounded-lg border bg-card px-3 py-2 text-sm"
+              >
                 <code className="truncate text-xs text-muted-foreground">{m.user_id}</code>
                 <Badge variant={m.role === "super_admin" ? "default" : "secondary"}>{m.role}</Badge>
               </div>
@@ -158,7 +182,15 @@ function SuperAdminPage() {
   );
 }
 
-function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: number | string }) {
+function StatCard({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number | string;
+}) {
   return (
     <Card>
       <CardContent className="flex items-center justify-between p-4">

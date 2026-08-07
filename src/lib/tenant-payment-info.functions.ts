@@ -46,10 +46,8 @@ export type PublicPaymentInfo = {
 function formatDoc(doc: string | null | undefined): string | null {
   if (!doc) return null;
   const d = doc.replace(/\D/g, "");
-  if (d.length === 14)
-    return d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
-  if (d.length === 11)
-    return d.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
+  if (d.length === 14) return d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
+  if (d.length === 11) return d.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
   return doc;
 }
 
@@ -76,7 +74,9 @@ const BANK_NAMES: Record<string, string> = {
 // TTL do cache server-side por tenant. Ajustável via env.
 const CACHE_TTL_MS = Number(process.env.PAYMENT_INFO_CACHE_TTL_MS ?? 60 * 60 * 1000); // 1h padrão
 
-async function fetchRecipientFromPagarme(recipientId: string): Promise<PublicPaymentInfo["recipient"]> {
+async function fetchRecipientFromPagarme(
+  recipientId: string,
+): Promise<PublicPaymentInfo["recipient"]> {
   const res = await fetch(`${PAGARME_BASE}/recipients/${recipientId}`, {
     headers: { Authorization: authHeader(), Accept: "application/json" },
   });
@@ -127,73 +127,76 @@ export const getPublicPaymentInfo = createServerFn({ method: "POST" })
   .inputValidator((d: { slug: string; forceRefresh?: boolean }) =>
     z.object({ slug: z.string().min(1).max(80), forceRefresh: z.boolean().optional() }).parse(d),
   )
-  .handler(async ({ data }): Promise<PublicPaymentInfo & { cached: boolean; fetchedAt: string }> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  .handler(
+    async ({ data }): Promise<PublicPaymentInfo & { cached: boolean; fetchedAt: string }> => {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const { data: tenant, error: tErr } = await supabaseAdmin
-      .from("tenants")
-      .select("id,name,slug,active")
-      .eq("slug", data.slug)
-      .eq("active", true)
-      .maybeSingle();
-    if (tErr) throw new Error(tErr.message);
-    if (!tenant) throw new Error("Instituição não encontrada");
-
-    // 1) Tenta servir do cache server-side
-    if (!data.forceRefresh) {
-      const { data: cached } = await supabaseAdmin
-        .from("tenant_payment_info_cache" as any)
-        .select("payload, fetched_at")
-        .eq("tenant_id", tenant.id)
+      const { data: tenant, error: tErr } = await supabaseAdmin
+        .from("tenants")
+        .select("id,name,slug,active")
+        .eq("slug", data.slug)
+        .eq("active", true)
         .maybeSingle();
-      const row = cached as { payload: PublicPaymentInfo; fetched_at: string } | null;
-      if (row) {
-        const age = Date.now() - new Date(row.fetched_at).getTime();
-        if (age < CACHE_TTL_MS) {
-          return { ...row.payload, cached: true, fetchedAt: row.fetched_at };
+      if (tErr) throw new Error(tErr.message);
+      if (!tenant) throw new Error("Instituição não encontrada");
+
+      // 1) Tenta servir do cache server-side
+      if (!data.forceRefresh) {
+        const { data: cached } = await supabaseAdmin
+          .from("tenant_payment_info_cache" as any)
+          .select("payload, fetched_at")
+          .eq("tenant_id", tenant.id)
+          .maybeSingle();
+        const row = cached as { payload: PublicPaymentInfo; fetched_at: string } | null;
+        if (row) {
+          const age = Date.now() - new Date(row.fetched_at).getTime();
+          if (age < CACHE_TTL_MS) {
+            return { ...row.payload, cached: true, fetchedAt: row.fetched_at };
+          }
         }
       }
-    }
 
-    // 2) Cache MISS ou expirado → busca dados frescos
-    const { data: tps } = await supabaseAdmin
-      .from("tenant_payment_settings")
-      .select("pix_key, pagarme_recipient_id")
-      .eq("tenant_id", tenant.id)
-      .maybeSingle();
-    const recipientId = (tps as { pagarme_recipient_id?: string | null } | null)?.pagarme_recipient_id;
+      // 2) Cache MISS ou expirado → busca dados frescos
+      const { data: tps } = await supabaseAdmin
+        .from("tenant_payment_settings")
+        .select("pix_key, pagarme_recipient_id")
+        .eq("tenant_id", tenant.id)
+        .maybeSingle();
+      const recipientId = (tps as { pagarme_recipient_id?: string | null } | null)
+        ?.pagarme_recipient_id;
 
-    let recipient: PublicPaymentInfo["recipient"] = null;
-    if (recipientId) {
-      try {
-        recipient = await fetchRecipientFromPagarme(recipientId);
-      } catch (err) {
-        console.error("[payment-info] fetch failed", err);
+      let recipient: PublicPaymentInfo["recipient"] = null;
+      if (recipientId) {
+        try {
+          recipient = await fetchRecipientFromPagarme(recipientId);
+        } catch (err) {
+          console.error("[payment-info] fetch failed", err);
+        }
       }
-    }
 
-    const payload: PublicPaymentInfo = {
-      tenantId: tenant.id,
-      tenantName: tenant.name,
-      slug: tenant.slug,
-      pixKey: (tps as { pix_key?: string | null } | null)?.pix_key ?? null,
-      recipient,
-    };
+      const payload: PublicPaymentInfo = {
+        tenantId: tenant.id,
+        tenantName: tenant.name,
+        slug: tenant.slug,
+        pixKey: (tps as { pix_key?: string | null } | null)?.pix_key ?? null,
+        recipient,
+      };
 
-    // 3) Só grava no cache se conseguimos buscar o recipient (ou se não há recipient configurado).
-    //    Evita "envenenar" o cache com falha temporária da Pagar.me.
-    if (!recipientId || recipient !== null) {
-      const fetchedAt = new Date().toISOString();
-      const { error: upErr } = await supabaseAdmin
-        .from("tenant_payment_info_cache" as any)
-        .upsert({ tenant_id: tenant.id, payload: payload as any, fetched_at: fetchedAt });
-      if (upErr) console.error("[payment-info] cache upsert failed", upErr);
-      return { ...payload, cached: false, fetchedAt };
-    }
+      // 3) Só grava no cache se conseguimos buscar o recipient (ou se não há recipient configurado).
+      //    Evita "envenenar" o cache com falha temporária da Pagar.me.
+      if (!recipientId || recipient !== null) {
+        const fetchedAt = new Date().toISOString();
+        const { error: upErr } = await supabaseAdmin
+          .from("tenant_payment_info_cache" as any)
+          .upsert({ tenant_id: tenant.id, payload: payload as any, fetched_at: fetchedAt });
+        if (upErr) console.error("[payment-info] cache upsert failed", upErr);
+        return { ...payload, cached: false, fetchedAt };
+      }
 
-    // 4) Pagar.me falhou e cache estava expirado → devolve dados crus sem persistir
-    return { ...payload, cached: false, fetchedAt: new Date().toISOString() };
-  });
+      // 4) Pagar.me falhou e cache estava expirado → devolve dados crus sem persistir
+      return { ...payload, cached: false, fetchedAt: new Date().toISOString() };
+    },
+  );
 
 /** Invalida o cache de payment-info de um tenant. Use após editar recipient na Pagar.me. */
 export const invalidatePaymentInfoCache = createServerFn({ method: "POST" })
@@ -207,4 +210,3 @@ export const invalidatePaymentInfoCache = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
-

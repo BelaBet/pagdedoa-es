@@ -7,7 +7,13 @@ import { Card } from "@/components/ui/card";
 import { KpiCard } from "@/components/kpi-card";
 import { DollarSign, Calendar } from "lucide-react";
 import {
-  ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
 } from "recharts";
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -24,7 +30,7 @@ function ManagerDashboard() {
   const tenantId = useEffectiveTenantId(profile?.tenant_id);
   const [kpis, setKpis] = useState<Kpis>({ donationsMonth: 0, eventsMonth: 0 });
   const [donationSeries, setDonationSeries] = useState<{ month: string; total: number }[]>([]);
-  
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,12 +47,25 @@ function ManagerDashboard() {
 
       const [donationsAllRes, donationsMonthRes, eventsMonthRes] = await Promise.all([
         supabase.from("donations").select("amount, created_at").eq("tenant_id", tenantId),
-        supabase.from("donations").select("amount").eq("tenant_id", tenantId).gte("created_at", startMonth).lte("created_at", endMonthIso),
-        supabase.from("events").select("id").eq("tenant_id", tenantId).gte("date", startMonth).lte("date", endMonthIso),
+        supabase
+          .from("donations")
+          .select("amount")
+          .eq("tenant_id", tenantId)
+          .gte("created_at", startMonth)
+          .lte("created_at", endMonthIso),
+        supabase
+          .from("events")
+          .select("id")
+          .eq("tenant_id", tenantId)
+          .gte("date", startMonth)
+          .lte("date", endMonthIso),
       ]);
 
       setKpis({
-        donationsMonth: (donationsMonthRes.data ?? []).reduce((s, d) => s + Number(d.amount || 0), 0),
+        donationsMonth: (donationsMonthRes.data ?? []).reduce(
+          (s, d) => s + Number(d.amount || 0),
+          0,
+        ),
         eventsMonth: (eventsMonthRes.data ?? []).length,
       });
 
@@ -57,7 +76,10 @@ function ManagerDashboard() {
         const s = startOfMonth(ref).getTime();
         const e = endOfMonth(ref).getTime();
         const total = (donationsAllRes.data ?? [])
-          .filter((d) => { const t = new Date(d.created_at).getTime(); return t >= s && t <= e; })
+          .filter((d) => {
+            const t = new Date(d.created_at).getTime();
+            return t >= s && t <= e;
+          })
           .reduce((sum, d) => sum + Number(d.amount || 0), 0);
         series.push({ month: format(ref, "MMM", { locale: ptBR }), total });
       }
@@ -77,8 +99,18 @@ function ManagerDashboard() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <KpiCard icon={DollarSign} label="Doações no mês" value={fmtBRL(kpis.donationsMonth)} loading={loading} />
-        <KpiCard icon={Calendar} label="Eventos no mês" value={kpis.eventsMonth} loading={loading} />
+        <KpiCard
+          icon={DollarSign}
+          label="Doações no mês"
+          value={fmtBRL(kpis.donationsMonth)}
+          loading={loading}
+        />
+        <KpiCard
+          icon={Calendar}
+          label="Eventos no mês"
+          value={kpis.eventsMonth}
+          loading={loading}
+        />
       </div>
 
       <Card className="p-4">
@@ -88,12 +120,23 @@ function ManagerDashboard() {
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
             <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-            <Tooltip formatter={(v) => fmtBRL(Number(v))} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }} />
-            <Line type="monotone" dataKey="total" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4 }} />
+            <Tooltip
+              formatter={(v) => fmtBRL(Number(v))}
+              contentStyle={{
+                background: "hsl(var(--card))",
+                border: "1px solid hsl(var(--border))",
+              }}
+            />
+            <Line
+              type="monotone"
+              dataKey="total"
+              stroke="hsl(var(--primary))"
+              strokeWidth={2}
+              dot={{ r: 4 }}
+            />
           </LineChart>
         </ResponsiveContainer>
       </Card>
-
     </div>
   );
 }

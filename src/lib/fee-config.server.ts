@@ -9,8 +9,8 @@ export type FeeRow = {
   adquirencia_fixa: number | null;
   adquirencia_avista_percent: number | null;
   adquirencia_2x_percent: number | null;
-  tk2_operacional_fixo: number | null;
-  tk2_op_percent: number | null;
+  g2_operacional_fixo: number | null;
+  g2_op_percent: number | null;
   transacao_fixa: number;
 };
 
@@ -28,7 +28,7 @@ export async function getPlatformFeeRow(
   tenantId?: string | null,
 ): Promise<FeeRow | null> {
   const columns =
-    "adm_percent, adquirencia_fixa, adquirencia_avista_percent, adquirencia_2x_percent, tk2_operacional_fixo, tk2_op_percent, transacao_fixa";
+    "adm_percent, adquirencia_fixa, adquirencia_avista_percent, adquirencia_2x_percent, g2_operacional_fixo, g2_op_percent, transacao_fixa";
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
@@ -47,17 +47,25 @@ export async function getPlatformFeeRow(
     const { data, error } = await supabaseAdmin
       .from("platform_fee_config" as any)
       .select(
-        "adm_percent, adquirencia_fixa, adquirencia_avista_percent, adquirencia_2x_percent, tk2_operacional_fixo, tk2_op_percent, transacao_fixa",
+        "adm_percent, adquirencia_fixa, adquirencia_avista_percent, adquirencia_2x_percent, g2_operacional_fixo, g2_op_percent, transacao_fixa",
       )
       .eq("payment_method", paymentMethod)
       .maybeSingle();
     if (error || !data) {
-      console.error("[fee-config.server] falha ao buscar platform_fee_config, caindo para valores fixos", paymentMethod, error);
+      console.error(
+        "[fee-config.server] falha ao buscar platform_fee_config, caindo para valores fixos",
+        paymentMethod,
+        error,
+      );
       return null;
     }
     return data as unknown as FeeRow;
   } catch (e) {
-    console.error("[fee-config.server] erro ao buscar platform_fee_config, caindo para valores fixos", paymentMethod, e);
+    console.error(
+      "[fee-config.server] erro ao buscar platform_fee_config, caindo para valores fixos",
+      paymentMethod,
+      e,
+    );
     return null;
   }
 }

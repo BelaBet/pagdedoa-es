@@ -2,13 +2,22 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, RefreshCw, Copy, CheckCircle2 } from "lucide-react";
@@ -49,7 +58,9 @@ export function BankingSetupModal({ tenant, open, onOpenChange }: Props) {
   const isConfigured = Boolean(tenant.recipient_id) && tenant.recipient_status !== "error";
 
   const [legalName, setLegalName] = useState(tenant.legal_name ?? tenant.name ?? "");
-  const [holderDocument, setHolderDocument] = useState(tenant.holder_document ?? tenant.document ?? "");
+  const [holderDocument, setHolderDocument] = useState(
+    tenant.holder_document ?? tenant.document ?? "",
+  );
   const [holderName, setHolderName] = useState(tenant.holder_name ?? "");
   const [bankCode, setBankCode] = useState(tenant.bank_code ?? "");
   const [bankAgency, setBankAgency] = useState(tenant.bank_agency ?? "");
@@ -129,7 +140,9 @@ export function BankingSetupModal({ tenant, open, onOpenChange }: Props) {
               <div>Banco: {tenant.bank_code ?? "—"}</div>
               <div>Tipo: {tenant.account_type ?? "—"}</div>
               <div>Agência: {tenant.bank_agency ?? "—"}</div>
-              <div>Conta: {tenant.bank_account ?? "—"}-{tenant.bank_account_dv ?? "—"}</div>
+              <div>
+                Conta: {tenant.bank_account ?? "—"}-{tenant.bank_account_dv ?? "—"}
+              </div>
               <div className="col-span-2">Titular: {tenant.holder_name ?? "—"}</div>
             </div>
             <DialogFooter>
@@ -163,13 +176,23 @@ export function BankingSetupModal({ tenant, open, onOpenChange }: Props) {
 
             <div className="space-y-1">
               <Label htmlFor="legalName">Razão social</Label>
-              <Input id="legalName" value={legalName} onChange={(e) => setLegalName(e.target.value)} required />
+              <Input
+                id="legalName"
+                value={legalName}
+                onChange={(e) => setLegalName(e.target.value)}
+                required
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
                 <Label htmlFor="holderName">Nome do titular</Label>
-                <Input id="holderName" value={holderName} onChange={(e) => setHolderName(e.target.value)} required />
+                <Input
+                  id="holderName"
+                  value={holderName}
+                  onChange={(e) => setHolderName(e.target.value)}
+                  required
+                />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="holderDocument">CPF/CNPJ do titular</Label>
@@ -185,7 +208,9 @@ export function BankingSetupModal({ tenant, open, onOpenChange }: Props) {
             <div className="space-y-1">
               <Label htmlFor="bankCode">Banco</Label>
               <Select value={bankCode} onValueChange={setBankCode}>
-                <SelectTrigger id="bankCode"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectTrigger id="bankCode">
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
                 <SelectContent>
                   {BANKS.map((b) => (
                     <SelectItem key={b.code} value={b.code}>
@@ -199,11 +224,21 @@ export function BankingSetupModal({ tenant, open, onOpenChange }: Props) {
             <div className="grid grid-cols-3 gap-2">
               <div className="space-y-1">
                 <Label htmlFor="bankAgency">Agência</Label>
-                <Input id="bankAgency" value={bankAgency} onChange={(e) => setBankAgency(e.target.value)} required />
+                <Input
+                  id="bankAgency"
+                  value={bankAgency}
+                  onChange={(e) => setBankAgency(e.target.value)}
+                  required
+                />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="bankAccount">Conta</Label>
-                <Input id="bankAccount" value={bankAccount} onChange={(e) => setBankAccount(e.target.value)} required />
+                <Input
+                  id="bankAccount"
+                  value={bankAccount}
+                  onChange={(e) => setBankAccount(e.target.value)}
+                  required
+                />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="bankAccountDv">Dígito</Label>
@@ -223,7 +258,9 @@ export function BankingSetupModal({ tenant, open, onOpenChange }: Props) {
                 value={accountType}
                 onValueChange={(v) => setAccountType(v as "checking" | "savings")}
               >
-                <SelectTrigger id="accountType"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="accountType">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="checking">Corrente</SelectItem>
                   <SelectItem value="savings">Poupança</SelectItem>

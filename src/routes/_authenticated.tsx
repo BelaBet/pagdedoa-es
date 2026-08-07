@@ -1,9 +1,26 @@
-import { createFileRoute, Outlet, redirect, Link, useRouter, useLocation } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  Link,
+  useRouter,
+  useLocation,
+} from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth-context";
 import { useTenant } from "@/lib/tenant-context";
 import { useEffectiveTenantId } from "@/lib/impersonation";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, User, LogOut, Bell, Megaphone, ExternalLink, ArrowLeft, Menu, ShieldAlert } from "lucide-react";
+import {
+  LayoutDashboard,
+  User,
+  LogOut,
+  Bell,
+  Megaphone,
+  ExternalLink,
+  ArrowLeft,
+  Menu,
+  ShieldAlert,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -70,7 +87,11 @@ function AuthLayout() {
   void redirect;
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center text-muted-foreground">Carregando...</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center text-muted-foreground">
+        Carregando...
+      </div>
+    );
   }
   if (!user) return null;
 
@@ -79,8 +100,12 @@ function AuthLayout() {
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="w-full max-w-md text-center">
           <h1 className="font-display text-2xl">Cadastro não aprovado</h1>
-          <p className="mt-3 text-muted-foreground">Entre em contato com o gestor da sua comunidade.</p>
-          <Button variant="outline" className="mt-6" onClick={signOut}>Sair</Button>
+          <p className="mt-3 text-muted-foreground">
+            Entre em contato com o gestor da sua comunidade.
+          </p>
+          <Button variant="outline" className="mt-6" onClick={signOut}>
+            Sair
+          </Button>
         </div>
       </div>
     );
@@ -133,19 +158,43 @@ function AuthLayout() {
             </Link>
           </div>
           <nav className="hidden items-center gap-1 md:flex">
-            <Button asChild variant="ghost" size="sm"><Link to="/dashboard">{"\n"}</Link></Button>
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/dashboard">{"\n"}</Link>
+            </Button>
             {isStaff && (myTenant as { slug?: string } | null)?.slug && (
               <Button asChild variant="ghost" size="sm">
-                <a href={`/i/${(myTenant as { slug: string }).slug}`} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={`/i/${(myTenant as { slug: string }).slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <ExternalLink className="h-4 w-4 mr-1" /> Página de Doação
                 </a>
               </Button>
             )}
-            <Button asChild variant="ghost" size="sm"><Link to="/manage/mensagens">Mensagens</Link></Button>
-            <Button asChild variant="ghost" size="sm"><Link to="/notifications"><Bell className="h-4 w-4" /></Link></Button>
-            {isStaff && <Button asChild variant="default" size="sm"><Link to="/manage/dashboard">Gestão</Link></Button>}
-            {isSuperAdmin && <Button asChild variant="default" size="sm"><Link to="/admin/dashboard"><ShieldAlert className="h-4 w-4 mr-1" /> Plataforma</Link></Button>}
-            <Button asChild variant="ghost" size="sm"><Link to="/profile">Perfil</Link></Button>
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/manage/mensagens">Mensagens</Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/notifications">
+                <Bell className="h-4 w-4" />
+              </Link>
+            </Button>
+            {isStaff && (
+              <Button asChild variant="default" size="sm">
+                <Link to="/manage/dashboard">Gestão</Link>
+              </Button>
+            )}
+            {isSuperAdmin && (
+              <Button asChild variant="default" size="sm">
+                <Link to="/admin/dashboard">
+                  <ShieldAlert className="h-4 w-4 mr-1" /> Plataforma
+                </Link>
+              </Button>
+            )}
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/profile">Perfil</Link>
+            </Button>
             <Button onClick={signOut} variant="ghost" size="sm">
               <LogOut className="h-4 w-4" /> Sair
             </Button>
@@ -160,21 +209,54 @@ function AuthLayout() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>{profile?.full_name ?? user.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild><Link to="/dashboard"><LayoutDashboard className="h-4 w-4 mr-2" />Painel</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/manage/mensagens"><Megaphone className="h-4 w-4 mr-2" />Mensagens</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/notifications"><Bell className="h-4 w-4 mr-2" />Avisos</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/profile"><User className="h-4 w-4 mr-2" />Perfil</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard">
+                    <LayoutDashboard className="h-4 w-4 mr-2" />
+                    Painel
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/manage/mensagens">
+                    <Megaphone className="h-4 w-4 mr-2" />
+                    Mensagens
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/notifications">
+                    <Bell className="h-4 w-4 mr-2" />
+                    Avisos
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/profile">
+                    <User className="h-4 w-4 mr-2" />
+                    Perfil
+                  </Link>
+                </DropdownMenuItem>
                 {isStaff && (
                   <>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild><Link to="/manage/dashboard"><LayoutDashboard className="h-4 w-4 mr-2" />Gestão</Link></DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/manage/dashboard">
+                        <LayoutDashboard className="h-4 w-4 mr-2" />
+                        Gestão
+                      </Link>
+                    </DropdownMenuItem>
                   </>
                 )}
                 {isSuperAdmin && (
-                  <DropdownMenuItem asChild><Link to="/admin/dashboard"><ShieldAlert className="h-4 w-4 mr-2" />Plataforma</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin/dashboard">
+                      <ShieldAlert className="h-4 w-4 mr-2" />
+                      Plataforma
+                    </Link>
+                  </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={signOut}><LogOut className="h-4 w-4 mr-2" />Sair</DropdownMenuItem>
+                <DropdownMenuItem onClick={signOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sair
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -196,8 +278,15 @@ function AuthLayout() {
           { to: "/notifications", label: "Avisos", icon: Bell },
           { to: "/profile", label: "Perfil", icon: User },
         ].map((i) => (
-          <Link key={i.to} to={i.to} className="flex flex-col items-center justify-center gap-0.5 py-2 text-xs text-muted-foreground"
-                activeProps={{ className: "flex flex-col items-center justify-center gap-0.5 py-2 text-xs text-primary" }}>
+          <Link
+            key={i.to}
+            to={i.to}
+            className="flex flex-col items-center justify-center gap-0.5 py-2 text-xs text-muted-foreground"
+            activeProps={{
+              className:
+                "flex flex-col items-center justify-center gap-0.5 py-2 text-xs text-primary",
+            }}
+          >
             <i.icon className="h-5 w-5" />
             {i.label}
           </Link>

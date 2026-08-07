@@ -8,24 +8,58 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableMoneyCell, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableMoneyCell,
+  TableRow,
 } from "@/components/ui/table";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { EmptyRow, LoadingRow } from "@/components/empty-row";
 import { TablePagination } from "@/components/table-pagination";
 import { usePagination } from "@/lib/use-pagination";
 import {
-  MoreVertical, Search, UserCheck, UserX, Eye, Pencil, Trash2, Building2, ArrowLeft, ShieldAlert,
+  MoreVertical,
+  Search,
+  UserCheck,
+  UserX,
+  Eye,
+  Pencil,
+  Trash2,
+  Building2,
+  ArrowLeft,
+  ShieldAlert,
 } from "lucide-react";
 import { toast } from "sonner";
 import { translateError } from "@/lib/translate-error";
@@ -37,12 +71,21 @@ export const Route = createFileRoute("/_authenticated/manage/members")({
 });
 
 type Tenant = {
-  id: string; name: string; slug: string; active: boolean | null;
-  created_at: string; trade_name: string | null;
+  id: string;
+  name: string;
+  slug: string;
+  active: boolean | null;
+  created_at: string;
+  trade_name: string | null;
 };
 type Profile = {
-  id: string; full_name: string | null; email: string | null; phone: string | null;
-  status: "pending" | "approved" | "blocked"; created_at: string; tenant_id: string;
+  id: string;
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+  status: "pending" | "approved" | "blocked";
+  created_at: string;
+  tenant_id: string;
 };
 type Role = "admin" | "manager" | "member";
 
@@ -73,7 +116,10 @@ function SuperAdminMembersPage() {
   const loadTenants = async () => {
     setLoading(true);
     const [{ data: ts }, { data: ps }] = await Promise.all([
-      supabase.from("tenants").select("id, name, slug, active, created_at, trade_name").order("name"),
+      supabase
+        .from("tenants")
+        .select("id, name, slug, active, created_at, trade_name")
+        .order("name"),
       supabase.from("profiles").select("tenant_id"),
     ]);
     setTenants((ts ?? []) as Tenant[]);
@@ -85,7 +131,9 @@ function SuperAdminMembersPage() {
     setLoading(false);
   };
 
-  useEffect(() => { if (isSuper) loadTenants(); }, [isSuper]);
+  useEffect(() => {
+    if (isSuper) loadTenants();
+  }, [isSuper]);
 
   const filtered = useMemo(() => {
     if (!search) return tenants;
@@ -124,7 +172,10 @@ function SuperAdminMembersPage() {
     return (
       <TenantMembersView
         tenant={selectedTenant}
-        onBack={() => { setSelectedTenant(null); loadTenants(); }}
+        onBack={() => {
+          setSelectedTenant(null);
+          loadTenants();
+        }}
       />
     );
   }
@@ -146,7 +197,10 @@ function SuperAdminMembersPage() {
               className="pl-8"
               placeholder="Buscar instituição por nome ou slug"
               value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
             />
           </div>
           <Badge variant="outline">{tenants.length} instituições</Badge>
@@ -169,45 +223,53 @@ function SuperAdminMembersPage() {
                 <LoadingRow colSpan={6} />
               ) : filtered.length === 0 ? (
                 <EmptyRow colSpan={6} message="Nenhuma instituição encontrada." />
-              ) : paginated.map((t) => (
-                <TableRow key={t.id} className="cursor-pointer" onClick={() => setSelectedTenant(t)}>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4 text-muted-foreground" />
-                      {t.name}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">{t.slug}</TableCell>
-                  <TableCell>{counts[t.id] ?? 0}</TableCell>
-                  <TableCell>
-                    <Badge variant={t.active ? "default" : "secondary"}>
-                      {t.active ? "Ativa" : "Inativa"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{format(new Date(t.created_at), "dd/MM/yyyy")}</TableCell>
-                  <TableCell onClick={(e) => e.stopPropagation()}>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size="icon" variant="ghost"><MoreVertical className="h-4 w-4" /></Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setSelectedTenant(t)}>
-                          <Eye className="h-4 w-4" /> Ver instituições
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setEditTenant(t)}>
-                          <Pencil className="h-4 w-4" /> Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive"
-                          onClick={() => setDeleteTenant(t)}
-                        >
-                          <Trash2 className="h-4 w-4" /> Excluir
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
+              ) : (
+                paginated.map((t) => (
+                  <TableRow
+                    key={t.id}
+                    className="cursor-pointer"
+                    onClick={() => setSelectedTenant(t)}
+                  >
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-4 w-4 text-muted-foreground" />
+                        {t.name}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{t.slug}</TableCell>
+                    <TableCell>{counts[t.id] ?? 0}</TableCell>
+                    <TableCell>
+                      <Badge variant={t.active ? "default" : "secondary"}>
+                        {t.active ? "Ativa" : "Inativa"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{format(new Date(t.created_at), "dd/MM/yyyy")}</TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size="icon" variant="ghost">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setSelectedTenant(t)}>
+                            <Eye className="h-4 w-4" /> Ver instituições
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setEditTenant(t)}>
+                            <Pencil className="h-4 w-4" /> Editar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => setDeleteTenant(t)}
+                          >
+                            <Trash2 className="h-4 w-4" /> Excluir
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
@@ -225,7 +287,10 @@ function SuperAdminMembersPage() {
       <TenantEditDialog
         tenant={editTenant}
         onOpenChange={(v) => !v && setEditTenant(null)}
-        onSaved={() => { setEditTenant(null); loadTenants(); }}
+        onSaved={() => {
+          setEditTenant(null);
+          loadTenants();
+        }}
       />
 
       <AlertDialog open={!!deleteTenant} onOpenChange={(v) => !v && setDeleteTenant(null)}>
@@ -233,13 +298,16 @@ function SuperAdminMembersPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir instituição?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta ação removerá permanentemente <b>{deleteTenant?.name}</b> e todos os dados associados.
-              Não é possível desfazer.
+              Esta ação removerá permanentemente <b>{deleteTenant?.name}</b> e todos os dados
+              associados. Não é possível desfazer.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={doDeleteTenant} className="bg-destructive text-destructive-foreground">
+            <AlertDialogAction
+              onClick={doDeleteTenant}
+              className="bg-destructive text-destructive-foreground"
+            >
               Excluir
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -250,8 +318,14 @@ function SuperAdminMembersPage() {
 }
 
 function TenantEditDialog({
-  tenant, onOpenChange, onSaved,
-}: { tenant: Tenant | null; onOpenChange: (v: boolean) => void; onSaved: () => void }) {
+  tenant,
+  onOpenChange,
+  onSaved,
+}: {
+  tenant: Tenant | null;
+  onOpenChange: (v: boolean) => void;
+  onSaved: () => void;
+}) {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [active, setActive] = useState(true);
@@ -282,7 +356,9 @@ function TenantEditDialog({
   return (
     <Dialog open={!!tenant} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader><DialogTitle>Editar instituição</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Editar instituição</DialogTitle>
+        </DialogHeader>
         <div className="space-y-3">
           <div>
             <Label>Nome</Label>
@@ -295,14 +371,20 @@ function TenantEditDialog({
           <div className="flex items-center justify-between rounded border p-3">
             <div>
               <p className="text-sm font-medium">Ativa</p>
-              <p className="text-xs text-muted-foreground">Instituições inativas ficam ocultas no app.</p>
+              <p className="text-xs text-muted-foreground">
+                Instituições inativas ficam ocultas no app.
+              </p>
             </div>
             <Switch checked={active} onCheckedChange={setActive} />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={save} disabled={saving}>{saving ? "Salvando…" : "Salvar"}</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
+          <Button onClick={save} disabled={saving}>
+            {saving ? "Salvando…" : "Salvar"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -325,28 +407,28 @@ function TenantMembersView({ tenant, onBack }: { tenant: Tenant; onBack: () => v
         .from("profiles")
         .select("id, full_name, email, phone, status, created_at, tenant_id")
         .eq("tenant_id", tenant.id),
-      supabase
-        .from("user_roles")
-        .select("user_id, role")
-        .eq("tenant_id", tenant.id),
-      supabase
-        .from("donations")
-        .select("profile_id, amount")
-        .eq("tenant_id", tenant.id),
+      supabase.from("user_roles").select("user_id, role").eq("tenant_id", tenant.id),
+      supabase.from("donations").select("profile_id, amount").eq("tenant_id", tenant.id),
     ]);
     setMembers((ps ?? []) as Profile[]);
     const rmap: Record<string, Role> = {};
-    (rs ?? []).forEach((r: { user_id: string; role: Role }) => { rmap[r.user_id] = r.role; });
+    (rs ?? []).forEach((r: { user_id: string; role: Role }) => {
+      rmap[r.user_id] = r.role;
+    });
     setRoles(rmap);
     setDonations((ds ?? []) as never);
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, [tenant.id]);
+  useEffect(() => {
+    load();
+  }, [tenant.id]);
 
   const totals = useMemo(() => {
     const m = new Map<string, number>();
-    donations.forEach((d) => m.set(d.profile_id, (m.get(d.profile_id) ?? 0) + Number(d.amount || 0)));
+    donations.forEach((d) =>
+      m.set(d.profile_id, (m.get(d.profile_id) ?? 0) + Number(d.amount || 0)),
+    );
     return m;
   }, [donations]);
 
@@ -355,12 +437,21 @@ function TenantMembersView({ tenant, onBack }: { tenant: Tenant; onBack: () => v
       if (statusFilter !== "all" && m.status !== statusFilter) return false;
       if (search) {
         const q = search.toLowerCase();
-        if (!`${m.full_name ?? ""} ${m.email ?? ""} ${m.phone ?? ""}`.toLowerCase().includes(q)) return false;
+        if (!`${m.full_name ?? ""} ${m.email ?? ""} ${m.phone ?? ""}`.toLowerCase().includes(q))
+          return false;
       }
       return true;
     });
   }, [members, statusFilter, search]);
-  const { page: mPage, setPage: setMPage, totalPages: mTotalPages, paginated: mPaginated, total: mTotal, start: mStart, end: mEnd } = usePagination(filtered, 10);
+  const {
+    page: mPage,
+    setPage: setMPage,
+    totalPages: mTotalPages,
+    paginated: mPaginated,
+    total: mTotal,
+    start: mStart,
+    end: mEnd,
+  } = usePagination(filtered, 10);
 
   const updateStatus = async (id: string, status: Profile["status"]) => {
     const { error } = await supabase.from("profiles").update({ status }).eq("id", id);
@@ -386,7 +477,11 @@ function TenantMembersView({ tenant, onBack }: { tenant: Tenant; onBack: () => v
 
   const doDeleteMember = async () => {
     if (!deleteMember) return;
-    await supabase.from("user_roles").delete().eq("user_id", deleteMember.id).eq("tenant_id", tenant.id);
+    await supabase
+      .from("user_roles")
+      .delete()
+      .eq("user_id", deleteMember.id)
+      .eq("tenant_id", tenant.id);
     const { error } = await supabase.from("profiles").delete().eq("id", deleteMember.id);
     if (error) return toast.error(translateError(error));
     toast.success("Instituição removida");
@@ -416,11 +511,22 @@ function TenantMembersView({ tenant, onBack }: { tenant: Tenant; onBack: () => v
               className="pl-8"
               placeholder="Buscar nome, e-mail, telefone"
               value={search}
-              onChange={(e) => { setSearch(e.target.value); setMPage(1); }}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setMPage(1);
+              }}
             />
           </div>
-          <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setMPage(1); }}>
-            <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+          <Select
+            value={statusFilter}
+            onValueChange={(v) => {
+              setStatusFilter(v);
+              setMPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos os status</SelectItem>
               <SelectItem value="pending">Pendente</SelectItem>
@@ -449,59 +555,80 @@ function TenantMembersView({ tenant, onBack }: { tenant: Tenant; onBack: () => v
                 <LoadingRow colSpan={7} />
               ) : filtered.length === 0 ? (
                 <EmptyRow colSpan={7} message="Nenhum membro encontrado." />
-              ) : mPaginated.map((m) => (
-                <TableRow key={m.id}>
-                  <TableCell className="font-medium">{m.full_name ?? "—"}</TableCell>
-                  <TableCell>{m.email ?? "—"}</TableCell>
-                  <TableCell>{m.phone ?? "—"}</TableCell>
-                  <TableCell>
-                    <Select
-                      value={roles[m.id] ?? "member"}
-                      onValueChange={(v) => changeRole(m.id, v as Role)}
-                    >
-                      <SelectTrigger className="h-8 w-[130px]"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="member">Instituição</SelectItem>
-                        <SelectItem value="manager">Gestor</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={m.status === "approved" ? "default" : m.status === "pending" ? "secondary" : "destructive"}>
-                      {m.status === "approved" ? "Aprovado" : m.status === "pending" ? "Pendente" : "Bloqueado"}
-                    </Badge>
-                  </TableCell>
-                  <TableMoneyCell>
-                    {(totals.get(m.id) ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                  </TableMoneyCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size="icon" variant="ghost"><MoreVertical className="h-4 w-4" /></Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        {m.status !== "approved" && (
-                          <DropdownMenuItem onClick={() => updateStatus(m.id, "approved")}>
-                            <UserCheck className="h-4 w-4" /> Aprovar
+              ) : (
+                mPaginated.map((m) => (
+                  <TableRow key={m.id}>
+                    <TableCell className="font-medium">{m.full_name ?? "—"}</TableCell>
+                    <TableCell>{m.email ?? "—"}</TableCell>
+                    <TableCell>{m.phone ?? "—"}</TableCell>
+                    <TableCell>
+                      <Select
+                        value={roles[m.id] ?? "member"}
+                        onValueChange={(v) => changeRole(m.id, v as Role)}
+                      >
+                        <SelectTrigger className="h-8 w-[130px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="member">Instituição</SelectItem>
+                          <SelectItem value="manager">Gestor</SelectItem>
+                          <SelectItem value="admin">Admin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          m.status === "approved"
+                            ? "default"
+                            : m.status === "pending"
+                              ? "secondary"
+                              : "destructive"
+                        }
+                      >
+                        {m.status === "approved"
+                          ? "Aprovado"
+                          : m.status === "pending"
+                            ? "Pendente"
+                            : "Bloqueado"}
+                      </Badge>
+                    </TableCell>
+                    <TableMoneyCell>
+                      {(totals.get(m.id) ?? 0).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </TableMoneyCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size="icon" variant="ghost">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {m.status !== "approved" && (
+                            <DropdownMenuItem onClick={() => updateStatus(m.id, "approved")}>
+                              <UserCheck className="h-4 w-4" /> Aprovar
+                            </DropdownMenuItem>
+                          )}
+                          {m.status !== "blocked" && (
+                            <DropdownMenuItem onClick={() => updateStatus(m.id, "blocked")}>
+                              <UserX className="h-4 w-4" /> Bloquear
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => setDeleteMember(m)}
+                          >
+                            <Trash2 className="h-4 w-4" /> Excluir
                           </DropdownMenuItem>
-                        )}
-                        {m.status !== "blocked" && (
-                          <DropdownMenuItem onClick={() => updateStatus(m.id, "blocked")}>
-                            <UserX className="h-4 w-4" /> Bloquear
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem
-                          className="text-destructive"
-                          onClick={() => setDeleteMember(m)}
-                        >
-                          <Trash2 className="h-4 w-4" /> Excluir
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
@@ -526,7 +653,10 @@ function TenantMembersView({ tenant, onBack }: { tenant: Tenant; onBack: () => v
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={doDeleteMember} className="bg-destructive text-destructive-foreground">
+            <AlertDialogAction
+              onClick={doDeleteMember}
+              className="bg-destructive text-destructive-foreground"
+            >
               Excluir
             </AlertDialogAction>
           </AlertDialogFooter>

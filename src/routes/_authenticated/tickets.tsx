@@ -42,27 +42,49 @@ function TicketsPage() {
         ) : (
           <ul className="grid gap-4 md:grid-cols-2">
             {data!.map((t) => {
-              const ev = t.events as { id: string; title: string; date: string | null; location: string | null } | null;
+              const ev = t.events as {
+                id: string;
+                title: string;
+                date: string | null;
+                location: string | null;
+              } | null;
               return (
-                <li key={t.id} className="rounded-2xl border bg-card p-5 shadow-[var(--shadow-card)]">
+                <li
+                  key={t.id}
+                  className="rounded-2xl border bg-card p-5 shadow-[var(--shadow-card)]"
+                >
                   <div className="flex items-start gap-4">
                     <div className="rounded-lg bg-white p-2">
                       <QRCodeSVG value={t.qr_code_data ?? t.id} size={108} />
                     </div>
                     <div className="flex-1">
                       <h3 className="font-display text-lg">{ev?.title ?? "Evento"}</h3>
-                      {ev?.date && <p className="text-xs text-muted-foreground">{new Date(ev.date).toLocaleString("pt-BR")}</p>}
-                      {ev?.location && <p className="text-xs text-muted-foreground">{ev.location}</p>}
+                      {ev?.date && (
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(ev.date).toLocaleString("pt-BR")}
+                        </p>
+                      )}
+                      {ev?.location && (
+                        <p className="text-xs text-muted-foreground">{ev.location}</p>
+                      )}
                       <div className="mt-3 flex items-center gap-2">
-                        <span className={`rounded-full px-2 py-0.5 text-xs ${
-                          t.status === "active" ? "bg-primary/10 text-primary" :
-                          t.status === "used" ? "bg-muted text-muted-foreground" :
-                          "bg-destructive/10 text-destructive"
-                        }`}>{t.status}</span>
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs ${
+                            t.status === "active"
+                              ? "bg-primary/10 text-primary"
+                              : t.status === "used"
+                                ? "bg-muted text-muted-foreground"
+                                : "bg-destructive/10 text-destructive"
+                          }`}
+                        >
+                          {t.status}
+                        </span>
                       </div>
                     </div>
                   </div>
-                  <p className="mt-3 break-all rounded bg-muted p-2 font-mono text-[10px] text-muted-foreground">{t.qr_code_data}</p>
+                  <p className="mt-3 break-all rounded bg-muted p-2 font-mono text-[10px] text-muted-foreground">
+                    {t.qr_code_data}
+                  </p>
                 </li>
               );
             })}

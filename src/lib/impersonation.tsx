@@ -17,8 +17,11 @@ type ImpersonationCtx = {
 };
 
 const Ctx = createContext<ImpersonationCtx>({
-  active: false, tenantId: null, sessionId: null,
-  start: async () => {}, stop: async () => {},
+  active: false,
+  tenantId: null,
+  sessionId: null,
+  start: async () => {},
+  stop: async () => {},
 });
 
 export function ImpersonationProvider({ children }: { children: ReactNode }) {
