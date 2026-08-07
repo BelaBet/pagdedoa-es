@@ -31,7 +31,7 @@ dist-ssr
 *.sln
 *.sw?
 
-# Variáveis de ambiente — nunca versionar
-.env
-.env.*
-!.env.example
+# .env permanece versionado: o build do Lovable lê as variáveis dele.
+# Só contém chaves publishable/anon. Nunca adicionar service_role key aqui.
+.env.local
+.env.*.local
