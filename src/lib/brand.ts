@@ -28,7 +28,7 @@ export const BRAND = {
     "Plataforma para gestão de comunidades religiosas — eventos, doações, mensagens.",
 
   /** Domínio raiz, sem protocolo e sem barra final. */
-  domain: "example.com.br",
+  domain: "meuhub.site",
 
   support: {
     email: "contato@meuhub.site",
