@@ -98,11 +98,6 @@ export function AppSidebar() {
         <div className="flex items-center gap-2 px-2 py-1">
           {isSuperAdmin ? (
             <>
-              <img
-                src="/__l5e/assets-v1/64e1ae41-9cf7-45e3-ac17-3658b088a3df/ticketconnect-logo-long.jpeg"
-                alt=""
-                className="h-6 w-auto rounded-sm"
-              />
               {!collapsed && (
                 <div className="flex flex-col leading-tight">
                   <span className="font-display text-sm">Painel da Plataforma</span>

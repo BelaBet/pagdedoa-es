@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { jsPDF } from "jspdf";
-import ticketConnectLogo from "@/assets/ticketconnect-logo.jpg";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
@@ -54,15 +53,6 @@ function maskDocument(doc: string | null) {
   return doc;
 }
 
-function loadImage(src: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = src;
-  });
-}
-
 async function buildPdf(
   items: DonationReportItem[],
   withdrawalItems: WithdrawalReportItem[],
@@ -75,15 +65,6 @@ async function buildPdf(
   const pageWidth = doc.internal.pageSize.getWidth();
   const marginX = 32;
   let y = 40;
-
-  try {
-    const logo = await loadImage(ticketConnectLogo);
-    const logoHeight = 26;
-    const logoWidth = (logo.width / logo.height) * logoHeight;
-    doc.addImage(logo, "JPEG", pageWidth - marginX - logoWidth, 24, logoWidth, logoHeight);
-  } catch {
-    // segue sem a logo se a imagem não carregar por algum motivo
-  }
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
