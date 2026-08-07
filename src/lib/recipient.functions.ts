@@ -418,7 +418,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
     const { data, error } = await supabaseAdmin
       .from("payments")
       .select(
-        "platform_fee, pagarme_fee, g2_op_fee, transacao_fee, split_platform_amount, split_seller_amount, seller_recipient_id",
+        "platform_fee, pagarme_fee, tk2_op_fee, transacao_fee, split_platform_amount, split_seller_amount, seller_recipient_id",
       )
       .eq("status", "confirmed")
       .is("deleted_at", null);
@@ -426,7 +426,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
     type Row = {
       platform_fee: number | null;
       pagarme_fee: number | null;
-      g2_op_fee: number | null;
+      tk2_op_fee: number | null;
       transacao_fee: number | null;
       split_platform_amount: number | null;
       split_seller_amount: number | null;
@@ -437,7 +437,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
       (acc, r) => {
         acc.platformRevenue += r.platform_fee ?? 0;
         acc.pagarmeAbsorbed += r.pagarme_fee ?? 0;
-        acc.g2OpRevenue += r.g2_op_fee ?? 0;
+        acc.g2OpRevenue += r.tk2_op_fee ?? 0;
         acc.transacaoAbsorbed += r.transacao_fee ?? 0;
         acc.totalPlatform += r.split_platform_amount ?? 0;
         acc.totalSeller += r.split_seller_amount ?? 0;
@@ -474,7 +474,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
         count: 0,
       };
       cur.platformRevenue += r.platform_fee ?? 0;
-      cur.g2OpRevenue += r.g2_op_fee ?? 0;
+      cur.g2OpRevenue += r.tk2_op_fee ?? 0;
       cur.totalPlatform += r.split_platform_amount ?? 0;
       cur.totalSeller += r.split_seller_amount ?? 0;
       cur.count += 1;
