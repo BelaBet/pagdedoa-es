@@ -126,14 +126,18 @@
   }
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
-    letter-spacing: -0.015em;
     font-weight: 500;
   }
 }
 
-/* Fora de @layer de proposito: regra sem camada vence utilitario do
-   Tailwind. Dentro de @layer components o .rounded-md dos componentes
-   shadcn sobrescrevia isto e nada acontecia. */
+/* As regras abaixo ficam fora de @layer de proposito: CSS sem camada vence
+   utilitario do Tailwind. Em @layer components, o .rounded-md e o
+   .tracking-tight dos componentes sobrescreviam tudo e nada aplicava. */
+
+h1, h2, h3, .font-display {
+  letter-spacing: 0.012em;
+}
+
 button,
 [role="button"],
 a[data-slot="button"],
