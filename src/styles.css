@@ -36,64 +36,70 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-display: "Fraunces", Georgia, serif;
-  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Bodoni Moda", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 :root {
-  --radius: 0.875rem;
+  /* Cantos retos: azulejo e ladrilho, nao cartao arredondado. */
+  --radius: 0.1875rem;
 
-  /* Warm parchment neutrals */
-  --background: oklch(0.985 0.008 75);
-  --foreground: oklch(0.21 0.02 60);
+  /* Cal — caiacao. Branco frio, deliberadamente nao creme. */
+  --background: oklch(0.972 0.002 250);
+  --foreground: oklch(0.19 0.025 275);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.02 60);
+  --card-foreground: oklch(0.19 0.025 275);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.02 60);
+  --popover-foreground: oklch(0.19 0.025 275);
 
-  /* Brand — overridden per tenant via JS */
-  --brand-primary: oklch(0.45 0.15 285);
-  --brand-primary-foreground: oklch(0.985 0.008 75);
-  --brand-secondary: oklch(0.85 0.13 85);
-  --brand-secondary-foreground: oklch(0.21 0.02 60);
-  --brand-glow: oklch(0.55 0.18 285);
+  /* Azul mariano (#232E6B) e talha dourada (#C8A24A).
+     Sobrescritos por tenant em runtime pelo TenantThemeBridge. */
+  --brand-primary: oklch(0.31 0.108 274);
+  --brand-primary-foreground: oklch(0.972 0.002 250);
+  --brand-secondary: oklch(0.71 0.108 82);
+  --brand-secondary-foreground: oklch(0.31 0.108 274);
+  --brand-glow: oklch(0.40 0.132 272);
 
-  --muted: oklch(0.96 0.01 75);
-  --muted-foreground: oklch(0.5 0.02 65);
-  --accent: oklch(0.94 0.03 80);
-  --accent-foreground: oklch(0.21 0.02 60);
-  --destructive: oklch(0.55 0.22 27);
-  --destructive-foreground: oklch(0.985 0.008 75);
-  --border: oklch(0.92 0.01 75);
-  --input: oklch(0.92 0.01 75);
+  /* Manto e veu: degraus intermediarios da propria familia azul,
+     para hover, borda e estado desabilitado. Sem cinza neutro. */
+  --muted: oklch(0.945 0.012 272);
+  --muted-foreground: oklch(0.52 0.032 275);
+  --accent: oklch(0.905 0.028 272);
+  --accent-foreground: oklch(0.31 0.108 274);
+  --destructive: oklch(0.52 0.20 25);
+  --destructive-foreground: oklch(0.972 0.002 250);
+  --border: oklch(0.895 0.022 272);
+  --input: oklch(0.895 0.022 272);
   --ring: var(--brand-primary);
 
-  --sidebar: oklch(0.97 0.01 75);
-  --sidebar-foreground: oklch(0.21 0.02 60);
+  --sidebar: oklch(0.955 0.010 272);
+  --sidebar-foreground: oklch(0.19 0.025 275);
   --sidebar-primary: var(--brand-primary);
   --sidebar-primary-foreground: var(--brand-primary-foreground);
-  --sidebar-accent: oklch(0.94 0.02 80);
-  --sidebar-accent-foreground: oklch(0.21 0.02 60);
-  --sidebar-border: oklch(0.92 0.01 75);
+  --sidebar-accent: oklch(0.905 0.028 272);
+  --sidebar-accent-foreground: oklch(0.31 0.108 274);
+  --sidebar-border: oklch(0.895 0.022 272);
   --sidebar-ring: var(--brand-primary);
 
-  --gradient-hero: linear-gradient(135deg, var(--brand-primary), var(--brand-glow));
-  --gradient-soft: linear-gradient(180deg, var(--background), var(--muted));
-  --shadow-elegant: 0 20px 50px -20px color-mix(in oklab, var(--brand-primary) 35%, transparent);
-  --shadow-card: 0 1px 3px oklch(0.21 0.02 60 / 0.06), 0 8px 24px -12px oklch(0.21 0.02 60 / 0.1);
+  /* Sem gradiente: superficie chapada, como parede caiada. */
+  --gradient-hero: var(--brand-primary);
+  --gradient-soft: var(--background);
+  --shadow-elegant: none;
+  --shadow-card: 0 1px 2px oklch(0.19 0.025 275 / 0.07);
 }
 
 .dark {
-  --background: oklch(0.18 0.02 60);
-  --foreground: oklch(0.97 0.01 75);
-  --card: oklch(0.22 0.02 60);
-  --card-foreground: oklch(0.97 0.01 75);
-  --popover: oklch(0.22 0.02 60);
-  --popover-foreground: oklch(0.97 0.01 75);
-  --muted: oklch(0.27 0.02 60);
-  --muted-foreground: oklch(0.7 0.02 70);
-  --accent: oklch(0.3 0.03 75);
-  --accent-foreground: oklch(0.97 0.01 75);
+  --background: oklch(0.17 0.030 275);
+  --foreground: oklch(0.965 0.004 250);
+  --card: oklch(0.215 0.038 274);
+  --card-foreground: oklch(0.965 0.004 250);
+  --popover: oklch(0.215 0.038 274);
+  --popover-foreground: oklch(0.965 0.004 250);
+  --muted: oklch(0.265 0.042 274);
+  --muted-foreground: oklch(0.70 0.036 272);
+  --accent: oklch(0.30 0.055 274);
+  --accent-foreground: oklch(0.965 0.004 250);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 12%);
 }
@@ -120,7 +126,8 @@
   }
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.015em;
+    font-weight: 500;
   }
 }
 
