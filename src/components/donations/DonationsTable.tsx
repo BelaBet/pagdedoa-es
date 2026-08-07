@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  TableMoneyCell,
   Table,
   TableBody,
   TableCell,
@@ -25,7 +26,17 @@ import { getDonationsList, getTenantOptions } from "@/lib/donations.functions";
 import { useImpersonation } from "@/lib/impersonation";
 import { DonationDetailDialog } from "./DonationDetailDialog";
 import { TablePagination } from "@/components/table-pagination";
-import { Search, Inbox } from "lucide-react";
+import { Search } from "lucide-react";
+import {
+  DataTableShell,
+  DataTableToolbar,
+  DataTableLoading,
+  DataTableEmpty,
+  DataTableNoResults,
+  DataTableError,
+  DataTableCards,
+  DataTableCard,
+} from "@/components/data-table";
 
 const PAGE_SIZE = 10;
 
@@ -40,7 +51,10 @@ function currentMonthRange() {
   };
 }
 
-const PERIOD_SHORTCUTS: { label: string; range: () => { periodStart: string; periodEnd: string } }[] = [
+const PERIOD_SHORTCUTS: {
+  label: string;
+  range: () => { periodStart: string; periodEnd: string };
+}[] = [
   { label: "Este mês", range: currentMonthRange },
   {
     label: "Mês passado",
@@ -160,7 +174,7 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
         </div>
       )}
 
-      <div className="flex flex-wrap items-end gap-2">
+      <DataTableToolbar>
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -223,44 +237,52 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
             </SelectContent>
           </Select>
         )}
-      </div>
+      </DataTableToolbar>
 
-      {donations.isLoading ? (
-        <Card>
-          <CardContent className="space-y-2 p-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 w-full" />
-            ))}
-          </CardContent>
-        </Card>
+      {donations.isError ? (
+        <DataTableError
+          message={(donations.error as Error)?.message}
+          onRetry={() => donations.refetch()}
+        />
+      ) : donations.isLoading ? (
+        <DataTableLoading rows={6} columns={isPlatformView ? 6 : 5} />
       ) : filtered.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-2 p-10 text-center text-muted-foreground">
-            <Inbox className="h-10 w-10 opacity-40" />
-            {search || total > 0 ? (
-              <>
-                <p className="text-sm">Nenhuma doação corresponde a esses filtros.</p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearch("");
-                    setPeriod(currentMonthRange());
-                  }}
-                  className="text-xs font-medium text-primary underline underline-offset-4"
-                >
-                  Limpar filtros
-                </button>
-              </>
-            ) : (
-              <p className="text-sm">
-                Nenhuma doação recebida ainda. Assim que a primeira entrar, ela aparece aqui.
-              </p>
-            )}
-          </CardContent>
-        </Card>
+        search || total > 0 ? (
+          <DataTableNoResults
+            onClear={() => {
+              setSearch("");
+              setPeriod(currentMonthRange());
+            }}
+          />
+        ) : (
+          <DataTableEmpty
+            title="Nenhuma doação recebida ainda"
+            description="Assim que a primeira contribuição entrar, ela aparece aqui."
+          />
+        )
       ) : (
-        <Card>
-          <CardContent className="p-0">
+        <>
+          {/* Celular: cada doacao vira card, com doador, valor e status
+              visiveis de imediato; o resto fica no detalhe ao tocar. */}
+          <DataTableCards>
+            {filtered.map((d) => (
+              <DataTableCard
+                key={d.id}
+                title={d.donorName ?? "Doador não identificado"}
+                subtitle={
+                  isPlatformView
+                    ? (d.tenantName ?? undefined)
+                    : `${translateMethod(d.paymentMethod)}${d.cardBrand ? ` · ${d.cardBrand}` : ""}`
+                }
+                value={brl(d.amountCents)}
+                badge={<StatusBadge status={d.status} />}
+                meta={fmtDate(d.createdAt)}
+                onClick={() => setSelectedId(d.id)}
+              />
+            ))}
+          </DataTableCards>
+
+          <DataTableShell className="hidden md:block">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -289,7 +311,7 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
                       {translateMethod(d.paymentMethod)}
                       {d.cardBrand ? ` · ${d.cardBrand}` : ""}
                     </TableCell>
-                    <TableCell className="text-right font-medium">{brl(d.amountCents)}</TableCell>
+                    <TableMoneyCell>{brl(d.amountCents)}</TableMoneyCell>
                     <TableCell className="text-muted-foreground">{fmtDate(d.createdAt)}</TableCell>
                     <TableCell>
                       <StatusBadge status={d.status} />
@@ -298,7 +320,7 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
                 ))}
               </TableBody>
             </Table>
-          </CardContent>
+          </DataTableShell>
           <TablePagination
             page={page}
             totalPages={totalPages}
@@ -308,7 +330,7 @@ export function DonationsTable({ showTenantFilter = true }: { showTenantFilter?:
             onPageChange={goToPage}
             itemLabel={total === 1 ? "doação" : "doações"}
           />
-        </Card>
+        </>
       )}
 
       <DonationDetailDialog paymentId={selectedId} onClose={() => setSelectedId(null)} />
