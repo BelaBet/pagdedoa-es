@@ -15,6 +15,7 @@ import { AuthProvider } from "@/lib/auth-context";
 import { ImpersonationProvider } from "@/lib/impersonation";
 import { ImpersonationBanner } from "@/components/impersonation-banner";
 import { Toaster } from "@/components/ui/sonner";
+import { BRAND_TITLE, BRAND_DESCRIPTION } from "@/lib/brand";
 
 function NotFoundComponent() {
   return (
@@ -53,12 +54,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Centro de Doações — Plataforma de Gestão" },
-      { name: "description", content: "Centro de Doações: plataforma para gestão de comunidades religiosas — eventos, doações, mensagens." },
-      { property: "og:title", content: "Centro de Doações — Plataforma de Gestão" },
-      { name: "twitter:title", content: "Centro de Doações — Plataforma de Gestão" },
-      { property: "og:description", content: "Centro de Doações: plataforma para gestão de comunidades religiosas — eventos, doações, mensagens." },
-      { name: "twitter:description", content: "Centro de Doações: plataforma para gestão de comunidades religiosas — eventos, doações, mensagens." },
+      { title: BRAND_TITLE },
+      { name: "description", content: BRAND_DESCRIPTION },
+      { property: "og:title", content: BRAND_TITLE },
+      { name: "twitter:title", content: BRAND_TITLE },
+      { property: "og:description", content: BRAND_DESCRIPTION },
+      { name: "twitter:description", content: BRAND_DESCRIPTION },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2aaa2783-fb62-4b53-a332-d006a47f2d29/id-preview-4c4bb4e9--06de6279-a941-4827-a6b4-839819780a01.lovable.app-1778355730732.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2aaa2783-fb62-4b53-a332-d006a47f2d29/id-preview-4c4bb4e9--06de6279-a941-4827-a6b4-839819780a01.lovable.app-1778355730732.png" },
       { name: "twitter:card", content: "summary_large_image" },

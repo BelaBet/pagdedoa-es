@@ -6,17 +6,18 @@ import { FinanceiroPanel } from "@/components/financeiro/FinanceiroPanel";
 import { getPlatformFeeRevenue, getRecipientBalance } from "@/lib/recipient.functions";
 import { brl } from "@/components/financeiro/format";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BRAND } from "@/lib/brand";
 
 export const Route = createFileRoute("/_authenticated/admin/financeiro")({
   component: FinanceiroPlataforma,
-  head: () => ({ meta: [{ title: "Financeiro Ticketto" }] }),
+  head: () => ({ meta: [{ title: `Financeiro ${BRAND.name}` }] }),
 });
 
 function FinanceiroPlataforma() {
   return (
     <FinanceiroPanel
       scope="platform"
-      title="Financeiro Ticketto"
+      title={`Financeiro ${BRAND.name}`}
       subtitle="Visão completa da plataforma."
       showFeeDetails
       platformSummary={<PlatformOverview />}

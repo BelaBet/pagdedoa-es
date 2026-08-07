@@ -21,10 +21,10 @@ describe("calculatePixAmounts", () => {
   it("R$100,00 → gross-up: fixos + 3,52% sobre o total", () => {
     const a = calculatePixAmounts(10_000);
     // totalAmount = round((10000 + 65) / (1 - 0.0352)) = round(10432.6) = 10432
-    // tickettoFee = 10432 - 10000 - 65 = 367
+    // platformFee = 10432 - 10000 - 65 = 367
     expect(a).toEqual({
       donationAmount: 10_000,
-      tickettoFee: 367,
+      platformFee: 367,
       pagarmeFee: 40,
       tk2OpFee: 25,
       transacaoFee: 28,
@@ -36,19 +36,19 @@ describe("calculatePixAmounts", () => {
 
   it("R$1,00 — taxa fixa domina o valor pequeno", () => {
     const a = calculatePixAmounts(100);
-    expect(a.tickettoFee).toBe(6);
+    expect(a.platformFee).toBe(6);
     expect(a.splitPlatformAmount).toBe(6 + 40 + 25);
     expect(a.totalAmount).toBe(100 + a.splitPlatformAmount);
   });
 
   it("R$0,33 — valor bem pequeno", () => {
     const a = calculatePixAmounts(33);
-    expect(a.tickettoFee).toBe(4);
+    expect(a.platformFee).toBe(4);
   });
 
   it("R$10.000,00 — valor alto sem perda", () => {
     const a = calculatePixAmounts(1_000_000);
-    expect(a.tickettoFee).toBe(36_487);
+    expect(a.platformFee).toBe(36_487);
     expect(a.splitPlatformAmount).toBe(36_487 + 40 + 25);
     expect(a.totalAmount).toBe(1_000_000 + a.splitPlatformAmount);
   });
@@ -72,7 +72,7 @@ describe("calculateCardAmounts", () => {
     const a = calculateCardAmounts(10_000, 1, "master_visa");
     expect(a).toEqual({
       donationAmount: 10_000,
-      tickettoFee: 373,
+      platformFee: 373,
       pagarmeFee: 0,
       tk2OpFee: 6,
       transacaoFee: 28,
@@ -95,7 +95,7 @@ describe("calculateCardAmounts", () => {
     const a = calculateCardAmounts(10_000, 1, "ello_hiper_amex");
     expect(a).toEqual({
       donationAmount: 10_000,
-      tickettoFee: 375,
+      platformFee: 375,
       pagarmeFee: 0,
       tk2OpFee: 6,
       transacaoFee: 28,
@@ -112,7 +112,7 @@ describe("calculateCardAmounts", () => {
 
   it("R$1,00 — valor pequeno", () => {
     const a = calculateCardAmounts(100, 1, "master_visa");
-    expect(a.tickettoFee).toBe(4);
+    expect(a.platformFee).toBe(4);
     expectAllIntegers(a);
   });
 
@@ -151,7 +151,7 @@ describe("calculateBoletoAmounts", () => {
     const a = calculateBoletoAmounts(10_000);
     expect(a).toEqual({
       donationAmount: 10_000,
-      tickettoFee: 378,
+      platformFee: 378,
       pagarmeFee: 100,
       tk2OpFee: 250,
       transacaoFee: 28,
@@ -170,7 +170,7 @@ describe("calculateBoletoAmounts", () => {
 
   it("R$0,50 — as taxas fixas dominam um valor bem pequeno", () => {
     const a = calculateBoletoAmounts(50);
-    expect(a.tickettoFee).toBe(15);
+    expect(a.platformFee).toBe(15);
   });
 
   it("aceita override de percentual (taxa de campanha customizada)", () => {

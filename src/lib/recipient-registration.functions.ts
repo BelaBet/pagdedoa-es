@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 // Server functions para o painel SuperAdmin gerenciar recebedores Pagar.me dos tenants.
 // Apenas usuários com platform_role = 'super_admin' podem executar estas funções.
 
@@ -129,7 +130,7 @@ export const registerTenantRecipient = createServerFn({ method: "POST" })
 
     const payload = {
       name: data.legalName,
-      email: `tenant-${data.tenantId}@ticketto.app`,
+      email: `tenant-${data.tenantId}@${BRAND.pagarme.recipientEmailDomain}`,
       description: `Tenant: ${t.name}`,
       type: docType,
       document: tenantDoc,

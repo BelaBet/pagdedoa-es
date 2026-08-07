@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 // Nenhuma consulta de sessão/perfil aqui de propósito — ver nota em
 // resolveCustomer() abaixo sobre por que isso nunca deve ser reintroduzido.
 
@@ -78,7 +79,7 @@ export function buildPagarmeCustomer(c: ResolvedCustomer) {
   const docType = c.documentType ?? "CPF";
   const obj: Record<string, unknown> = {
     name: c.name ?? "Contribuinte",
-    email: c.email ?? "contribuinte@proposito.app",
+    email: c.email ?? BRAND.pagarme.fallbackCustomerEmail,
     type: docType === "CNPJ" ? "company" : "individual",
     document: c.document ?? "",
     document_type: docType,

@@ -402,7 +402,7 @@ export const getRecipientPayments = createServerFn({ method: "POST" })
     return { items: (rows ?? []) as PaymentListItem[] };
   });
 
-/** Platform-only: aggregate Ticketto fee revenue from paid payments. */
+/** Platform-only: aggregate platform fee revenue from paid payments. */
 export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -435,7 +435,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
     const rows = (data ?? []) as Row[];
     const totals = rows.reduce(
       (acc, r) => {
-        acc.tickettoRevenue += r.ticketto_fee ?? 0;
+        acc.platformRevenue += r.ticketto_fee ?? 0;
         acc.pagarmeAbsorbed += r.pagarme_fee ?? 0;
         acc.tk2OpRevenue += r.tk2_op_fee ?? 0;
         acc.transacaoAbsorbed += r.transacao_fee ?? 0;
@@ -444,7 +444,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
         return acc;
       },
       {
-        tickettoRevenue: 0,
+        platformRevenue: 0,
         pagarmeAbsorbed: 0,
         tk2OpRevenue: 0,
         transacaoAbsorbed: 0,
@@ -456,7 +456,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
       string,
       {
         sellerRecipientId: string;
-        tickettoRevenue: number;
+        platformRevenue: number;
         tk2OpRevenue: number;
         totalPlatform: number;
         totalSeller: number;
@@ -467,13 +467,13 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
       const k = r.seller_recipient_id ?? "—";
       const cur = bySellerMap.get(k) ?? {
         sellerRecipientId: k,
-        tickettoRevenue: 0,
+        platformRevenue: 0,
         tk2OpRevenue: 0,
         totalPlatform: 0,
         totalSeller: 0,
         count: 0,
       };
-      cur.tickettoRevenue += r.ticketto_fee ?? 0;
+      cur.platformRevenue += r.ticketto_fee ?? 0;
       cur.tk2OpRevenue += r.tk2_op_fee ?? 0;
       cur.totalPlatform += r.split_platform_amount ?? 0;
       cur.totalSeller += r.split_seller_amount ?? 0;
@@ -481,7 +481,7 @@ export const getPlatformFeeRevenue = createServerFn({ method: "POST" })
       bySellerMap.set(k, cur);
     }
     return {
-      totalFeeCents: totals.tickettoRevenue,
+      totalFeeCents: totals.platformRevenue,
       count: rows.length,
       breakdown: totals,
       bySeller: Array.from(bySellerMap.values()),

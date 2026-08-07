@@ -8,7 +8,7 @@ export type CardBrand = "master_visa" | "ello_hiper_amex";
 
 export interface SplitAmounts {
   donationAmount: number; // valor que vai para a igreja (centavos)
-  tickettoFee: number; // taxa ADM 3,5% TK2
+  platformFee: number; // taxa ADM da plataforma (3,5%)
   pagarmeFee: number; // taxa fixa Pagar.me absorvida
   tk2OpFee: number; // taxa operacional TK2
   transacaoFee: number; // taxa fixa por transação
@@ -67,12 +67,12 @@ export function calculatePixAmounts(ofertaEmCentavos: number, splitOverridePerce
   // admPercent > 0. Resolvendo totalAmount = (donationAmount + fixos) / (1 - admPercent).
   const fixedTotal = pagarmeFee + tk2OpFee;
   const totalAmount = Math.round((donationAmount + fixedTotal) / (1 - admPercent));
-  const tickettoFee = totalAmount - donationAmount - fixedTotal;
-  const splitPlatformAmount = tickettoFee + pagarmeFee + tk2OpFee;
+  const platformFee = totalAmount - donationAmount - fixedTotal;
+  const splitPlatformAmount = platformFee + pagarmeFee + tk2OpFee;
 
   return {
     donationAmount,
-    tickettoFee,
+    platformFee,
     pagarmeFee,
     tk2OpFee,
     transacaoFee,
@@ -109,13 +109,13 @@ export function calculateCardAmounts(
   const totalAmount = Math.round(donationAmount / (1 - totalPct));
   const splitPlatformAmount = totalAmount - donationAmount;
 
-  const tickettoFee = Math.round((splitPlatformAmount * admPercent) / totalPct);
+  const platformFee = Math.round((splitPlatformAmount * admPercent) / totalPct);
   const tk2OpFee = Math.round((splitPlatformAmount * tk2OpPercent) / totalPct);
-  const adquirenciaValor = splitPlatformAmount - tickettoFee - tk2OpFee;
+  const adquirenciaValor = splitPlatformAmount - platformFee - tk2OpFee;
 
   return {
     donationAmount,
-    tickettoFee,
+    platformFee,
     pagarmeFee,
     tk2OpFee,
     transacaoFee,
@@ -137,12 +137,12 @@ export function calculateBoletoAmounts(ofertaEmCentavos: number, splitOverridePe
   // GROSS-UP: mesmo ajuste do PIX — ver comentário em calculatePixAmounts.
   const fixedTotal = pagarmeFee + tk2OpFee;
   const totalAmount = Math.round((donationAmount + fixedTotal) / (1 - admPercent));
-  const tickettoFee = totalAmount - donationAmount - fixedTotal;
-  const splitPlatformAmount = tickettoFee + tk2OpFee + pagarmeFee;
+  const platformFee = totalAmount - donationAmount - fixedTotal;
+  const splitPlatformAmount = platformFee + tk2OpFee + pagarmeFee;
 
   return {
     donationAmount,
-    tickettoFee,
+    platformFee,
     pagarmeFee,
     tk2OpFee,
     transacaoFee,

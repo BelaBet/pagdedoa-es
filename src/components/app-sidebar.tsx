@@ -35,6 +35,7 @@ import { useEffectiveTenantId } from "@/lib/impersonation";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { initials } from "@/lib/utils";
+import { BRAND } from "@/lib/brand";
 
 const MANAGE_ITEMS = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -171,23 +172,23 @@ export function AppSidebar() {
                     <span>Suporte</span>
                   </div>
                   <a
-                    href="mailto:tk2@grupoempresariallp.com.br"
+                    href={`mailto:${BRAND.support.email}`}
                     className="mt-2 flex items-center gap-2 text-xs hover:text-primary hover:underline"
                   >
                     <Mail className="h-3.5 w-3.5 shrink-0" />
-                    tk2@grupoempresariallp.com.br
+                    {BRAND.support.email}
                   </a>
                   <a
-                    href="tel:+5531998199781"
+                    href={`tel:${BRAND.support.phoneE164}`}
                     className="mt-1.5 flex items-center gap-2 text-xs hover:text-primary hover:underline"
                   >
                     <Phone className="h-3.5 w-3.5 shrink-0" />
-                    (31) 99819-9781
+                    {BRAND.support.phone}
                   </a>
                 </div>
               ) : (
                 <a
-                  href="mailto:tk2@grupoempresariallp.com.br"
+                  href={`mailto:${BRAND.support.email}`}
                   title="Suporte"
                   className="flex h-8 w-8 items-center justify-center rounded-lg border bg-card hover:bg-accent"
                 >
