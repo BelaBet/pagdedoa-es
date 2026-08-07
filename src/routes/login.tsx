@@ -67,7 +67,7 @@ function LoginPage() {
             className="h-24 w-auto sm:h-28"
           />
         </div>
-        <h1 className="font-display text-3xl">Bem-Vindo a Centro de Doações</h1>
+        <h1 className="font-display text-3xl">Bem-vindo ao Centro de Doações</h1>
         <p className="mt-1 text-sm text-muted-foreground">Acesse sua conta.</p>
         {emailConfirmed && (
           <div className="mt-4 rounded-lg border border-primary/20 bg-primary/10 p-3 text-sm text-primary">

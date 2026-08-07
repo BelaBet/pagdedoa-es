@@ -235,7 +235,7 @@ function TK2LandingPage() {
       <section id="planos" className="bg-white py-20">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            Comece grátis. Cresça com a Centro de Doações.
+            Comece grátis. Cresça com o Centro de Doações.
           </h2>
           <p className="mt-3 text-slate-600">Cadastre sua igreja em minutos e comece a receber doações ainda hoje.</p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
