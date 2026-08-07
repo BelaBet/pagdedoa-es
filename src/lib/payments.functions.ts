@@ -197,7 +197,7 @@ async function persistPayment(args: {
       donation_amount: a.donationAmount,
       platform_fee: a.platformFee,
       pagarme_fee: a.pagarmeFee,
-      g2_op_fee: a.g2OpFee,
+      tk2_op_fee: a.g2OpFee,
       transacao_fee: a.transacaoFee,
       split_platform_amount: a.splitPlatformAmount,
       split_seller_amount: a.donationAmount,

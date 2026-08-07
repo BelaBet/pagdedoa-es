@@ -181,7 +181,7 @@ export const createBoletoPayment = createServerFn({ method: "POST" })
         donation_amount: amounts.donationAmount,
         platform_fee: amounts.platformFee,
         pagarme_fee: amounts.pagarmeFee,
-        g2_op_fee: amounts.g2OpFee,
+        tk2_op_fee: amounts.g2OpFee,
         transacao_fee: amounts.transacaoFee,
         split_platform_amount: amounts.splitPlatformAmount,
         split_seller_amount: amounts.donationAmount,
