@@ -1,5 +1,11 @@
 import { useState, useEffect, useRef, type ComponentType, type ReactNode } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,12 +83,14 @@ function TK2LandingPage() {
             </span>
             <h1 className="mt-5 font-display text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
               A plataforma completa para a sua igreja{" "}
-              <span className="bg-gradient-to-r from-amber-500 to-rose-500 bg-clip-text text-transparent">crescer</span>
+              <span className="bg-gradient-to-r from-amber-500 to-rose-500 bg-clip-text text-transparent">
+                crescer
+              </span>
               .
             </h1>
             <p className="mt-5 max-w-xl text-lg text-slate-600">
-              Receba dízimos e ofertas por PIX, cartão e boleto. Gerencie instituições, eventos e financeiro em um único
-              lugar — com a sua marca, no seu domínio.
+              Receba dízimos e ofertas por PIX, cartão e boleto. Gerencie instituições, eventos e
+              financeiro em um único lugar — com a sua marca, no seu domínio.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <a
@@ -161,16 +169,33 @@ function TK2LandingPage() {
             <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
               Tudo o que sua igreja precisa
             </h2>
-            <p className="mt-3 text-slate-600">Recursos pensados para o dia a dia da gestão eclesiástica.</p>
+            <p className="mt-3 text-slate-600">
+              Recursos pensados para o dia a dia da gestão eclesiástica.
+            </p>
           </div>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[
-              { t: "Doações online", d: "PIX, cartão e boleto com split automático e taxas transparentes." },
-              { t: "Gestão financeira", d: "Centros de custo, conciliação, antecipação e transferências." },
-              { t: "Instituições e comunidade", d: "Cadastro, comunicação, segmentação e histórico." },
-              { t: "Eventos com TicketTO", d: "Divulgue e venda ingressos integrado à TicketTO." },
-              { t: "Sua marca, sua página", d: "Página pública personalizada com logo, cores e domínio próprio." },
-              { t: "QR Code de doação", d: "Imprima, projete na tela e receba contribuições em segundos." },
+              {
+                t: "Doações online",
+                d: "PIX, cartão e boleto com split automático e taxas transparentes.",
+              },
+              {
+                t: "Gestão financeira",
+                d: "Centros de custo, conciliação, antecipação e transferências.",
+              },
+              {
+                t: "Instituições e comunidade",
+                d: "Cadastro, comunicação, segmentação e histórico.",
+              },
+              { t: "Eventos", d: "Divulgue eventos e direcione para a inscrição ou bilheteria." },
+              {
+                t: "Sua marca, sua página",
+                d: "Página pública personalizada com logo, cores e domínio próprio.",
+              },
+              {
+                t: "QR Code de doação",
+                d: "Imprima, projete na tela e receba contribuições em segundos.",
+              },
             ].map((f) => (
               <div
                 key={f.t}
@@ -193,7 +218,8 @@ function TK2LandingPage() {
                 Mais doações, menos burocracia.
               </h2>
               <p className="mt-4 text-slate-300">
-                Sua igreja foca na missão. Nós cuidamos da infraestrutura, do pagamento e da conformidade financeira.
+                Sua igreja foca na missão. Nós cuidamos da infraestrutura, do pagamento e da
+                conformidade financeira.
               </p>
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
                 {[
@@ -237,7 +263,9 @@ function TK2LandingPage() {
           <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
             Comece grátis. Cresça com o Centro de Doações.
           </h2>
-          <p className="mt-3 text-slate-600">Cadastre sua igreja em minutos e comece a receber doações ainda hoje.</p>
+          <p className="mt-3 text-slate-600">
+            Cadastre sua igreja em minutos e comece a receber doações ainda hoje.
+          </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <a
               href="/signup"
@@ -545,7 +573,16 @@ function PaymentHeader({
         {icon}
       </div>
       <div>
-        <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, color: primary, margin: 0 }}>{title}</h3>
+        <h3
+          style={{
+            fontFamily: "'Playfair Display', serif",
+            fontSize: 18,
+            color: primary,
+            margin: 0,
+          }}
+        >
+          {title}
+        </h3>
         <p style={{ fontSize: 12, color: "#888", margin: "2px 0 0" }}>{subtitle}</p>
       </div>
     </div>
@@ -589,7 +626,13 @@ function PlaceholderBody({
       >
         <div>
           <div
-            style={{ fontSize: 11, letterSpacing: 2, color: muted ? "#bbb" : accent, marginBottom: 6, fontWeight: 600 }}
+            style={{
+              fontSize: 11,
+              letterSpacing: 2,
+              color: muted ? "#bbb" : accent,
+              marginBottom: 6,
+              fontWeight: 600,
+            }}
           >
             {status.toUpperCase()}
           </div>
@@ -630,7 +673,15 @@ function PlaceholderBody({
 }
 
 // ── Event Card ────────────────────────────────────────────────────────────────
-function EventCard({ event, accent, primary }: { event: EventItem; accent: string; primary: string }) {
+function EventCard({
+  event,
+  accent,
+  primary,
+}: {
+  event: EventItem;
+  accent: string;
+  primary: string;
+}) {
   const [hovered, setHovered] = useState(false);
   const month = new Date(event.date + "T12:00:00")
     .toLocaleDateString("pt-BR", { month: "short" })
@@ -638,11 +689,15 @@ function EventCard({ event, accent, primary }: { event: EventItem; accent: strin
     .toUpperCase();
   const day = new Date(event.date + "T12:00:00").getDate();
 
+  // Sem URL externa o card nao deve virar link morto.
+  const Wrapper = event.ticketUrl ? "a" : "div";
+  const linkProps = event.ticketUrl
+    ? { href: event.ticketUrl, target: "_blank", rel: "noopener noreferrer" }
+    : {};
+
   return (
-    <a
-      href={event.ticketUrl}
-      target="_blank"
-      rel="noopener noreferrer"
+    <Wrapper
+      {...linkProps}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -719,11 +774,27 @@ function EventCard({ event, accent, primary }: { event: EventItem; accent: strin
 
       {/* Content */}
       <div style={{ padding: 24, flex: 1, display: "flex", flexDirection: "column" }}>
-        <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, margin: "0 0 12px", color: primary }}>
+        <h3
+          style={{
+            fontFamily: "'Playfair Display', serif",
+            fontSize: 20,
+            margin: "0 0 12px",
+            color: primary,
+          }}
+        >
           {event.title}
         </h3>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#666", fontSize: 13, marginBottom: 6 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            color: "#666",
+            fontSize: 13,
+            marginBottom: 6,
+          }}
+        >
           <svg
             width="14"
             height="14"
@@ -742,7 +813,16 @@ function EventCard({ event, accent, primary }: { event: EventItem; accent: strin
           </span>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#666", fontSize: 13, marginBottom: 12 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            color: "#666",
+            fontSize: 13,
+            marginBottom: 12,
+          }}
+        >
           <svg
             width="14"
             height="14"
@@ -789,17 +869,27 @@ function EventCard({ event, accent, primary }: { event: EventItem; accent: strin
           Participar do Evento →
         </div>
       </div>
-    </a>
+    </Wrapper>
   );
 }
 
 // ── PAYMENTS QUICK ACTIONS (fintech-style) ───────────────────────────────────
 type ActionKey = "pix" | "boleto" | "fatura" | "mais";
 
-const QUICK_ACTIONS: { key: ActionKey; label: string; icon: ComponentType<{ className?: string }>; tint: string }[] = [
+const QUICK_ACTIONS: {
+  key: ActionKey;
+  label: string;
+  icon: ComponentType<{ className?: string }>;
+  tint: string;
+}[] = [
   { key: "pix", label: "Pix", icon: QrCode, tint: "bg-emerald-100 text-emerald-700" },
   { key: "boleto", label: "Boleto", icon: Barcode, tint: "bg-sky-100 text-sky-700" },
-  { key: "fatura", label: "Cartão de crédito", icon: CreditCard, tint: "bg-violet-100 text-violet-700" },
+  {
+    key: "fatura",
+    label: "Cartão de crédito",
+    icon: CreditCard,
+    tint: "bg-violet-100 text-violet-700",
+  },
 ];
 
 type CostCenterOpt = {
@@ -830,7 +920,10 @@ function PaymentsQuickActions({
 
   return (
     <>
-      <div className="rounded-2xl border bg-white p-5 shadow-sm sm:p-6" style={{ borderColor: `${primary}1a` }}>
+      <div
+        className="rounded-2xl border bg-white p-5 shadow-sm sm:p-6"
+        style={{ borderColor: `${primary}1a` }}
+      >
         <div className="grid grid-cols-3 gap-3 sm:gap-6">
           {QUICK_ACTIONS.map((a) => {
             const Icon = a.icon;
@@ -892,8 +985,16 @@ function PaymentsQuickActions({
         primary={primary}
         initialAmount={selectedAmount}
       />
-      <FaturaDialog open={methodOpen === "fatura"} onClose={() => setMethodOpen(null)} primary={primary} />
-      <MaisDialog open={methodOpen === "mais"} onClose={() => setMethodOpen(null)} onPick={(k) => setMethodOpen(k)} />
+      <FaturaDialog
+        open={methodOpen === "fatura"}
+        onClose={() => setMethodOpen(null)}
+        primary={primary}
+      />
+      <MaisDialog
+        open={methodOpen === "mais"}
+        onClose={() => setMethodOpen(null)}
+        onPick={(k) => setMethodOpen(k)}
+      />
     </>
   );
 }
@@ -982,7 +1083,13 @@ function PixDialog({
         >
           <QRCodeCanvas value={brCode} size={220} level="M" includeMargin={false} />
         </div>
-        <Button type="button" variant="outline" size="sm" className="gap-1.5 text-xs" onClick={downloadQR}>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="gap-1.5 text-xs"
+          onClick={downloadQR}
+        >
           <Download className="h-3.5 w-3.5" />
           Baixar QR Code
         </Button>
@@ -996,7 +1103,13 @@ function PixDialog({
             onChange={(e) => setKey(e.target.value)}
             placeholder="CPF, e-mail, telefone ou aleatória"
           />
-          <Button type="button" variant="outline" size="icon" onClick={copy} aria-label="Copiar chave">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={copy}
+            aria-label="Copiar chave"
+          >
             {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
           </Button>
         </div>
@@ -1026,7 +1139,15 @@ function PixDialog({
   );
 }
 
-function BoletoDialog({ open, onClose, primary }: { open: boolean; onClose: () => void; primary: string }) {
+function BoletoDialog({
+  open,
+  onClose,
+  primary,
+}: {
+  open: boolean;
+  onClose: () => void;
+  primary: string;
+}) {
   const [code, setCode] = useState("");
   const [amount, setAmount] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
@@ -1050,7 +1171,9 @@ function BoletoDialog({ open, onClose, primary }: { open: boolean; onClose: () =
       <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed bg-muted/40 p-4 text-sm transition-colors hover:bg-muted">
         <span className="flex items-center gap-3">
           <Upload className="h-5 w-5 text-muted-foreground" />
-          <span className="text-muted-foreground">{fileName ?? "Enviar arquivo do boleto (PDF/JPG)"}</span>
+          <span className="text-muted-foreground">
+            {fileName ?? "Enviar arquivo do boleto (PDF/JPG)"}
+          </span>
         </span>
         <input
           type="file"
@@ -1084,7 +1207,15 @@ function BoletoDialog({ open, onClose, primary }: { open: boolean; onClose: () =
   );
 }
 
-function FaturaDialog({ open, onClose, primary }: { open: boolean; onClose: () => void; primary: string }) {
+function FaturaDialog({
+  open,
+  onClose,
+  primary,
+}: {
+  open: boolean;
+  onClose: () => void;
+  primary: string;
+}) {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
   const [expiry, setExpiry] = useState("");
@@ -1198,15 +1329,36 @@ function FaturaDialog({ open, onClose, primary }: { open: boolean; onClose: () =
   );
 }
 
-function MaisDialog({ open, onClose, onPick }: { open: boolean; onClose: () => void; onPick: (k: ActionKey) => void }) {
-  const items: { icon: ComponentType<{ className?: string }>; label: string; onClick: () => void }[] = [
+function MaisDialog({
+  open,
+  onClose,
+  onPick,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onPick: (k: ActionKey) => void;
+}) {
+  const items: {
+    icon: ComponentType<{ className?: string }>;
+    label: string;
+    onClick: () => void;
+  }[] = [
     { icon: Smartphone, label: "Recarga de celular", onClick: () => toast.info("Em breve") },
     { icon: Receipt, label: "Contas e impostos", onClick: () => onPick("boleto") },
-    { icon: ArrowLeftRight, label: "Transferência entre contas", onClick: () => toast.info("Em breve") },
+    {
+      icon: ArrowLeftRight,
+      label: "Transferência entre contas",
+      onClick: () => toast.info("Em breve"),
+    },
     { icon: PiggyBank, label: "Investir", onClick: () => toast.info("Em breve") },
   ];
   return (
-    <PaymentDialogShell open={open} onClose={onClose} title="Mais opções" description="Outras ações disponíveis.">
+    <PaymentDialogShell
+      open={open}
+      onClose={onClose}
+      title="Mais opções"
+      description="Outras ações disponíveis."
+    >
       <ul className="divide-y rounded-xl border">
         {items.map(({ icon: Icon, label, onClick }) => (
           <li key={label}>
@@ -1239,7 +1391,6 @@ export function ChurchPageView({ tenantOverride }: { tenantOverride?: Tenant | n
   const { tenant: ctxTenant } = useTenant();
   const { profile } = useAuth();
   const { theme } = useChurchTheme();
-  
 
   // Quando o usuário está autenticado, prioriza o tenant do próprio perfil
   // (lendo sempre da tabela `tenants`, sem cache stale) para refletir mudanças
@@ -1264,7 +1415,8 @@ export function ChurchPageView({ tenantOverride }: { tenantOverride?: Tenant | n
   const tenant = tenantOverride ?? myTenant ?? ctxTenant;
 
   // ── Prioridade 3: pré-seleção de centro de custo via ?cc=<slug> ──
-  const ccSlug = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("cc") : null;
+  const ccSlug =
+    typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("cc") : null;
   const { data: selectedCostCenter } = useQuery({
     queryKey: ["public-cost-center", tenant?.id, ccSlug],
     enabled: !!tenant?.id && !!ccSlug,
@@ -1308,9 +1460,7 @@ export function ChurchPageView({ tenantOverride }: { tenantOverride?: Tenant | n
   const eventsToRender: EventItem[] = (publicEvents ?? []).map((e, idx) => {
     const d = e.date ? new Date(e.date) : null;
     const iso = d ? d.toISOString().slice(0, 10) : "";
-    const time = d
-      ? d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
-      : "";
+    const time = d ? d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "";
     return {
       id: idx,
       title: e.title,
@@ -1319,9 +1469,8 @@ export function ChurchPageView({ tenantOverride }: { tenantOverride?: Tenant | n
       location: e.location ?? "",
       description: e.description ?? "",
       image:
-        e.banner_url ||
-        "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=600&q=80",
-      ticketUrl: e.external_url || "https://ticketto.com.br",
+        e.banner_url || "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=600&q=80",
+      ticketUrl: e.external_url || "",
       free: true,
       spots: 0,
     };
@@ -1335,7 +1484,11 @@ export function ChurchPageView({ tenantOverride }: { tenantOverride?: Tenant | n
   };
   // Cores vêm direto da tabela `tenants` quando disponíveis; caem para o tema extraído da logo.
   const tenantAny = tenant as
-    | (Tenant & { primary_color?: string | null; secondary_color?: string | null; accent_color?: string | null })
+    | (Tenant & {
+        primary_color?: string | null;
+        secondary_color?: string | null;
+        accent_color?: string | null;
+      })
     | null;
   const primary = tenantAny?.primary_color || theme.primary;
   const secondary = tenantAny?.secondary_color || `${primary}dd`;
@@ -1451,7 +1604,13 @@ export function ChurchPageView({ tenantOverride }: { tenantOverride?: Tenant | n
             </div>
           )}
 
-          <span style={{ fontWeight: 600, color: scrolled ? "#1a1a1a" : "transparent", transition: "color .3s" }}>
+          <span
+            style={{
+              fontWeight: 600,
+              color: scrolled ? "#1a1a1a" : "transparent",
+              transition: "color .3s",
+            }}
+          >
             {CHURCH.name}
           </span>
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
@@ -1557,7 +1716,10 @@ export function ChurchPageView({ tenantOverride }: { tenantOverride?: Tenant | n
           </p>
 
           {/* Divider */}
-          <div className="mt-3 sm:mt-8" style={{ width: 40, height: 2, background: accent, borderRadius: 2 }} />
+          <div
+            className="mt-3 sm:mt-8"
+            style={{ width: 40, height: 2, background: accent, borderRadius: 2 }}
+          />
         </div>
       </section>
 
@@ -1636,14 +1798,15 @@ export function ChurchPageView({ tenantOverride }: { tenantOverride?: Tenant | n
         </div>
       </section>
 
-
       {/* ── EVENTS SECTION ─────────────────────────────────────────────── */}
       {eventsToRender.length > 0 && (
         <section style={{ padding: "80px 24px", background: "#fff" }}>
           <div className="fade-up-3" style={{ maxWidth: 1200, margin: "0 auto" }}>
             {/* Section Header */}
             <div style={{ textAlign: "center", marginBottom: 48 }}>
-              <span style={{ fontSize: 12, letterSpacing: 3, color: accent, fontWeight: 600 }}>✦ AGENDA</span>
+              <span style={{ fontSize: 12, letterSpacing: 3, color: accent, fontWeight: 600 }}>
+                ✦ AGENDA
+              </span>
               <h2
                 style={{
                   fontFamily: "'Playfair Display', serif",
@@ -1654,11 +1817,19 @@ export function ChurchPageView({ tenantOverride }: { tenantOverride?: Tenant | n
               >
                 Próximos Eventos
               </h2>
-              <p style={{ color: "#666", margin: 0 }}>Clique em qualquer evento para garantir sua participação.</p>
+              <p style={{ color: "#666", margin: 0 }}>
+                Clique em qualquer evento para garantir sua participação.
+              </p>
             </div>
 
             {/* Events Grid */}
-            <div style={{ display: "grid", gap: 24, gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
+            <div
+              style={{
+                display: "grid",
+                gap: 24,
+                gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+              }}
+            >
               {eventsToRender.map((event) => (
                 <EventCard key={event.id} event={event} accent={accent} primary={primary} />
               ))}
@@ -1668,7 +1839,14 @@ export function ChurchPageView({ tenantOverride }: { tenantOverride?: Tenant | n
       )}
 
       {/* ── FOOTER ─────────────────────────────────────────────────────── */}
-      <footer style={{ padding: "48px 24px", textAlign: "center", background: "#fafaf7", borderTop: "1px solid #eee" }}>
+      <footer
+        style={{
+          padding: "48px 24px",
+          textAlign: "center",
+          background: "#fafaf7",
+          borderTop: "1px solid #eee",
+        }}
+      >
         {CHURCH.logo && !logoError ? (
           <div
             style={{
@@ -1720,9 +1898,12 @@ export function ChurchPageView({ tenantOverride }: { tenantOverride?: Tenant | n
         >
           {CHURCH.name}
         </p>
-        {CHURCH.tagline && <p style={{ fontSize: 12, color: "#666", margin: "0 0 16px" }}>{CHURCH.tagline}</p>}
+        {CHURCH.tagline && (
+          <p style={{ fontSize: 12, color: "#666", margin: "0 0 16px" }}>{CHURCH.tagline}</p>
+        )}
         <p style={{ fontSize: 11, color: "#999", margin: 0, letterSpacing: "0.04em" }}>
-          Tecnologia fornecida por <span style={{ color: "#666", fontWeight: 600 }}>Centro de Doações</span>
+          Tecnologia fornecida por{" "}
+          <span style={{ color: "#666", fontWeight: 600 }}>Centro de Doações</span>
         </p>
       </footer>
     </div>

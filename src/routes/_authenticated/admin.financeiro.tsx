@@ -46,25 +46,49 @@ function PlatformOverview() {
     <Card className="border-amber-500/30">
       <CardContent className="p-6 space-y-4">
         <div>
-          <p className="text-xs uppercase tracking-wider text-amber-600">Plataforma Ticketto</p>
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">{BRAND.name}</p>
           <h2 className="font-display text-xl">Visão geral</h2>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Stat label="Saldo disponível" value={balance.isLoading ? null : brl(balance.data?.available?.amount)} />
-          <Stat label="A receber" value={balance.isLoading ? null : brl(balance.data?.waiting_funds?.amount)} />
+          <Stat
+            label="Saldo disponível"
+            value={balance.isLoading ? null : brl(balance.data?.available?.amount)}
+          />
+          <Stat
+            label="A receber"
+            value={balance.isLoading ? null : brl(balance.data?.waiting_funds?.amount)}
+          />
         </div>
         <div className="h-px bg-border" />
         <div className="grid gap-4 sm:grid-cols-3">
-          <Stat label="Receita de taxas (3,5% adm)" value={fees.isLoading ? null : brl(feeRevenue)} />
-          <Stat label="Taxa Pagar.me absorvida (estimativa)" value={fees.isLoading ? null : brl(pagarmeAbsorbedEst)} />
-          <Stat label="Margem líquida estimada" value={fees.isLoading ? null : brl(margin)} highlight />
+          <Stat
+            label="Receita de taxas (3,5% adm)"
+            value={fees.isLoading ? null : brl(feeRevenue)}
+          />
+          <Stat
+            label="Taxa Pagar.me absorvida (estimativa)"
+            value={fees.isLoading ? null : brl(pagarmeAbsorbedEst)}
+          />
+          <Stat
+            label="Margem líquida estimada"
+            value={fees.isLoading ? null : brl(margin)}
+            highlight
+          />
         </div>
       </CardContent>
     </Card>
   );
 }
 
-function Stat({ label, value, highlight }: { label: string; value: string | null; highlight?: boolean }) {
+function Stat({
+  label,
+  value,
+  highlight,
+}: {
+  label: string;
+  value: string | null;
+  highlight?: boolean;
+}) {
   return (
     <div>
       <p className="text-xs uppercase tracking-wider text-muted-foreground">{label}</p>

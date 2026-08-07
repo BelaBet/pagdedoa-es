@@ -34,9 +34,8 @@ import { Calendar, ExternalLink, Plus, Pencil, Trash2 } from "lucide-react";
 import { BackButton } from "@/components/back-button";
 import { toast } from "sonner";
 import { translateError } from "@/lib/translate-error";
-import { externalEventUrlSchema, TICKETTO_BASE, isTickettoUrl } from "@/lib/validators/url";
+import { externalEventUrlSchema, EXTERNAL_URL_PLACEHOLDER } from "@/lib/validators/url";
 import { z } from "zod";
-
 
 export const Route = createFileRoute("/_authenticated/manage/events")({
   component: ManageEventsPage,
@@ -59,7 +58,7 @@ const empty: FormData = {
   location: "",
   description: "",
   banner_url: "",
-  external_url: TICKETTO_BASE,
+  external_url: EXTERNAL_URL_PLACEHOLDER,
 };
 
 type EventRow = {
@@ -89,7 +88,6 @@ function ManageEventsPage() {
   const [toDelete, setToDelete] = useState<EventRow | null>(null);
   const [uploading, setUploading] = useState(false);
   const uploadBannerFn = useServerFn(uploadEventBanner);
-
 
   async function handleBannerUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -202,7 +200,6 @@ function ManageEventsPage() {
     saveMut.mutate(r.data);
   }
 
-
   return (
     <div>
       <BackButton />
@@ -210,21 +207,28 @@ function ManageEventsPage() {
         <div>
           <h1 className="font-display text-3xl md:text-4xl">Eventos</h1>
           <p className="mt-1 text-muted-foreground">
-            Cadastre eventos da igreja. A inscrição é feita no link externo (TicketTO).
+            Cadastre eventos da igreja. A inscrição é feita no link externo.
           </p>
         </div>
         <Dialog
           open={open}
           onOpenChange={(o) => {
             setOpen(o);
-            if (!o) { setEditing(null); setForm(empty); }
+            if (!o) {
+              setEditing(null);
+              setForm(empty);
+            }
           }}
         >
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditing(null); setForm(empty); }}>
+            <Button
+              onClick={() => {
+                setEditing(null);
+                setForm(empty);
+              }}
+            >
               <Plus className="mr-2 h-4 w-4" /> Novo evento
             </Button>
-
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
@@ -299,12 +303,12 @@ function ManageEventsPage() {
                   id="external_url"
                   type="url"
                   required
-                  placeholder="https://www.ticketto.com.br/evento/…"
+                  placeholder="https://exemplo.com/seu-evento"
                   value={form.external_url}
                   onChange={(e) => setForm({ ...form, external_url: e.target.value })}
                 />
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Padrão: TicketTO.
+                  Link de inscrição, bilheteria ou formulário.
                 </p>
               </div>
               <DialogFooter>
@@ -313,7 +317,6 @@ function ManageEventsPage() {
                 </Button>
                 <Button type="submit" disabled={saveMut.isPending}>
                   {saveMut.isPending ? "Salvando…" : editing ? "Salvar alterações" : "Cadastrar"}
-
                 </Button>
               </DialogFooter>
             </form>
@@ -376,11 +379,6 @@ function ManageEventsPage() {
                 >
                   Participar do Evento <ExternalLink className="h-3.5 w-3.5" />
                 </a>
-                {!isTickettoUrl(ev.external_url) && (
-                  <p className="mt-1 text-[10px] text-muted-foreground">
-                    Link externo (não-TicketTO)
-                  </p>
-                )}
 
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
                   <div className="flex gap-2">
@@ -427,6 +425,5 @@ function ManageEventsPage() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-
   );
 }

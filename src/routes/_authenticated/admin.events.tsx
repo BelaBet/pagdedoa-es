@@ -57,7 +57,7 @@ import { ExternalLink, Calendar, Plus, Pencil, Trash2 } from "lucide-react";
 
 import { toast } from "sonner";
 import { translateError } from "@/lib/translate-error";
-import { externalEventUrlSchema, TICKETTO_BASE } from "@/lib/validators/url";
+import { externalEventUrlSchema, EXTERNAL_URL_PLACEHOLDER } from "@/lib/validators/url";
 import { z } from "zod";
 import { useImpersonation } from "@/lib/impersonation";
 
@@ -98,7 +98,7 @@ const empty: FormData = {
   location: "",
   description: "",
   banner_url: "",
-  external_url: TICKETTO_BASE,
+  external_url: EXTERNAL_URL_PLACEHOLDER,
 };
 
 function toLocalInput(iso: string) {
@@ -106,8 +106,6 @@ function toLocalInput(iso: string) {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
-
-
 
 function AdminEventsPage() {
   const qc = useQueryClient();
@@ -125,10 +123,12 @@ function AdminEventsPage() {
   const [toDelete, setToDelete] = useState<AdminEvent | null>(null);
   const [uploading, setUploading] = useState(false);
 
-
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin-events", active ? impersonatedTenantId : null],
-    queryFn: () => fetchEvents({ data: active && impersonatedTenantId ? { tenantId: impersonatedTenantId } : {} }),
+    queryFn: () =>
+      fetchEvents({
+        data: active && impersonatedTenantId ? { tenantId: impersonatedTenantId } : {},
+      }),
   });
   const { data: tenants } = useQuery({
     queryKey: ["admin-tenants-list"],
@@ -194,7 +194,6 @@ function AdminEventsPage() {
     });
     setOpen(true);
   }
-
 
   async function handleBannerUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -269,7 +268,12 @@ function AdminEventsPage() {
           }}
         >
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditing(null); setForm(empty); }}>
+            <Button
+              onClick={() => {
+                setEditing(null);
+                setForm(empty);
+              }}
+            >
               <Plus className="mr-2 h-4 w-4" /> Novo evento
             </Button>
           </DialogTrigger>
@@ -280,7 +284,6 @@ function AdminEventsPage() {
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={onSubmit} className="space-y-4">
-
               <div>
                 <Label>Igreja *</Label>
                 <Select
@@ -288,7 +291,6 @@ function AdminEventsPage() {
                   disabled={!!editing}
                   onValueChange={(v) => setForm({ ...form, tenant_id: v })}
                 >
-
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a igreja" />
                   </SelectTrigger>
@@ -364,7 +366,7 @@ function AdminEventsPage() {
                   id="external_url"
                   type="url"
                   required
-                  placeholder="https://www.ticketto.com.br/evento/…"
+                  placeholder="https://exemplo.com/seu-evento"
                   value={form.external_url}
                   onChange={(e) => setForm({ ...form, external_url: e.target.value })}
                 />
@@ -376,7 +378,6 @@ function AdminEventsPage() {
                 <Button type="submit" disabled={saveMut.isPending}>
                   {saveMut.isPending ? "Salvando…" : editing ? "Salvar alterações" : "Cadastrar"}
                 </Button>
-
               </DialogFooter>
             </form>
           </DialogContent>
@@ -417,14 +418,20 @@ function AdminEventsPage() {
                   </div>
                 </TableCell>
                 {!active && (
-                  <TableCell className="max-w-[140px] truncate text-sm text-muted-foreground" title={ev.tenants?.name ?? undefined}>
+                  <TableCell
+                    className="max-w-[140px] truncate text-sm text-muted-foreground"
+                    title={ev.tenants?.name ?? undefined}
+                  >
                     {ev.tenants?.name ?? "—"}
                   </TableCell>
                 )}
                 <TableCell className="text-sm whitespace-nowrap">
                   {ev.date ? new Date(ev.date).toLocaleString("pt-BR") : "—"}
                 </TableCell>
-                <TableCell className="max-w-[160px] truncate text-sm text-muted-foreground" title={ev.location ?? undefined}>
+                <TableCell
+                  className="max-w-[160px] truncate text-sm text-muted-foreground"
+                  title={ev.location ?? undefined}
+                >
                   {ev.location ?? "—"}
                 </TableCell>
                 <TableCell>
@@ -505,6 +512,5 @@ function AdminEventsPage() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-
   );
 }
