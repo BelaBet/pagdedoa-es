@@ -147,7 +147,7 @@ export function AppSidebar() {
 
         {isSuperAdmin && (
           <SidebarGroup>
-            <SidebarGroupLabel className="h-auto py-2 leading-tight">Plataforma&nbsp;{"\n"}TicketConnect</SidebarGroupLabel>
+            <SidebarGroupLabel className="h-auto py-2 leading-tight">Plataforma&nbsp;{"\n"}Centro de Doações</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {PLATFORM_ITEMS.map((i) => (

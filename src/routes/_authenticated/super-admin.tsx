@@ -102,7 +102,7 @@ function SuperAdminPage() {
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              TicketConnect
+              Centro de Doações
             </p>
             <h1 className="font-display text-2xl leading-tight">Plataforma de igrejas</h1>
             <p className="text-sm text-muted-foreground">Gestão das igrejas administradas pela plataforma</p>
