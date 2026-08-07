@@ -19,6 +19,7 @@ import {
   Settings,
   ArrowLeft,
   HeartHandshake,
+  Users,
   Building2,
   CreditCard,
   ScrollText,
@@ -40,6 +41,7 @@ import { BRAND } from "@/lib/brand";
 const MANAGE_ITEMS = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Doações", url: "/manage/donations", icon: HeartHandshake },
+  { title: "Membros", url: "/manage/members", icon: Users },
   { title: "Relatórios", url: "/manage/relatorios", icon: ScrollText },
   { title: "Financeiro", url: "/dashboard/financeiro", icon: Wallet },
   { title: "Eventos", url: "/manage/events", icon: Calendar },
