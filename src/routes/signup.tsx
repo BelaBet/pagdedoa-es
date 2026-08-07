@@ -230,7 +230,7 @@ function SignupPage() {
           Crie a conta do administrador e a instituição em um único passo.
         </p>
 
-        <form onSubmit={submit} className="mt-8 space-y-5">
+        <form onSubmit={submit} className="auth-fields mt-8 space-y-5">
           <div className="space-y-4 rounded-lg border bg-muted/30 p-4">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Instituição</p>
             <div>

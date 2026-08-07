@@ -131,7 +131,7 @@ function RedefinirSenhaPage() {
           ) : (
             <>
               <p className="mt-1 text-sm text-muted-foreground">Digite sua nova senha abaixo</p>
-              <form onSubmit={submit} className="mt-8 space-y-4">
+              <form onSubmit={submit} className="auth-fields mt-8 space-y-4">
                 <div>
                   <Label htmlFor="nova">Nova senha</Label>
                   <div className="relative">

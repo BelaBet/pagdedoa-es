@@ -131,4 +131,16 @@
   }
 }
 
+@layer components {
+  /* Telas de acesso: campos com canto suave. O resto do produto mantem o
+     canto reto do ladrilho — aqui o objetivo e reduzir a aspereza no
+     primeiro contato, antes de a pessoa conhecer a marca. */
+  .auth-fields input,
+  .auth-fields select,
+  .auth-fields textarea,
+  .auth-fields button {
+    border-radius: 0.5rem;
+  }
+}
+
 #lovable-badge { display: none !important; }

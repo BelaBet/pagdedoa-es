@@ -67,7 +67,7 @@ function LoginPage() {
             E-mail confirmado. Agora entre com seu e-mail e senha.
           </div>
         )}
-        <form onSubmit={submit} className="mt-8 space-y-4">
+        <form onSubmit={submit} className="auth-fields mt-8 space-y-4">
           <div>
             <Label htmlFor="email">E-mail</Label>
             <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
