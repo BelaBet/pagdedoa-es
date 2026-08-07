@@ -138,7 +138,7 @@
   .auth-fields input,
   .auth-fields select,
   .auth-fields textarea {
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
   }
 
   /* Botoes arredondados em todo o produto: sao o elemento que a pessoa
@@ -147,7 +147,7 @@
   button,
   [role="button"],
   a[data-slot="button"] {
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
   }
 }
 
