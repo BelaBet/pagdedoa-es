@@ -37,6 +37,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { getPublicChurchEvents } from "@/lib/church.functions";
 import { BRAND } from "@/lib/brand";
+import { EventNeedsPublic } from "@/components/events/EventNeedsPublic";
 
 function G2LandingPage() {
   return (
@@ -1838,6 +1839,17 @@ export function ChurchPageView({ tenantOverride }: { tenantOverride?: Tenant | n
           </div>
         </section>
       )}
+
+      {/* Padrinhos e itens: cada evento com necessidades ativas renderiza a
+          propria secao. O componente devolve null quando nao ha nenhuma. */}
+      {(publicEvents ?? []).map((e) => (
+        <EventNeedsPublic
+          key={`needs-${e.id}`}
+          eventId={e.id}
+          eventTitle={e.title}
+          accent={accent}
+        />
+      ))}
 
       {/* ── FOOTER ─────────────────────────────────────────────────────── */}
       <footer
