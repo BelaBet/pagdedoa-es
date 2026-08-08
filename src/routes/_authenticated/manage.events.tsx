@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Calendar, ExternalLink, HandHeart, Plus, Pencil, Trash2 } from "lucide-react";
 import { EventNeedsPanel } from "@/components/events/EventNeedsPanel";
+import { Progress } from "@/components/ui/progress";
 import { BackButton } from "@/components/back-button";
 import { toast } from "sonner";
 import { translateError } from "@/lib/translate-error";
@@ -51,6 +52,8 @@ const formSchema = z.object({
   description: z.string().trim().max(2000).optional(),
   banner_url: z.string().trim().url("Banner inválido").optional().or(z.literal("")),
   external_url: externalEventUrlSchema,
+  // Vazio = evento sem meta. String porque vem de <input>; convertida na gravação.
+  goal_amount: z.string().trim().optional(),
 });
 type FormData = z.infer<typeof formSchema>;
 
@@ -61,6 +64,7 @@ const empty: FormData = {
   description: "",
   banner_url: "",
   external_url: EXTERNAL_URL_PLACEHOLDER,
+  goal_amount: "",
 };
 
 type EventRow = {
@@ -71,6 +75,7 @@ type EventRow = {
   description: string | null;
   banner_url: string | null;
   external_url: string;
+  goal_amount: number | null;
   status: string;
 };
 
@@ -126,7 +131,9 @@ function ManageEventsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("events")
-        .select("id,title,date,location,description,banner_url,external_url,status,created_at")
+        .select(
+          "id,title,date,location,description,banner_url,external_url,status,created_at,goal_amount",
+        )
         .eq("tenant_id", tenantId!)
         .order("date", { ascending: false, nullsFirst: false });
       if (error) throw error;
@@ -145,6 +152,7 @@ function ManageEventsPage() {
         description: parsed.description || null,
         banner_url: parsed.banner_url || null,
         external_url: parsed.external_url,
+        goal_amount: parsed.goal_amount ? Number(parsed.goal_amount) : null,
       };
       if (editing) {
         const { error } = await supabase.from("events").update(payload).eq("id", editing.id);
@@ -181,6 +189,30 @@ function ManageEventsPage() {
 
   const [needsFor, setNeedsFor] = useState<string | null>(null);
 
+  // Arrecadado por evento: soma das doações confirmadas com campaign_id igual
+  // ao evento. Uma consulta só para todos, em vez de uma por card.
+  const arrecadado = useQuery({
+    queryKey: ["events-raised", tenantId],
+    enabled: Boolean(tenantId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("donations")
+        .select("campaign_id, amount, payments!inner(status)")
+        .eq("tenant_id", tenantId!)
+        .not("campaign_id", "is", null)
+        .is("deleted_at", null);
+      if (error) throw error;
+
+      const mapa = new Map<string, number>();
+      for (const d of data ?? []) {
+        const pago = (d.payments as { status?: string } | null)?.status === "confirmed";
+        if (!pago || !d.campaign_id) continue;
+        mapa.set(d.campaign_id, (mapa.get(d.campaign_id) ?? 0) + Number(d.amount ?? 0));
+      }
+      return mapa;
+    },
+  });
+
   function startEdit(ev: EventRow) {
     setEditing(ev);
     setForm({
@@ -190,6 +222,7 @@ function ManageEventsPage() {
       description: ev.description ?? "",
       banner_url: ev.banner_url ?? "",
       external_url: ev.external_url,
+      goal_amount: ev.goal_amount != null ? String(ev.goal_amount) : "",
     });
     setOpen(true);
   }
@@ -315,6 +348,22 @@ function ManageEventsPage() {
                   Link de inscrição, bilheteria ou formulário.
                 </p>
               </div>
+
+              <div>
+                <Label htmlFor="goal_amount">Meta de arrecadação (R$)</Label>
+                <Input
+                  id="goal_amount"
+                  type="number"
+                  step="0.01"
+                  min={0}
+                  placeholder="Deixe em branco se não houver meta"
+                  value={form.goal_amount ?? ""}
+                  onChange={(e) => setForm({ ...form, goal_amount: e.target.value })}
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  O progresso soma as doações confirmadas vinculadas a este evento.
+                </p>
+              </div>
               <DialogFooter>
                 <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
                   Cancelar
@@ -383,6 +432,30 @@ function ManageEventsPage() {
                 >
                   Participar do Evento <ExternalLink className="h-3.5 w-3.5" />
                 </a>
+
+                {ev.goal_amount != null && (
+                  <div className="mt-4">
+                    {(() => {
+                      const meta = Number(ev.goal_amount);
+                      const total = arrecadado.data?.get(ev.id) ?? 0;
+                      const pct = meta > 0 ? Math.min(100, Math.round((total / meta) * 100)) : 0;
+                      const fmt = (v: number) =>
+                        v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+                      return (
+                        <>
+                          <div className="flex items-baseline justify-between text-xs">
+                            <span className="font-medium text-foreground">{fmt(total)}</span>
+                            <span className="text-muted-foreground">meta {fmt(meta)}</span>
+                          </div>
+                          <Progress value={pct} className="mt-1.5 h-1.5" />
+                          <p className="mt-1 text-[11px] text-muted-foreground">
+                            {pct >= 100 ? "Meta atingida" : `${pct}% da meta`}
+                          </p>
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
 
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
                   <div className="flex gap-2">
